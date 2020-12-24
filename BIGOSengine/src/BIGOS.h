@@ -3,8 +3,9 @@
 
 // For use by BIGOS applications
 
-#include "Engine/Application.h"
+#include "Engine/Core/Application.h"
+#include "Engine/Core/Logger.h"
 
 // ---Entry Point---------------------
-#include "Engine/EntryPoint.h"
+#include "Engine/Core/EntryPoint.h"
 // -----------------------------------

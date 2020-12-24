@@ -15,7 +15,9 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["ImGui"] = "Hazel/vendor/imgui"
 
-include "BIGOSengine/ThirdParty/imgui"
+group "Dependencies"
+	include "BIGOSengine/ThirdParty/imgui"
+group ""
 
 project "BIGOSengine"
 	location "BIGOSengine"

@@ -1,4 +1,5 @@
-#include "Application.h"
+#include "Engine\Core\Application.h"
+#include "Engine\Core\Logger.h"
 
 #include <cstdio>
 
@@ -16,7 +17,7 @@ namespace BIGOS {
 	{
 		while (true)
 		{
-			printf("BIGOS");
+			//printf("BIGOS");
 		}
 	}
 
