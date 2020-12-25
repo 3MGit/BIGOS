@@ -1,11 +1,12 @@
+#include "bgspch.h"
+
 #include "Engine\Core\Application.h"
 #include "Engine\Core\Logger.h"
 
-#include <cstdio>
-
 namespace BIGOS {
 
-	Application::Application()
+	Application::Application(const std::string& name)
+		:m_Name(name)
 	{
 	}
 
@@ -13,11 +14,24 @@ namespace BIGOS {
 	{
 	}
 
+	bool Application::Init()
+	{
+		m_Window = Window::StartUpWindow(WindowProps(m_Name));
+
+		BGS_CORE_ASSERT(m_Window->Init());
+
+		return true;
+	}
+
+	void Application::ShutDown()
+	{
+	}
+
 	void Application::Run()
 	{
-		while (true)
+		while (m_Running)
 		{
-			//printf("BIGOS");
+			m_Window->OnUpdate();
 		}
 	}
 

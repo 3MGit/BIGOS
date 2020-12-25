@@ -1,18 +1,11 @@
 #pragma once
 
-#include <fstream>
-#include <iostream>
-#include <cstdarg>
-#include <string>
-#include <sstream>
-
-#include <memory>
-#include <sstream>
+#include "bgspch.h"
  
 namespace BIGOS {
 
-	enum LogType {CLIENT, CORE};
-	enum LogLevel { TRACE, INFO, WARN, ERROR, FATAL};
+	enum class LogType {CLIENT, CORE};
+	enum class LogLevel { TRACE, INFO, WARN, FATAL};
 
     class Logger 
     {
@@ -30,7 +23,7 @@ namespace BIGOS {
 
 	private:
 
-		static Logger* s_pLogger;
+		static Logger* s_Instance;
     };
 
 }
@@ -39,12 +32,10 @@ namespace BIGOS {
 #define BGS_CORE_TRACE(...)    ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::TRACE, __VA_ARGS__)
 #define BGS_CORE_INFO(...)     ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::INFO, __VA_ARGS__)
 #define BGS_CORE_WARN(...)     ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::WARN, __VA_ARGS__)
-#define BGS_CORE_ERROR(...)    ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::ERROR, __VA_ARGS__)
 #define BGS_CORE_FATAL(...)    ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::FATAL, __VA_ARGS__)
 
 // Client log macros
 #define BGS_TRACE(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::TRACE, __VA_ARGS__)
 #define BGS_INFO(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::INFO, __VA_ARGS__)
 #define BGS_WARN(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::WARN, __VA_ARGS__)
-#define BGS_ERROR(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::ERROR, __VA_ARGS__)
 #define BGS_FATAL(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::FATAL, __VA_ARGS__)

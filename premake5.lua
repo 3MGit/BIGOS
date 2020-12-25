@@ -29,6 +29,9 @@ project "BIGOSengine"
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
+	pchheader "bgspch.h"
+	pchsource "BIGOSengine/src/bgspch.cpp"
+
 	files
 	{
 		"%{prj.name}/src/**.h",
@@ -43,7 +46,6 @@ project "BIGOSengine"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{prj.name}/ThirdParty/spdlog/include",
 		"%{IncludeDir.ImGui}"
 	}
 
@@ -93,7 +95,6 @@ project "Sandbox"
 
 	includedirs
 	{
-		"BIGOSengine/ThirdParty/spdlog/include",
 		"BIGOSengine/src",
 		"BIGOSengine/ThirdParty"
 	}

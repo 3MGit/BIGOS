@@ -4,6 +4,7 @@ class Sandbox : public BIGOS::Application
 {
 public:
 	Sandbox()
+		: Application("SandboxApp")
 	{
 
 	}

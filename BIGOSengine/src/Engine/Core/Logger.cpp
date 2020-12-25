@@ -1,16 +1,18 @@
+#include "bgspch.h"
+
 #include "Engine/Core/Logger.h"
 #include "Engine/Core/Utilities.h"
 
 namespace BIGOS {
 
-	Logger* Logger::s_pLogger = NULL;
+	Logger* Logger::s_Instance = NULL;
 
 	Logger* Logger::Get()
 	{
-		if (s_pLogger == NULL) {
-			s_pLogger = new Logger();
+		if (s_Instance == NULL) {
+			s_Instance = new Logger();
 		}
-		return s_pLogger;
+		return s_Instance;
 	}
 
 	Logger::Logger()
@@ -27,9 +29,9 @@ namespace BIGOS {
 		oss << "[" << Utils::CurrentDateTime() << "] ";
 		switch (type)
 		{
-		case BIGOS::CLIENT:
+		case BIGOS::LogType::CLIENT:
 			break;
-		case BIGOS::CORE:
+		case BIGOS::LogType::CORE:
 			oss << "BIGOS:";
 			break;
 		default:
@@ -37,19 +39,16 @@ namespace BIGOS {
 		}
 		switch (lvl)
 		{
-		case BIGOS::TRACE:
+		case BIGOS::LogLevel::TRACE:
 			oss << "TRACE:\t";
 			break;
-		case BIGOS::INFO:
+		case BIGOS::LogLevel::INFO:
 			oss << "INFO:\t";
 			break;
-		case BIGOS::WARN:
+		case BIGOS::LogLevel::WARN:
 			oss << "WARN:\t";
 			break;
-		case BIGOS::ERROR:
-			oss << "ERROR:\t";
-			break;
-		case BIGOS::FATAL:
+		case BIGOS::LogLevel::FATAL:
 			oss << "FATAL:\t";
 			break;
 		default:
@@ -76,9 +75,9 @@ namespace BIGOS {
 		oss << "[" << Utils::CurrentDateTime() << "] ";
 		switch (type)
 		{
-		case BIGOS::CLIENT:
+		case BIGOS::LogType::CLIENT:
 			break;
-		case BIGOS::CORE:
+		case BIGOS::LogType::CORE:
 			oss << "BIGOS:";
 			break;
 		default:
@@ -86,19 +85,16 @@ namespace BIGOS {
 		}
 		switch (lvl)
 		{
-		case BIGOS::TRACE:
+		case BIGOS::LogLevel::TRACE:
 			oss << "TRACE:\t";
 			break;
-		case BIGOS::INFO:
+		case BIGOS::LogLevel::INFO:
 			oss << "INFO:\t";
 			break;
-		case BIGOS::WARN:
+		case BIGOS::LogLevel::WARN:
 			oss << "WARN:\t";
 			break;
-		case BIGOS::ERROR:
-			oss << "ERROR:\t";
-			break;
-		case BIGOS::FATAL:
+		case BIGOS::LogLevel::FATAL:
 			oss << "FATAL:\t";
 			break;
 		default:
