@@ -8,15 +8,28 @@
 
 namespace BIGOS {
 
-	std::unique_ptr<Window> Window::StartUpWindow(const WindowProps& props)
+	std::map<void*, Window*> Window::s_Handles;
+
+	Window* Window::StartUpWindow(const WindowProps& props)
 	{
 #ifdef BGS_PLATFORM_WINDOWS
-		return std::make_unique<WindowsWindow>(props);
+		return new WindowsWindow(props);
 #else
 		BT_CORE_ASSERT(false, "Unknown platform!");
 		return nullptr;
 #endif
 
 		return nullptr;
+	}
+	void Window::RegisterWindowClass(void* handle, Window* window)
+	{
+		s_Handles[handle] = window;
+	}
+	Window* Window::GetWindowClass(void* handle)
+	{
+		if (handle == nullptr)
+			return s_Handles.begin()->second;
+
+		return s_Handles[handle];
 	}
 }

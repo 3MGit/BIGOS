@@ -1,12 +1,12 @@
 #include "bgspch.h"
 
 #include "Engine/Core/Core.h"
+#include "Engine/Events/ApplicationEvent.h"
 
 #include "Platform/Win32Window.h"
 
-namespace BIGOS {
 
-	LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
+namespace BIGOS {
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
@@ -45,7 +45,7 @@ namespace BIGOS {
 		winClass.lpszClassName = "Bigos Win32 Window";
 		winClass.lpszMenuName = "";
 		winClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
-		winClass.lpfnWndProc = WindowProc;
+		winClass.lpfnWndProc = WindowsWindow::WindowProc;
 
 		if (!RegisterClassA(&winClass))
 		{
@@ -81,6 +81,8 @@ namespace BIGOS {
 			return false;
 		}
 
+		RegisterWindowClass(m_Hwnd, this);
+
 		BGS_CORE_TRACE("Win32 window succesfully created!");
 		//show up the window
 		ShowWindow(m_Hwnd, SW_SHOW);
@@ -95,20 +97,33 @@ namespace BIGOS {
 		if (m_Hwnd)
 			if(DestroyWindow(m_Hwnd))
 				BGS_CORE_TRACE("Win32 window succesfully destroyed!");
+
 	}
 
-	LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+	LRESULT CALLBACK WindowsWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		Window* window = Window::GetWindowClass(hwnd);
+		if (window == nullptr)
+			return DefWindowProcA(hwnd, msg, wParam, lParam);
+		
 		switch (msg)
 		{
 		case WM_CREATE:
-			// Event fierd when the window is created
+		{
+			// Event fired when the window is created
 			
 			break;
+		}
 		case WM_DESTROY:
+		{
 			// Event fierd when the window is destroyed
+			WindowCloseEvent event;
+			//BGS_CORE_INFO(event.ToString());
+			window->m_Data.EventCallback(event);
 			PostQuitMessage(0);
+
 			break;
+		}
 		default:
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
 		}	

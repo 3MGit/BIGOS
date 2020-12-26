@@ -16,6 +16,8 @@
 
 #include <cstdarg>
 
+#include <functional>
+
 #include <memory>
 
 #include <time.h>

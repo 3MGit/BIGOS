@@ -2,6 +2,8 @@
 
 #include "Engine/Core/Window.h"
 
+#include "Engine/Events/ApplicationEvent.h"
+
 int main(int argc, char** argv);
 
 namespace BIGOS {
@@ -15,14 +17,19 @@ namespace BIGOS {
 		bool Init();
 		void ShutDown();
 
+		void OnEvent(Event& e);
+
+		static Application& Get() { return *s_Instance; }
 	private:
 		void Run();
+		bool OnWindowClose(WindowCloseEvent& e);
 	private:
-		std::unique_ptr<Window> m_Window;
+		Window* m_Window = nullptr;
 		bool m_Running = true;
 		std::string m_Name;
 	private:
 		friend int ::main(int argc, char** argv);
+		static Application* s_Instance;
 	};
 
 	// TODO: think about defining it
