@@ -1,8 +1,9 @@
 #pragma once
 
-#include "Engine/Core/Window.h"
+#include "Engine/Core/App/Window.h"
 
 #include "Engine/Events/ApplicationEvent.h"
+#include "Engine/Events/MouseEvent.h"
 
 int main(int argc, char** argv);
 
@@ -23,6 +24,9 @@ namespace BIGOS {
 	private:
 		void Run();
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
+		bool OnMouseMoved(MouseMovedEvent& e);
+		bool OnMousePressed(MouseButtonPressedEvent& e);
 	private:
 		Window* m_Window = nullptr;
 		bool m_Running = true;

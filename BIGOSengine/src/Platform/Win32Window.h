@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Engine/Core/Window.h"
+#include "Engine/Core/App/Window.h"
 
 namespace BIGOS {
 
@@ -19,11 +19,12 @@ namespace BIGOS {
 		virtual uint32_t GetWidth() const override { return m_Data.Width; };
 		virtual uint32_t GetHeight() const override { return m_Data.Height; };
 
-		virtual void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; };
+		virtual void SetVsync(bool enabled) override;
+
+		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 	private:
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	private:
-		HWND m_Hwnd;
 		HINSTANCE m_HInstance;
 	};
 

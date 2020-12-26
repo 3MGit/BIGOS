@@ -2,8 +2,6 @@
 
 #include "Engine/Core/Core.h"
 
-
-
 extern BIGOS::Application* BIGOS::CreateApplication();
 
 int main(int argc, char** argv)

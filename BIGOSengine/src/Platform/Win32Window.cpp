@@ -8,6 +8,11 @@
 
 namespace BIGOS {
 
+	HWND m_Hwnd;
+
+	extern void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
+	extern void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
+
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
 		m_Data.Title = props.Title;
@@ -28,11 +33,15 @@ namespace BIGOS {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
+
+		m_Data.m_InputManager->PlatformUpdate();
 	}
 
 	bool WindowsWindow::Init()
 	{
 		BGS_CORE_TRACE("Creating Win32 window: Title: %s, Width: %d, Height: %d", m_Data.Title.c_str(), m_Data.Width, m_Data.Height);
+
+		m_Data.m_InputManager = new InputManager();
 
 		// Register the window class.
 		WNDCLASSA winClass = { };
@@ -41,7 +50,7 @@ namespace BIGOS {
 		winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 		winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		winClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		winClass.hInstance = NULL;
+		winClass.hInstance = m_HInstance;
 		winClass.lpszClassName = "Bigos Win32 Window";
 		winClass.lpszMenuName = "";
 		winClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -71,7 +80,7 @@ namespace BIGOS {
 
 			NULL,       // Parent window    
 			NULL,       // Menu
-			NULL,  // Instance handle
+			m_HInstance,  // Instance handle
 			NULL        // Additional application data
 		);
 
@@ -100,11 +109,24 @@ namespace BIGOS {
 
 	}
 
+	void WindowsWindow::SetVsync(bool enabled)
+	{
+		m_Data.m_Vsync = enabled;
+	}
+
+	void WindowsWindow::SetEventCallback(const EventCallbackFn& callback)
+	{
+		m_Data.EventCallback = callback;
+		//m_Data.m_InputManager->SetEventCallback(m_Data.EventCallback);
+	};
+
 	LRESULT CALLBACK WindowsWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		Window* window = Window::GetWindowClass(hwnd);
 		if (window == nullptr)
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
+
+		InputManager* inputManager = window->m_Data.m_InputManager;
 		
 		switch (msg)
 		{
@@ -118,12 +140,35 @@ namespace BIGOS {
 		{
 			// Event fierd when the window is destroyed
 			WindowCloseEvent event;
-			//BGS_CORE_INFO(event.ToString());
 			window->m_Data.EventCallback(event);
 			PostQuitMessage(0);
 
 			break;
 		}
+		case WM_SIZE:
+		{
+			// Event fierd when the window is resized
+			window->m_Data.Width = LOWORD(lParam);
+			window->m_Data.Height = HIWORD(lParam);
+
+			WindowResizeEvent event(window->m_Data.Width, window->m_Data.Height);
+			window->m_Data.EventCallback(event);
+			break;
+		}
+		case WM_KEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYDOWN:
+		case WM_SYSKEYUP:
+			KeyCallback(inputManager, lParam, wParam, msg);
+			break;
+		case WM_LBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONDOWN:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONDOWN:
+		case WM_MBUTTONUP:
+			MouseButtonCallback(inputManager, msg, LOWORD(lParam), HIWORD(lParam));
+			break;
 		default:
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
 		}	

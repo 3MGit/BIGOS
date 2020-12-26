@@ -52,10 +52,10 @@ namespace BIGOS {
 		}
 	};
 
-	class EventDispatcher
+	class EventManager
 	{
 	public:
-		EventDispatcher(Event& event)
+		EventManager(Event& event)
 			: m_Event(event)
 		{
 		}

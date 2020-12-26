@@ -4,6 +4,8 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Events/Event.h"
 
+#include "Engine/Core/App/Input.h"
+
 #include <map>
 
 namespace BIGOS {
@@ -33,11 +35,15 @@ namespace BIGOS {
 
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
+
+		virtual void SetVsync(bool enabled) = 0;
 		
 		virtual bool Init() = 0;
 		virtual void ShutDown() = 0;
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+
+		inline InputManager* GetInputManager() const { return m_Data.m_InputManager; }
 
 		static Window* StartUpWindow(const WindowProps& props);
 
@@ -46,9 +52,14 @@ namespace BIGOS {
 
 		struct WindowData {
 			std::string Title;
-			uint32_t Width, Height;
+			uint32_t Width = 0;
+			uint32_t Height = 0;
+
+			bool m_Vsync = true;
 
 			EventCallbackFn EventCallback;
+
+			InputManager* m_InputManager;
 		};
 
 		WindowData m_Data;
