@@ -1,8 +1,7 @@
 #include "bgspch.h"
 
+#include "Engine/Core/Core.h"
 #include "Engine/Core/App/Application.h"
-#include "Engine/Core/Logger.h"
-
 
 namespace BIGOS {
 
@@ -33,6 +32,7 @@ namespace BIGOS {
 
 	void Application::ShutDown()
 	{
+		delete m_Timer;
 	}
 
 	void Application::OnEvent(Event& e)
@@ -40,25 +40,44 @@ namespace BIGOS {
 		EventManager manager(e);
 		manager.Dispatch<WindowCloseEvent>(BGS_BIND_EVENT_FN(Application::OnWindowClose));
 		manager.Dispatch<WindowResizeEvent>(BGS_BIND_EVENT_FN(Application::OnWindowResize));
-		manager.Dispatch<MouseMovedEvent>(BGS_BIND_EVENT_FN(Application::OnMouseMoved));
-		manager.Dispatch<MouseButtonPressedEvent>(BGS_BIND_EVENT_FN(Application::OnMousePressed));
+		//manager.Dispatch<MouseMovedEvent>(BGS_BIND_EVENT_FN(Application::OnMouseMoved));
+		//manager.Dispatch<MouseButtonPressedEvent>(BGS_BIND_EVENT_FN(Application::OnMousePressed));
+
+		for (auto it = m_LayerStack.rbegin(); it != m_LayerStack.rend(); ++it)
+		{
+			if (e.Handled)
+				break;
+			(*it)->OnEvent(e);
+		}
 		
+	}
+
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+		layer->OnAttach();
+	}
+
+	void Application::PushOverlay(Layer* layer)
+	{
+		m_LayerStack.PushOverlay(layer);
+		layer->OnAttach();
 	}
 
 	void Application::Run()
 	{
+		m_Timer = new Utils::Timer();
+
+		float time = m_Timer->ElapsedMillis();
+		Utils::Timestep timestep = time - m_LastFrameTime;
+		m_LastFrameTime = time;
+
 		while (m_Running)
 		{
-			m_Window->OnUpdate();
+			for (Layer* layer : m_LayerStack)
+				layer->OnUpdate(timestep);
 
-			if (Input::IsKeyPressed(Key::A))
-				BGS_CORE_INFO("A");
-			if (Input::IsKeyPressed(Key::W))
-				BGS_CORE_INFO("W");
-			if (Input::IsKeyPressed(Key::D))
-				BGS_CORE_INFO("D");
-			if (Input::IsKeyPressed(Key::S))
-				BGS_CORE_INFO("S");
+			m_Window->OnUpdate();
 		}
 	}
 
@@ -74,16 +93,17 @@ namespace BIGOS {
 		BGS_CORE_TRACE(e.ToString());
 		return true;
 	}
-
+	/*
 	bool Application::OnMouseMoved(MouseMovedEvent& e)
 	{
-		BGS_CORE_TRACE(e.ToString());
+		//BGS_CORE_TRACE(e.ToString());
 		return true;
 	}
 
 	bool Application::OnMousePressed(MouseButtonPressedEvent& e)
 	{
-		BGS_CORE_TRACE(e.ToString());
+		//BGS_CORE_TRACE(e.ToString());
 		return true;
 	}
+	*/
 }

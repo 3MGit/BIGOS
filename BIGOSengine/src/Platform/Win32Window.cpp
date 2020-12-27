@@ -8,7 +8,8 @@
 
 namespace BIGOS {
 
-	HWND m_Hwnd;
+	//TODO: Change windows handle to be more protected
+	HWND g_hWnd;
 
 	extern void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
 	extern void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
@@ -34,14 +35,14 @@ namespace BIGOS {
 			DispatchMessage(&msg);
 		}
 
-		m_Data.m_InputManager->PlatformUpdate();
+		m_Data.InputManager->PlatformUpdate();
 	}
 
 	bool WindowsWindow::Init()
 	{
 		BGS_CORE_TRACE("Creating Win32 window: Title: %s, Width: %d, Height: %d", m_Data.Title.c_str(), m_Data.Width, m_Data.Height);
 
-		m_Data.m_InputManager = new InputManager();
+		m_Data.InputManager = new InputManager();
 
 		// Register the window class.
 		WNDCLASSA winClass = { };
@@ -66,7 +67,7 @@ namespace BIGOS {
 		AdjustWindowRectEx(&size, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, false, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
 
 
-		m_Hwnd = ::CreateWindowExA(
+		g_hWnd = ::CreateWindowExA(
 			WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,                             // Optional window styles.
 			winClass.lpszClassName,         // Window class
 			(LPCSTR)m_Data.Title.c_str(),		    // Window text
@@ -84,18 +85,18 @@ namespace BIGOS {
 			NULL        // Additional application data
 		);
 
-		if (!m_Hwnd)
+		if (!g_hWnd)
 		{
 			BGS_CORE_FATAL("Could not create Win32 window!");
 			return false;
 		}
 
-		RegisterWindowClass(m_Hwnd, this);
+		RegisterWindowClass(g_hWnd, this);
 
 		BGS_CORE_TRACE("Win32 window succesfully created!");
 		//show up the window
-		ShowWindow(m_Hwnd, SW_SHOW);
-		UpdateWindow(m_Hwnd);
+		ShowWindow(g_hWnd, SW_SHOW);
+		SetFocus(g_hWnd);
 
 		return true;
 	}
@@ -103,15 +104,15 @@ namespace BIGOS {
 	void WindowsWindow::ShutDown()
 	{
 		//Destroy window
-		if (m_Hwnd)
-			if(DestroyWindow(m_Hwnd))
+		if (g_hWnd)
+			if(DestroyWindow(g_hWnd))
 				BGS_CORE_TRACE("Win32 window succesfully destroyed!");
 
 	}
 
 	void WindowsWindow::SetVsync(bool enabled)
 	{
-		m_Data.m_Vsync = enabled;
+		m_Data.Vsync = enabled;
 	}
 
 	void WindowsWindow::SetEventCallback(const EventCallbackFn& callback)
@@ -126,7 +127,7 @@ namespace BIGOS {
 		if (window == nullptr)
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
 
-		InputManager* inputManager = window->m_Data.m_InputManager;
+		InputManager* inputManager = window->m_Data.InputManager;
 		
 		switch (msg)
 		{
@@ -155,6 +156,12 @@ namespace BIGOS {
 			window->m_Data.EventCallback(event);
 			break;
 		}
+		case WM_SETFOCUS:
+			//FocusCallback(window, true);
+			break;
+		case WM_KILLFOCUS:
+			//FocusCallback(window, false);
+			break;
 		case WM_KEYDOWN:
 		case WM_KEYUP:
 		case WM_SYSKEYDOWN:
@@ -175,5 +182,14 @@ namespace BIGOS {
 
 		return NULL;
 	}
-
+	/*
+	void FocusCallback(Window* window, bool focused)
+	{
+		if (!focused)
+		{
+			window->m_Data.m_InputManager->ClearKeys();
+			window->m_Data.m_InputManager->ClearMouseButtons();
+		}
+	}
+	*/
 }

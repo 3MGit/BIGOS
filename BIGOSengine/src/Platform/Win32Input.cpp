@@ -9,19 +9,19 @@
 
 namespace BIGOS {
 
-	extern HWND m_Hwnd;
+	extern HWND g_hWnd;
 	
 	void InputManager::PlatformUpdate()
 	{
 		// Mouse Events
 		POINT mouse;
 		GetCursorPos(&mouse);
-		ScreenToClient(m_Hwnd, &mouse);
+		ScreenToClient(g_hWnd, &mouse);
 
 		math::vec2 mousePos = math::vec2((float)mouse.x, (float)mouse.y);
 		if (mousePos != m_MousePosition)
 		{
-			Window* window = Window::GetWindowClass(m_Hwnd);
+			Window* window = Window::GetWindowClass(g_hWnd);
 			window->m_Data.EventCallback(MouseMovedEvent(mousePos.x, mousePos.y));
 			//m_EventCallback(MouseMovedEvent(mousePos.x, mousePos.y));
 			m_MousePosition = mousePos;
@@ -31,7 +31,7 @@ namespace BIGOS {
 	void InputManager::SetMousePosition(const math::vec2& position)
 	{
 		POINT pt = { (LONG)position.x, (LONG)position.y };
-		ClientToScreen(m_Hwnd, &pt);
+		ClientToScreen(g_hWnd, &pt);
 		SetCursorPos(pt.x, pt.y);
 	}
 
@@ -58,7 +58,7 @@ namespace BIGOS {
 
 		bool repeat = (flags >> 30) & 1;
 
-		Window* window = Window::GetWindowClass(m_Hwnd);
+		Window* window = Window::GetWindowClass(g_hWnd);
 		if (pressed)
 			window->m_Data.EventCallback(KeyPressedEvent(key, repeat));
 			//inputManager->m_EventCallback(KeyPressedEvent(key, repeat));
@@ -73,7 +73,7 @@ namespace BIGOS {
 		switch (button)
 		{
 		case WM_LBUTTONDOWN:
-			SetCapture(m_Hwnd);
+			SetCapture(g_hWnd);
 			button = Mouse::ButtonLeft;
 			down = true;
 			break;
@@ -83,7 +83,7 @@ namespace BIGOS {
 			down = false;
 			break;
 		case WM_RBUTTONDOWN:
-			SetCapture(m_Hwnd);
+			SetCapture(g_hWnd);
 			button = Mouse::ButtonRight;
 			down = true;
 			break;
@@ -93,7 +93,7 @@ namespace BIGOS {
 			down = false;
 			break;
 		case WM_MBUTTONDOWN:
-			SetCapture(m_Hwnd);
+			SetCapture(g_hWnd);
 			button = Mouse::ButtonMiddle;
 			down = true;
 			break;
@@ -108,7 +108,7 @@ namespace BIGOS {
 		inputManager->m_MousePosition.y = (float)y;
 
 		//BGS_CORE_ASSERT(inputManager->m_EventCallback);
-		Window* window = Window::GetWindowClass(m_Hwnd);
+		Window* window = Window::GetWindowClass(g_hWnd);
 		if (down)
 			window->m_Data.EventCallback(MouseButtonPressedEvent(button));
 			//inputManager->m_EventCallback(MouseButtonPressedEvent(button));

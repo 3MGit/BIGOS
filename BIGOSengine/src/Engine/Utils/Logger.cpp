@@ -1,7 +1,7 @@
 #include "bgspch.h"
 
-#include "Engine/Core/Logger.h"
-#include "Engine/Core/Utilities.h"
+#include "Engine/Utils/Logger.h"
+#include "Engine/Utils/TimeUtils.h"
 
 namespace BIGOS {
 

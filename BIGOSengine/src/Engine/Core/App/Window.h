@@ -37,13 +37,16 @@ namespace BIGOS {
 		virtual uint32_t GetHeight() const = 0;
 
 		virtual void SetVsync(bool enabled) = 0;
+		virtual bool IsVSync() const = 0;
 		
 		virtual bool Init() = 0;
 		virtual void ShutDown() = 0;
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
-		inline InputManager* GetInputManager() const { return m_Data.m_InputManager; }
+		//virtual void* GetNativeWindow() const = 0;
+
+		inline InputManager* GetInputManager() const { return m_Data.InputManager; }
 
 		static Window* StartUpWindow(const WindowProps& props);
 
@@ -55,11 +58,11 @@ namespace BIGOS {
 			uint32_t Width = 0;
 			uint32_t Height = 0;
 
-			bool m_Vsync = true;
+			bool Vsync = true;
 
 			EventCallbackFn EventCallback;
 
-			InputManager* m_InputManager;
+			InputManager* InputManager = nullptr;
 		};
 
 		WindowData m_Data;

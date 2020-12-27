@@ -4,10 +4,13 @@
 // For use by BIGOS applications
 
 #include "Engine/Core/App/Application.h"
-#include "Engine/Core/Logger.h"
+
+//-----Utils--------------------------
+#include "Engine/Utils/Logger.h"
+// -----------------------------------
 
 // ---Entry Point---------------------
-#include "Engine/Core/EntryPoint.h"
+//#include "Engine/Core/EntryPoint.h"
 // -----------------------------------
 
 //-----Input--------------------------
