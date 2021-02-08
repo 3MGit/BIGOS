@@ -1,4 +1,5 @@
 #pragma once
+#include "vec3.h"
 
 namespace BIGOS {
 	namespace math {
@@ -10,7 +11,7 @@ namespace BIGOS {
 			vec2();
 			vec2(float scalar);
 			vec2(float x, float y);
-			//vec2(const vec3& vector);
+			vec2(const vec3& vector);
 
 			vec2& Add(const vec2& other);
 			vec2& Subtract(const vec2& other);

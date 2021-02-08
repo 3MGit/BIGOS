@@ -13,10 +13,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
-IncludeDir["ImGui"] = "Hazel/vendor/imgui"
+IncludeDir["ImGui"] = "%{wks.location}/BIGOSengine/ThirdParty/imgui"
+IncludeDir["Glad"] = "%{wks.location}/BIGOSengine/ThirdParty/Glad/include"
 
 group "Dependencies"
 	include "BIGOSengine/ThirdParty/imgui"
+	include "BIGOSengine/ThirdParty/Glad"
 group ""
 
 project "BIGOSengine"
@@ -46,12 +48,15 @@ project "BIGOSengine"
 	includedirs
 	{
 		"%{prj.name}/src",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.Glad}"
 	}
 
 	links 
 	{ 
-		"ImGui"
+		"Glad",
+		"ImGui",
+		"opengl32.lib"
 	}
 
 	filter "system:windows"

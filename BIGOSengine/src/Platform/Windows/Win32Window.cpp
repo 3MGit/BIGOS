@@ -3,22 +3,41 @@
 #include "Engine/Core/Core.h"
 #include "Engine/Events/ApplicationEvent.h"
 
-#include "Platform/Win32Window.h"
+#include "Platform/Windows/Win32Window.h"
+#include "Engine/Renderer/RenderCommand.h"
 
 
 namespace BIGOS {
 
 	//TODO: Change windows handle to be more protected
 	HWND g_hWnd;
+	HINSTANCE g_hInstance;
+	HDC g_hDc;
 
 	extern void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
 	extern void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
+
+	static PIXELFORMATDESCRIPTOR GetPixelFormat()
+	{
+		PIXELFORMATDESCRIPTOR result = {};
+		result.nSize = sizeof(PIXELFORMATDESCRIPTOR);
+		result.nVersion = 1;
+		result.dwFlags = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+		result.iPixelType = PFD_TYPE_RGBA;
+		result.cColorBits = 32;
+		result.cDepthBits = 24;
+		result.cStencilBits = 8;
+		result.cAuxBuffers = 0;
+		result.iLayerType = PFD_MAIN_PLANE;
+		return result;
+	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
 	{
 		m_Data.Title = props.Title;
 		m_Data.Width = props.Width;
 		m_Data.Height = props.Height;
+		m_Data.Vsync = props.Vsync;
 	}
 
 	WindowsWindow::~WindowsWindow()
@@ -36,6 +55,7 @@ namespace BIGOS {
 		}
 
 		m_Data.InputManager->PlatformUpdate();
+		RenderCommand::Present();
 	}
 
 	bool WindowsWindow::Init()
@@ -51,7 +71,7 @@ namespace BIGOS {
 		winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 		winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		winClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		winClass.hInstance = m_HInstance;
+		winClass.hInstance = g_hInstance;
 		winClass.lpszClassName = "Bigos Win32 Window";
 		winClass.lpszMenuName = "";
 		winClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -81,7 +101,7 @@ namespace BIGOS {
 
 			NULL,       // Parent window    
 			NULL,       // Menu
-			m_HInstance,  // Instance handle
+			g_hInstance,  // Instance handle
 			NULL        // Additional application data
 		);
 
@@ -92,6 +112,25 @@ namespace BIGOS {
 		}
 
 		RegisterWindowClass(g_hWnd, this);
+
+		g_hDc = GetDC(g_hWnd);
+		PIXELFORMATDESCRIPTOR pfd = GetPixelFormat();
+		uint32_t pixelFormat = ChoosePixelFormat(g_hDc, &pfd);
+		if (pixelFormat)
+		{
+			if (!SetPixelFormat(g_hDc, pixelFormat, &pfd))
+			{
+				BGS_CORE_FATAL("Failed setting pixel format!");
+				return false;
+			}
+		}
+		else
+		{
+			BGS_CORE_FATAL("Failed choosing pixel format!");
+			return false;
+		}
+
+		GraphicsContext::Create({ m_Data.Title, m_Data.Width, m_Data.Height, m_Data.Vsync}, g_hWnd);
 
 		BGS_CORE_TRACE("Win32 window succesfully created!");
 		//show up the window

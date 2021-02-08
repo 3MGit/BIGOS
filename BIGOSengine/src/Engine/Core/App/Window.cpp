@@ -2,7 +2,7 @@
 #include "Window.h"
 
 #ifdef BGS_PLATFORM_WINDOWS
-	#include "Platform/Win32Window.h"
+	#include "Platform/Windows/Win32Window.h"
 #endif // BGS_PLATFORM_WINDOWS
 
 

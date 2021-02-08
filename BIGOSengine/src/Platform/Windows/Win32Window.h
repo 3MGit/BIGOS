@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Core/App/Window.h"
+#include "Engine/Renderer/GraphicsContext.h"
 
 namespace BIGOS {
 
@@ -25,10 +26,11 @@ namespace BIGOS {
 		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 
 		//virtual void* GetNativeWindow() const { return m_Hwnd; }
+		friend class RendererAPI;
 	private:
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	private:
-		HINSTANCE m_HInstance;
+	protected:
+		//std::shared_ptr<GraphicsContext> m_Context;
 	};
 
 	//void FocusCallback(Window* window, bool focused);

@@ -16,10 +16,21 @@ namespace BIGOS {
 		uint32_t Width;
 		uint32_t Height;
 
+		bool Vsync;
+		/*
 		WindowProps(const std::string& title = "Test window" , 
 					uint32_t width = 1600, 
 					uint32_t height = 900)
 			: Title(title), Width(width), Height(height)
+		{
+
+		}
+		*/
+		WindowProps(const std::string& title = "Test window",
+			uint32_t width = 1600,
+			uint32_t height = 900,
+			bool vsync = true)
+			: Title(title), Width(width), Height(height), Vsync(vsync)
 		{
 
 		}

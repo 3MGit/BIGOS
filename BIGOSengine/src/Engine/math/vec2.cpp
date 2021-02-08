@@ -22,11 +22,11 @@ namespace BIGOS {
 		{
 		}
 
-		//vec2::vec2(const vec3& vector)
-		//{
-		//	this->x = vector.x;
-		//	this->y = vector.y;
-		//}
+		vec2::vec2(const vec3& vector)
+		{
+			this->x = vector.x;
+			this->y = vector.y;
+		}
 
 		vec2& vec2::Add(const vec2& other)
 		{
