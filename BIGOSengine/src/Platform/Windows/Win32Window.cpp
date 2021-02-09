@@ -110,6 +110,8 @@ namespace BIGOS {
 			BGS_CORE_FATAL("Could not create Win32 window!");
 			return false;
 		}
+		else
+			BGS_CORE_TRACE("Win32 window succesfully created!");
 
 		RegisterWindowClass(g_hWnd, this);
 
@@ -130,9 +132,9 @@ namespace BIGOS {
 			return false;
 		}
 
+		//creating graphic context
 		GraphicsContext::Create({ m_Data.Title, m_Data.Width, m_Data.Height, m_Data.Vsync}, g_hWnd);
 
-		BGS_CORE_TRACE("Win32 window succesfully created!");
 		//show up the window
 		ShowWindow(g_hWnd, SW_SHOW);
 		SetFocus(g_hWnd);
@@ -142,7 +144,9 @@ namespace BIGOS {
 
 	void WindowsWindow::ShutDown()
 	{
-		//Destroy window
+		// Release Context
+
+		// Destroy window
 		if (g_hWnd)
 			if(DestroyWindow(g_hWnd))
 				BGS_CORE_TRACE("Win32 window succesfully destroyed!");

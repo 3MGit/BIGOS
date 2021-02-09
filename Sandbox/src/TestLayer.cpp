@@ -15,7 +15,6 @@ void TestLayer::OnDetach()
 
 void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 {
-
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::A))
 		BGS_CORE_INFO("A");
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::W))
@@ -24,6 +23,9 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 		BGS_CORE_INFO("D");
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::S))
 		BGS_CORE_INFO("S");
+	// Rendering
+	BIGOS::RenderCommand::SetClearColor(m_ClearColor);
+	BIGOS::RenderCommand::Clear();
 }
 
 void TestLayer::OnImGuiRender()

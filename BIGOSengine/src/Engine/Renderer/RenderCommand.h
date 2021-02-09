@@ -12,6 +12,11 @@ namespace BIGOS {
 			s_RendererAPI->Init();
 		}
 
+		static void Shutdown()
+		{
+			s_RendererAPI->Shutdown();
+		}
+
 		static void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 		{
 			s_RendererAPI->SetViewport(x, y, width, height);
@@ -26,13 +31,17 @@ namespace BIGOS {
 		{
 			s_RendererAPI->Clear();
 		}
+		
+		//TODO: void Draw();
 
+	private:
+		// Think should that be handled by RenderCommand, only window should use that metod
 		static void Present()
 		{
 			s_RendererAPI->Present();
 		}
+		friend class WindowsWindow;
 
-		//TODO: void Draw();
 	private:
 		static std::unique_ptr<RendererAPI> s_RendererAPI;
 	};

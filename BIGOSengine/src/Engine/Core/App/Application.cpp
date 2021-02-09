@@ -94,6 +94,7 @@ namespace BIGOS {
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
 		BGS_CORE_TRACE(e.ToString());
+		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		return true;
 	}
 	/*
