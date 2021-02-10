@@ -1,6 +1,7 @@
 #include "bgspch.h"
 #include "Platform/DirectX/Direct3DBuffer.h"
-#include "Direct3DContext.h"
+#include "Platform/DirectX/Direct3DContext.h"
+#include "Platform/DirectX/Direct3DShader.h"
 
 namespace BIGOS {
 
@@ -71,9 +72,8 @@ namespace BIGOS {
 	{
 		Resize(size);
 
-		if (SUCCEEDED(Direct3DContext::GetDeviceContext()->Map(m_BufferHandle, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &m_MappedSubresource))) ///D3D11_MAP_WRITE_DISCARD
+		if (SUCCEEDED(Direct3DContext::GetDeviceContext()->Map(m_BufferHandle, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &m_MappedSubresource))) 
 		{
-			//throw an exception while writting memmory
 			memcpy(m_MappedSubresource.pData, data, size);
 			Direct3DContext::GetDeviceContext()->Unmap(m_BufferHandle, NULL);
 		}
@@ -95,13 +95,16 @@ namespace BIGOS {
 		HRESULT hr;
 		const std::vector<BufferElement>& layout = m_Layout.GetElements();
 		D3D11_INPUT_ELEMENT_DESC* desc = new D3D11_INPUT_ELEMENT_DESC[layout.size()];
-		for (uint32_t i = 0; i < layout.size(); i++)
+		for (size_t i = 0; i < layout.size(); i++)
 		{
 			const BufferElement& element = layout[i];
 			desc[i] = { element.Name.c_str(), 0, ShaderDataTypeToDirect3DBaseType(element.Type), 0, element.Offset, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 		}
 		// TODO: Change when we add shaders
-		hr = Direct3DContext::GetDevice()->CreateInputLayout(desc, layout.size(), NULL, NULL, &m_InputLayout);
+		const Direct3DShader* shader = Direct3DShader::CurrentlyBound();
+		BGS_CORE_ASSERT(shader, "Shader doesn't exist");
+
+		hr = Direct3DContext::GetDevice()->CreateInputLayout(desc, layout.size(), shader->GetData().vs->GetBufferPointer(), shader->GetData().vs->GetBufferSize(), &m_InputLayout);
 		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11InputLayout");
 		if (SUCCEEDED(hr))
 			BGS_CORE_TRACE("D3D11InputLayout succesfully created!");

@@ -1,9 +1,6 @@
 #include "bgspch.h"
 #include "Platform/DirectX/Direct3DContext.h"
 
-// compile shaders
-#include <d3dcompiler.h>
-
 namespace BIGOS {
 
 	Direct3DContext::Direct3DContext(WindowProps properties, void* deviceContext)
@@ -85,7 +82,7 @@ namespace BIGOS {
 
 	void Direct3DContext::Resize(uint32_t width, uint32_t height)
 	{
-		swapchain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
+		//swapchain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 		ID3D11Texture2D* backBuffer;
 		swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);

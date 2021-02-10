@@ -17,5 +17,6 @@ public:
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 
+	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
 };

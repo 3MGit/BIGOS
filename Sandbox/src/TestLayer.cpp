@@ -16,10 +16,12 @@ void TestLayer::OnAttach()
 		 0.5f,-0.5f,0.0f
 	};
 
+	m_Shader = BIGOS::Shader::Create("assets/shaders/shader.shader");
+	m_Shader->Bind();
 
 	m_VertexBuffer = BIGOS::VertexBuffer::Create(list, sizeof(list));
 	m_VertexBuffer->SetLayout({
-			{ BIGOS::ShaderDataType::Float3, "a_Position" }
+			{ BIGOS::ShaderDataType::Float3, "POSITION" }
 		});
 	m_VertexBuffer->Bind();
 	
@@ -42,6 +44,8 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Rendering
 	BIGOS::RenderCommand::SetClearColor(m_ClearColor);
 	BIGOS::RenderCommand::Clear();
+
+	BIGOS::RenderCommand::Draw(9, 0);
 }
 
 void TestLayer::OnImGuiRender()

@@ -26,11 +26,11 @@ namespace BIGOS {
 		ID3D11Device* dev;
 		ID3D11DeviceContext* devcon;
 
+		ID3D11RenderTargetView* m_RenderTargetView;
 	private:
 		D3D_FEATURE_LEVEL m_Direct3DFeatureLevel;
 
 		D3D11_VIEWPORT m_ScreenViewport;
-		ID3D11RenderTargetView* m_RenderTargetView;
 	private:
 		WindowProps m_WindowProperties;
 	};

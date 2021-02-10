@@ -24,4 +24,5 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/GraphicsContext.h"
 #include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/Shader.h"
 // -----------------------------------
