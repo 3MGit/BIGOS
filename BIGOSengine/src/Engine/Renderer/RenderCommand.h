@@ -32,7 +32,10 @@ namespace BIGOS {
 			s_RendererAPI->Clear();
 		}
 		
-		//TODO: void Draw();
+		static void Draw(UINT vertex_count, UINT start_vertex_index)
+		{
+			s_RendererAPI->Draw(vertex_count, start_vertex_index);
+		}
 
 	private:
 		// Think should that be handled by RenderCommand, only window should use that metod

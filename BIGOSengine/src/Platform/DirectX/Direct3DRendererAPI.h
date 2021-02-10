@@ -15,6 +15,7 @@ namespace BIGOS {
 		virtual void Clear() override;
 
 		virtual void Present() override;
+		virtual void Draw(UINT vertex_count, UINT start_vertex_index)override;
 	private:
 		Direct3DContext* m_Context;
 		math::vec4 m_ClearColor;

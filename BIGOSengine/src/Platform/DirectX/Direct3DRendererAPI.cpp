@@ -27,11 +27,18 @@ namespace BIGOS {
 	{
 		float color[4] = { m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w };
 		m_Context->GetDeviceContext()->ClearRenderTargetView(m_Context->GetBackBuffer(), color);
+		//m_Context->GetDeviceContext()->OMSetRenderTargets(1, m_Context->GetBackBuffer(), NULL);
 	}
 
 	void Direct3DRendererAPI::Present()
 	{
 		m_Context->Present();
+	}
+
+	void Direct3DRendererAPI::Draw(UINT vertex_count, UINT start_vertex_index)
+	{
+		m_Context->GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		m_Context->GetDeviceContext()->Draw(vertex_count, start_vertex_index);
 	}
 
 }

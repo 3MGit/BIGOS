@@ -1,4 +1,5 @@
 #include "TestLayer.h"
+#include <memory>
 
 TestLayer::TestLayer()
 	: Layer("TestLayer")
@@ -7,6 +8,21 @@ TestLayer::TestLayer()
 
 void TestLayer::OnAttach()
 {
+	float list[3*3] =
+	{
+		//X - Y - Z
+		-0.5f,-0.5f,0.0f, // POS1
+		 0.0f,0.5f,0.0f, // POS2
+		 0.5f,-0.5f,0.0f
+	};
+
+
+	m_VertexBuffer = BIGOS::VertexBuffer::Create(list, sizeof(list));
+	m_VertexBuffer->SetLayout({
+			{ BIGOS::ShaderDataType::Float3, "a_Position" }
+		});
+	m_VertexBuffer->Bind();
+	
 }
 
 void TestLayer::OnDetach()

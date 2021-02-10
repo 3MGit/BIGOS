@@ -1,6 +1,9 @@
 #include "bgspch.h"
 #include "Platform/DirectX/Direct3DContext.h"
 
+// compile shaders
+#include <d3dcompiler.h>
+
 namespace BIGOS {
 
 	Direct3DContext::Direct3DContext(WindowProps properties, void* deviceContext)
@@ -20,7 +23,7 @@ namespace BIGOS {
 			NULL,
 			D3D_DRIVER_TYPE_HARDWARE,
 			NULL,
-			0,
+			D3D11_CREATE_DEVICE_DEBUG,
 			featureLevels,
 			ARRAYSIZE(featureLevels),
 			D3D11_SDK_VERSION,
@@ -107,5 +110,4 @@ namespace BIGOS {
 		m_ScreenViewport.MaxDepth = 1.0f;
 		devcon->RSSetViewports(1, &m_ScreenViewport);
 	}
-
 }

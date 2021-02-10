@@ -12,6 +12,7 @@ namespace BIGOS {
 	Application::Application(const std::string& name)
 		:m_Name(name)
 	{
+		Init();
 	}
 
 	Application::~Application()

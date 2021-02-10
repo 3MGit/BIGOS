@@ -17,19 +17,20 @@ namespace BIGOS {
 		inline static Direct3DContext* GetContext() { return (Direct3DContext*)s_Context; }
 		inline static ID3D11DeviceContext* GetDeviceContext() { return GetContext()->devcon; }
 		inline static ID3D11RenderTargetView* GetBackBuffer() { return GetContext()->m_RenderTargetView; }
+		inline static ID3D11Device* GetDevice() { return GetContext()->dev; }
 	private:
 		void Init(HWND hWnd);
 		void Shutdown();
-
 	public:
 		IDXGISwapChain* swapchain;
 		ID3D11Device* dev;
 		ID3D11DeviceContext* devcon;
+
 	private:
 		D3D_FEATURE_LEVEL m_Direct3DFeatureLevel;
 
-		ID3D11RenderTargetView* m_RenderTargetView;
 		D3D11_VIEWPORT m_ScreenViewport;
+		ID3D11RenderTargetView* m_RenderTargetView;
 	private:
 		WindowProps m_WindowProperties;
 	};

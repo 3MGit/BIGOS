@@ -57,7 +57,8 @@ project "BIGOSengine"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
-		"d3d11.lib"
+		"d3d11.lib",
+		"D3DCompiler.lib"
 	}
 
 	filter "system:windows"
