@@ -9,7 +9,7 @@ namespace BIGOS
 	{
 		enum : KeyCode
 		{
-			//TODO: Swap to hexadecimal for win 32api
+			//TODO: Swap to hexadecimal for win 32api, some doesnt match properly
 			Space = 32,
 			Apostrophe = 39, /* ' */
 			Comma = 44, /* , */
@@ -67,7 +67,8 @@ namespace BIGOS
 			World2 = 162, /* non-US #2 */
 
 			/* Function keys */
-			Escape = 256,
+			//Escape = 256,
+			Escape = 27,
 			Enter = 257,
 			Tab = 258,
 			Backspace = 259,

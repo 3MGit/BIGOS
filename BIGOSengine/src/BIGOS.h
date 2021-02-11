@@ -19,6 +19,13 @@
 #include "Engine/Core/MouseCodes.h"
 // -----------------------------------
 
+//-----Input--------------------------
+#include "Engine/Events/ApplicationEvent.h"
+#include "Engine/Events/Event.h"
+#include "Engine/Events/MouseEvent.h"
+#include "Engine/Events/KeyEvent.h"
+// -----------------------------------
+
 //-----Renderer-----------------------
 #include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Renderer.h"

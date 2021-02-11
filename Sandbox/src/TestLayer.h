@@ -14,6 +14,8 @@ public:
 	void OnUpdate(BIGOS::Utils::Timestep ts) override;
 	virtual void OnImGuiRender() override;
 	void OnEvent(BIGOS::Event& e) override;
+
+	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 

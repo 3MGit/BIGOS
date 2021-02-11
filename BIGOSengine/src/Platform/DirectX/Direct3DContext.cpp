@@ -15,12 +15,17 @@ namespace BIGOS {
 			D3D_FEATURE_LEVEL_11_1
 		};
 
+		uint32_t createDeviceFlags = 0;
+#if defined(BGS_DEBUG) 
+		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
 		// Creating D3D11Device
 		HRESULT hr = D3D11CreateDevice(
 			NULL,
 			D3D_DRIVER_TYPE_HARDWARE,
 			NULL,
-			D3D11_CREATE_DEVICE_DEBUG,
+			createDeviceFlags,
 			featureLevels,
 			ARRAYSIZE(featureLevels),
 			D3D11_SDK_VERSION,
@@ -33,7 +38,12 @@ namespace BIGOS {
 		if(SUCCEEDED(hr))
 			BGS_CORE_TRACE("D3D11Device succesfully created!");
 
-		hr = E_ABORT;
+		hr = dev->CheckMultisampleQualityLevels(
+			DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_MSAAQuality);
+		BGS_CORE_ASSERT(m_MSAAQuality > 0, "");
+		m_MSAAEnabled = true;
+
+		//hr = E_ABORT;
 
 		// SwapChain descriptor
 		DXGI_SWAP_CHAIN_DESC scd;
@@ -48,9 +58,13 @@ namespace BIGOS {
 		scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		scd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 		scd.OutputWindow = hWnd;
-		scd.SampleDesc.Count =  1;
-		scd.SampleDesc.Quality = 0;
-		scd.Windowed = TRUE;
+
+		scd.SampleDesc.Count = m_MSAAEnabled ? 4 : 1;
+		scd.SampleDesc.Quality = m_MSAAEnabled ? (m_MSAAQuality - 1) : 0;
+		scd.Windowed = TRUE;			// FALSE for fullscreen mode
+		scd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+		scd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+
 
 		// Creating SwapChain
 		IDXGIDevice* dxgiDevice = 0;
@@ -85,7 +99,7 @@ namespace BIGOS {
 		//swapchain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
 		ID3D11Texture2D* backBuffer;
-		swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), (void**)&backBuffer);
+		swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
 		dev->CreateRenderTargetView(backBuffer, NULL, &m_RenderTargetView);
 		backBuffer->Release();
 

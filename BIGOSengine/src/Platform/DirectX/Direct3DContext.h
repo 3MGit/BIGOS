@@ -28,6 +28,8 @@ namespace BIGOS {
 
 		ID3D11RenderTargetView* m_RenderTargetView;
 	private:
+		uint32_t m_MSAAQuality;
+		bool m_MSAAEnabled;
 		D3D_FEATURE_LEVEL m_Direct3DFeatureLevel;
 
 		D3D11_VIEWPORT m_ScreenViewport;

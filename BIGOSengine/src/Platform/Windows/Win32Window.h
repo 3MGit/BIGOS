@@ -23,6 +23,8 @@ namespace BIGOS {
 		virtual void SetVsync(bool enabled) override;
 		virtual bool IsVSync() const override { return m_Data.Vsync; }
 
+		virtual void SetTitle(const std::string& title) override;
+
 		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 
 		//virtual void* GetNativeWindow() const { return m_Hwnd; }

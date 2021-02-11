@@ -39,6 +39,11 @@ namespace BIGOS {
 		delete m_Timer;
 	}
 
+	void Application::Close()
+	{
+		m_Running = false;
+	}
+
 	void Application::OnEvent(Event& e)
 	{
 		EventManager manager(e);
@@ -71,17 +76,30 @@ namespace BIGOS {
 	void Application::Run()
 	{
 		m_Timer = new Utils::Timer();
-
-		float time = m_Timer->ElapsedMillis();
-		Utils::Timestep timestep = time - m_LastFrameTime;
-		m_LastFrameTime = time;
+		float timer = 0.0f;
+		uint32_t frames = 0;
+		
 
 		while (m_Running)
-		{
+		{	
+			float time = m_Timer->ElapsedMillis();
+			Utils::Timestep timestep = time - m_LastFrameTime;
+			m_LastFrameTime = time;
+
 			for (Layer* layer : m_LayerStack)
+			{
 				layer->OnUpdate(timestep);
+				frames++;
+			}
 
 			m_Window->OnUpdate();
+			if (m_Timer->Elapsed() - timer > 1.0f)
+			{
+				timer += 1.0f;
+				m_FramesPerSecond = frames;
+				frames = 0;
+			}
+			m_Window->SetTitle(m_Name + std::string(" (FPS: ") + std::to_string(m_FramesPerSecond) + std::string(") "));
 		}
 	}
 

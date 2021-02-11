@@ -158,6 +158,12 @@ namespace BIGOS {
 		m_Data.Vsync = enabled;
 	}
 
+	void WindowsWindow::SetTitle(const std::string& title)
+	{
+		m_Data.Title = title;
+		SetWindowTextA(g_hWnd, m_Data.Title.c_str());
+	}
+
 	void WindowsWindow::SetEventCallback(const EventCallbackFn& callback)
 	{
 		m_Data.EventCallback = callback;
