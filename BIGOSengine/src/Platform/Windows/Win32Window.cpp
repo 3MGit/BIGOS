@@ -6,6 +6,8 @@
 #include "Platform/Windows/Win32Window.h"
 #include "Engine/Renderer/RenderCommand.h"
 
+//#include "Platform/DirectX/Direct3DContext.h"
+
 
 namespace BIGOS {
 
@@ -203,6 +205,9 @@ namespace BIGOS {
 
 			WindowResizeEvent event(window->m_Data.Width, window->m_Data.Height);
 			window->m_Data.EventCallback(event);
+
+			//RenderCommand::SetViewport(0, 0, window->m_Data.Width, window->m_Data.Height);
+			
 			break;
 		}
 		case WM_SETFOCUS:

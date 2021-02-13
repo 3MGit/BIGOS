@@ -23,6 +23,7 @@ namespace BIGOS {
 	{
 		BGS_CORE_ASSERT(!s_Instance, "Application already exists!");
 		s_Instance = this;
+		
 
 		m_Window = Window::StartUpWindow(WindowProps(m_Name));
 		m_Window->SetEventCallback(BGS_BIND_EVENT_FN(Application::OnEvent));

@@ -29,7 +29,7 @@ namespace BIGOS {
 		WindowProps(const std::string& title = "Test window",
 			uint32_t width = 1600,
 			uint32_t height = 900,
-			bool vsync = true)
+			bool vsync = false)
 			: Title(title), Width(width), Height(height), Vsync(vsync)
 		{
 
@@ -71,7 +71,7 @@ namespace BIGOS {
 			uint32_t Width = 0;
 			uint32_t Height = 0;
 
-			bool Vsync = true;
+			bool Vsync = false;
 
 			EventCallbackFn EventCallback;
 
