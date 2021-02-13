@@ -20,13 +20,12 @@ namespace BIGOS {
 		inline static ID3D11DepthStencilView* GetDepthStencilBuffer() { return GetContext()->m_DepthStencilView; }
 	private:
 		void Init();
+	public:
 		void Shutdown();
-		void Resize(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 	public:
 		IDXGISwapChain* swapchain;
 		ID3D11Device* dev;
 		ID3D11DeviceContext* devcon;
-
 	private:
 		uint32_t m_MSAAQuality;
 		bool m_MSAAEnabled;
@@ -36,10 +35,9 @@ namespace BIGOS {
 		ID3D11DepthStencilView* m_DepthStencilView;
 		ID3D11Texture2D* m_DepthStencilBuffer;
 		D3D11_VIEWPORT m_ScreenViewport;
-		
-		HWND m_hWnd;
 	private:
 		WindowProps m_WindowProperties;
+		HWND m_hWnd;
 
 		friend class WindowsWindow;
 	};

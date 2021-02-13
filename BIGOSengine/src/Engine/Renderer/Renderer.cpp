@@ -10,6 +10,7 @@ namespace BIGOS {
 
 	void Renderer::Shutdown()
 	{
+		RenderCommand::Shutdown();
 	}
 
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height)

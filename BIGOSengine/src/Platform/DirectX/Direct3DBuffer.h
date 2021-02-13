@@ -31,4 +31,19 @@ namespace BIGOS {
 		ID3D11InputLayout* m_InputLayout;
 	};
 
+	class Direct3DIndexBuffer: public IndexBuffer
+	{
+	public:
+		Direct3DIndexBuffer(uint32_t* indices, uint32_t count);
+		virtual ~Direct3DIndexBuffer();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		virtual uint32_t GetCount() const override { return m_Count; }
+	private:
+		ID3D11Buffer* m_Handle;
+		uint32_t m_Count;
+	};
+
 }

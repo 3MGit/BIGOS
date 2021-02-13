@@ -35,4 +35,18 @@ namespace BIGOS {
 		return nullptr;
 	}
 
+	std::shared_ptr<IndexBuffer> IndexBuffer::Create(uint32_t* indices, uint32_t count)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
+		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
+		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DIndexBuffer>(indices, count);
+		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
+		}
+
+		BGS_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
 }

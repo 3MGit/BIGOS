@@ -13,6 +13,7 @@ namespace BIGOS {
 
 	void Direct3DRendererAPI::Shutdown()
 	{
+		m_Context->Shutdown();
 	}
 
 	void Direct3DRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
@@ -43,6 +44,7 @@ namespace BIGOS {
 	{
 		Direct3DContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Direct3DContext::GetDeviceContext()->Draw(vertex_count, start_vertex_index);
+		//Direct3DContext::GetDeviceContext()->DrawIndexed()
 	}
 
 }

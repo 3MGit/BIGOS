@@ -89,17 +89,28 @@ namespace BIGOS {
 		ReleaseCOM(dxgiAdapter);
 		ReleaseCOM(dxgiDevice);
 
-		Resize(0, 0, m_WindowProperties.Width, m_WindowProperties.Height);
+		SetViewport(0, 0, m_WindowProperties.Width, m_WindowProperties.Height);
 	}
 
 	void Direct3DContext::Shutdown()
 	{
+		ReleaseCOM(m_RenderTargetView);
+		ReleaseCOM(m_DepthStencilView);
+		ReleaseCOM(m_DepthStencilBuffer);
+
 		ReleaseCOM(dev);
 		ReleaseCOM(devcon);
 		ReleaseCOM(swapchain);
+
+		BGS_CORE_TRACE("D3D11Context succesfully destroyed!");
 	}
 
-	void Direct3DContext::Resize(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+	void Direct3DContext::Present()
+	{
+		swapchain->Present(m_WindowProperties.Vsync, NULL);
+	}
+
+	void Direct3DContext::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
 		ReleaseCOM(m_RenderTargetView);
 		ReleaseCOM(m_DepthStencilView);
@@ -140,16 +151,5 @@ namespace BIGOS {
 		m_ScreenViewport.MinDepth = 0.0f;
 		m_ScreenViewport.MaxDepth = 1.0f;
 		devcon->RSSetViewports(1, &m_ScreenViewport);
-
-	}
-
-	void Direct3DContext::Present()
-	{
-		swapchain->Present(m_WindowProperties.Vsync, NULL);
-	}
-
-	void Direct3DContext::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
-	{
-		Resize(x, y, width, height);
 	}
 }

@@ -27,7 +27,6 @@ namespace BIGOS {
 
 		m_Window = Window::StartUpWindow(WindowProps(m_Name));
 		m_Window->SetEventCallback(BGS_BIND_EVENT_FN(Application::OnEvent));
-
 		BGS_CORE_ASSERT(m_Window->Init(), "Cannot create Win32 window");
 
 		Renderer::Init();
@@ -38,6 +37,9 @@ namespace BIGOS {
 	void Application::ShutDown()
 	{
 		delete m_Timer;
+		m_Window->ShutDown();
+
+		Renderer::Shutdown();
 	}
 
 	void Application::Close()

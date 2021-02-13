@@ -112,4 +112,37 @@ namespace BIGOS {
 		delete[] desc;
 	}
 
+	Direct3DIndexBuffer::Direct3DIndexBuffer(uint32_t* indices, uint32_t count)
+		:m_Count(count)
+	{
+		D3D11_BUFFER_DESC ibd;
+		ZeroMemory(&ibd, sizeof(D3D11_BUFFER_DESC));
+		ibd.Usage = D3D11_USAGE_IMMUTABLE;
+		ibd.ByteWidth = count * sizeof(uint32_t);
+		ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		ibd.CPUAccessFlags = 0;
+		ibd.MiscFlags = 0;
+
+		D3D11_SUBRESOURCE_DATA ibInitData;
+		ibInitData.pSysMem = indices;
+		HRESULT hr = Direct3DContext::GetDevice()->CreateBuffer(&ibd, &ibInitData, &m_Handle);
+		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11IndexBuffer");
+		if (SUCCEEDED(hr))
+			BGS_CORE_TRACE("D3D11IndexBuffer succesfully created!");
+	}
+
+	Direct3DIndexBuffer::~Direct3DIndexBuffer()
+	{
+	}
+
+	void Direct3DIndexBuffer::Bind() const
+	{
+		Direct3DContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		Direct3DContext::GetDeviceContext()->IASetIndexBuffer(m_Handle, DXGI_FORMAT_R32_UINT, 0);
+	}
+
+	void Direct3DIndexBuffer::Unbind() const
+	{
+	}
+
 }
