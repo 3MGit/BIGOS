@@ -9,7 +9,7 @@ namespace BIGOS {
 	{
 	public:
 		Direct3DShader(const std::string& filepath);
-		//virtual ~Direct3DShader();
+		virtual ~Direct3DShader();
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;

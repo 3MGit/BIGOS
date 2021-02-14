@@ -54,6 +54,10 @@ namespace BIGOS {
 
 	Direct3DVertexBuffer::~Direct3DVertexBuffer()
 	{
+		m_InputLayout->Release();
+		BGS_CORE_TRACE("D3D11InputLayout succesfully released!");
+		m_BufferHandle->Release();
+		BGS_CORE_TRACE("D3D11VertexBuffer succesfully released!");
 	}
 
 	void Direct3DVertexBuffer::Bind() const
@@ -71,7 +75,12 @@ namespace BIGOS {
 	void Direct3DVertexBuffer::SetData(const void* data, uint32_t size)
 	{
 		Resize(size);
+		/*
+		Updating a GPU resource dynamically from the CPU incurs a performance hit, 
+		as the new data must be transferred over from CPU memory to GPU memory
 
+		TODO: Change that to use UpdateSubresources method
+		*/
 		if (SUCCEEDED(Direct3DContext::GetDeviceContext()->Map(m_BufferHandle, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &m_MappedSubresource))) 
 		{
 			memcpy(m_MappedSubresource.pData, data, size);
@@ -125,7 +134,7 @@ namespace BIGOS {
 
 		D3D11_SUBRESOURCE_DATA ibInitData;
 		ibInitData.pSysMem = indices;
-		HRESULT hr = Direct3DContext::GetDevice()->CreateBuffer(&ibd, &ibInitData, &m_Handle);
+		HRESULT hr = Direct3DContext::GetDevice()->CreateBuffer(&ibd, &ibInitData, &m_BufferHandle);
 		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11IndexBuffer");
 		if (SUCCEEDED(hr))
 			BGS_CORE_TRACE("D3D11IndexBuffer succesfully created!");
@@ -133,12 +142,14 @@ namespace BIGOS {
 
 	Direct3DIndexBuffer::~Direct3DIndexBuffer()
 	{
+		m_BufferHandle->Release();
+		BGS_CORE_TRACE("D3D11IndexBuffer succesfully released!");
 	}
 
 	void Direct3DIndexBuffer::Bind() const
 	{
 		Direct3DContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Direct3DContext::GetDeviceContext()->IASetIndexBuffer(m_Handle, DXGI_FORMAT_R32_UINT, 0);
+		Direct3DContext::GetDeviceContext()->IASetIndexBuffer(m_BufferHandle, DXGI_FORMAT_R32_UINT, 0);
 	}
 
 	void Direct3DIndexBuffer::Unbind() const

@@ -21,4 +21,5 @@ private:
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
+	std::shared_ptr<BIGOS::IndexBuffer> m_IndexBuffer;
 };

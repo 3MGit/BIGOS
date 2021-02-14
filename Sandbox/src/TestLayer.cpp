@@ -8,15 +8,26 @@ TestLayer::TestLayer()
 
 void TestLayer::OnAttach()
 {
-	float list[3*3] =
+	float list[] =
 	{
-		//X - Y - Z
-		-0.5f,-0.5f,0.0f, // POS1
-		 0.0f,0.5f,0.0f, // POS2
-		 0.5f,-0.5f,0.0f
+		// X    Y     Z
+		-0.5f,-0.5f, 0.0f,	// POS0
+		-0.5f, 0.5f, 0.0f,	// POS1
+		 0.5f, 0.5f, 0.0f,	// POS2
+		 0.5f,-0.5f, 0.0f,	// POS3
+		 0.8f,-1.0f, 0.0f,	// POS4
+		 1.0f,-0.8f, 0.0f,	// POS5
+		 1.0f,-1.0f, 0.0f	// POS6
 	};
 
-	m_Shader = BIGOS::Shader::Create("assets/shaders/shader.shader");
+	uint32_t indices[] =
+	{
+		0, 1, 2,			// 1st triangle
+		0, 2, 3,			// 2nd triangle
+		4, 5, 6				// 3rd triangle
+	};
+
+	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
 
 	m_VertexBuffer = BIGOS::VertexBuffer::Create(list, sizeof(list));
@@ -24,7 +35,9 @@ void TestLayer::OnAttach()
 			{ BIGOS::ShaderDataType::Float3, "POSITION" }
 		});
 	m_VertexBuffer->Bind();
-	
+
+	m_IndexBuffer = BIGOS::IndexBuffer::Create(indices, ARRAYSIZE(indices));
+	m_IndexBuffer->Bind();	
 }
 
 void TestLayer::OnDetach()
@@ -38,10 +51,9 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	BIGOS::RenderCommand::SetClearColor(m_ClearColor);
 	BIGOS::RenderCommand::Clear();
 
-	BIGOS::RenderCommand::Draw(9, 0);
+	BIGOS::RenderCommand::DrawIndexed(m_IndexBuffer->GetCount());
 
 	// Input test
-
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::A))
 		BGS_INFO("A");
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::W))

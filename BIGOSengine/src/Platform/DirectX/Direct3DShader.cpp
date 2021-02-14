@@ -41,6 +41,16 @@ namespace BIGOS {
 		
 	}
 
+	Direct3DShader::~Direct3DShader()
+	{
+		m_Data.vs->Release();
+		m_Data.vertexShader->Release();
+		BGS_CORE_TRACE("Vertex shader succesfuly released");
+		m_Data.ps->Release();
+		m_Data.pixelShader->Release();
+		BGS_CORE_TRACE("Pixel shader succesfuly released");
+	}
+
 	void Direct3DShader::Bind() const
 	{
 		s_CurrentlyBound = this;

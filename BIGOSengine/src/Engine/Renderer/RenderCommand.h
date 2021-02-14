@@ -32,9 +32,9 @@ namespace BIGOS {
 			s_RendererAPI->Clear();
 		}
 		
-		static void Draw(UINT vertex_count, UINT start_vertex_index)
+		static void DrawIndexed(uint32_t count)
 		{
-			s_RendererAPI->Draw(vertex_count, start_vertex_index);
+			s_RendererAPI->DrawIndexed(count);
 		}
 
 	private:

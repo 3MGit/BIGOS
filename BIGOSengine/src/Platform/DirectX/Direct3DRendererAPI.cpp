@@ -40,11 +40,11 @@ namespace BIGOS {
 		m_Context->Present();
 	}
 
-	void Direct3DRendererAPI::Draw(UINT vertex_count, UINT start_vertex_index)
+	void Direct3DRendererAPI::DrawIndexed(uint32_t count)
 	{
 		Direct3DContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		Direct3DContext::GetDeviceContext()->Draw(vertex_count, start_vertex_index);
-		//Direct3DContext::GetDeviceContext()->DrawIndexed()
+		Direct3DContext::GetDeviceContext()->DrawIndexed(count, 0, 0);
+		// TODO: During optimilization maby expand API to handle a lot of object in one buffer and draw call
 	}
 
 }

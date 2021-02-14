@@ -97,12 +97,14 @@ namespace BIGOS {
 		ReleaseCOM(m_RenderTargetView);
 		ReleaseCOM(m_DepthStencilView);
 		ReleaseCOM(m_DepthStencilBuffer);
+		BGS_CORE_TRACE("D3D11SwapChain's resources succesfully released!");
+
+		ReleaseCOM(swapchain);
+		BGS_CORE_TRACE("D3D11SwapChain succesfully released!");
 
 		ReleaseCOM(dev);
 		ReleaseCOM(devcon);
-		ReleaseCOM(swapchain);
-
-		BGS_CORE_TRACE("D3D11Context succesfully destroyed!");
+		BGS_CORE_TRACE("D3D11Device and ImidieteContext succesfully released!");
 	}
 
 	void Direct3DContext::Present()

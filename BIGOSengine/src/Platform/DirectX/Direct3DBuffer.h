@@ -42,7 +42,7 @@ namespace BIGOS {
 
 		virtual uint32_t GetCount() const override { return m_Count; }
 	private:
-		ID3D11Buffer* m_Handle;
+		ID3D11Buffer* m_BufferHandle;
 		uint32_t m_Count;
 	};
 
