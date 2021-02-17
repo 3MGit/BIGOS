@@ -9,6 +9,14 @@ namespace BIGOS {
 		//m_Context = Direct3DContext::GetContext();
 
 		// TODO: Log device and drivers properties
+
+		D3D11_RASTERIZER_DESC rsDesc;
+		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+		rsDesc.FillMode = D3D11_FILL_SOLID;
+		rsDesc.CullMode = D3D11_CULL_NONE;
+		rsDesc.FrontCounterClockwise = false;
+		rsDesc.DepthClipEnable = true;
+		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, nullptr);
 	}
 
 	void Direct3DRendererAPI::Shutdown()

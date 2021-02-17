@@ -23,12 +23,6 @@ VS_OUTPUT vsmain( VS_INPUT input )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
 
-    float4x4 world = { {1.0f, 0.0f, 0.0f, 0.0f},
-                       {0.0f, 1.0f, 0.0f, 0.0f},
-                       {0.0f, 0.0f, 1.0f, 0.0f},
-                       {0.0f, 0.0f, 0.0f, 1.0f} };
-  
-    //output.position = float4(input.position, 1.0f);
     //WORLD SPACE
     output.position = mul(float4(input.position, 1.0f), u_World);
     //VIEW SPACE
