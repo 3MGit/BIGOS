@@ -3,6 +3,7 @@
 
 #include "vec2.h"
 #include "vec4.h"
+#include "mat4.h"
 
 namespace BIGOS {
 	namespace math {
@@ -148,7 +149,7 @@ namespace BIGOS {
 
 			return *this;
 		}
-		/*
+		
 		vec3 vec3::Multiply(const mat4& transform) const
 		{
 			return vec3(
@@ -157,7 +158,7 @@ namespace BIGOS {
 				transform.rows[2].x * x + transform.rows[2].y * y + transform.rows[2].z * z + transform.rows[2].w
 			);
 		}
-		*/
+		
 		vec3 operator+(vec3 left, const vec3& right)
 		{
 			return left.Add(right);

@@ -1,9 +1,8 @@
 #include "bgspch.h"
 #include "Platform/DirectX/Direct3DContext.h"
+#include "Platform/DirectX/Direct3DCommon.h"
 
 namespace BIGOS {
-
-#define ReleaseCOM(x) { if(x){ x->Release(); x = 0; } }
 
 	Direct3DContext::Direct3DContext(WindowProps properties, void* deviceContext)
 		:m_WindowProperties(properties)

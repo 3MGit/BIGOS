@@ -21,7 +21,7 @@ namespace BIGOS {
 			vec4& Multiply(const vec4& other);
 			vec4& Divide(const vec4& other);
 
-			//vec4 Multiply(const mat4& transform) const;
+			vec4 Multiply(const mat4& transform) const;
 
 			friend vec4 operator+(vec4 left, const vec4& right);
 			friend vec4 operator-(vec4 left, const vec4& right);

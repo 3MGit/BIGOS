@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Renderer/Shader.h"
+#include "Platform/DirectX/Direct3DBuffer.h"
 #include <d3d11.h>
 
 namespace BIGOS {
@@ -15,7 +16,7 @@ namespace BIGOS {
 		virtual void Unbind() const override;
 
 		virtual const std::string& GetName() const override { return m_Name; }
-		
+
 		static const Direct3DShader* CurrentlyBound() { return s_CurrentlyBound; }
 	private:
 		std::string m_Name;

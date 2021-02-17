@@ -21,7 +21,7 @@ namespace BIGOS {
 		return nullptr;
 	}
 
-	std::shared_ptr<VertexBuffer> VertexBuffer::Create(float* vertices, uint32_t size)
+	std::shared_ptr<VertexBuffer> VertexBuffer::Create(const void* vertices, uint32_t size)
 	{
 		switch (Renderer::GetAPI())
 		{
@@ -42,6 +42,20 @@ namespace BIGOS {
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
 		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DIndexBuffer>(indices, count);
+		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
+		}
+
+		BGS_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+	}
+
+	std::shared_ptr<ConstantBuffer> ConstantBuffer::Create(uint32_t size)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
+		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
+		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DConstantBuffer>(size);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 

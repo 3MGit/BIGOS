@@ -18,8 +18,14 @@ public:
 	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+	BIGOS::math::vec3 m_Position = { 0.0f, 0.0f, 0.0f };
+	BIGOS::math::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
+	float m_Speed = 0.01;
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
 	std::shared_ptr<BIGOS::IndexBuffer> m_IndexBuffer;
+	std::shared_ptr<BIGOS::ConstantBuffer> m_ConstantBuffer;
+
+	//ConstantData* cd = nullptr;
 };

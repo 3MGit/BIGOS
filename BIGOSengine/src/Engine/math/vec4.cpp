@@ -1,5 +1,6 @@
 #include "bgspch.h"
 #include "vec4.h"
+#include "mat4.h"
 
 namespace BIGOS {
 	namespace math {
@@ -58,7 +59,7 @@ namespace BIGOS {
 
 			return *this;
 		}
-		/*
+		
 		vec4 vec4::Multiply(const mat4& transform) const
 		{
 			return vec4(
@@ -68,7 +69,7 @@ namespace BIGOS {
 				transform.rows[3].x * x + transform.rows[3].y * y + transform.rows[3].z * z + transform.rows[3].w * w
 			);
 		}
-		*/
+		
 		vec4 operator+(vec4 left, const vec4& right)
 		{
 			return left.Add(right);

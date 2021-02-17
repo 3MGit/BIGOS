@@ -2,6 +2,7 @@
 #include "Platform/DirectX/Direct3DBuffer.h"
 #include "Platform/DirectX/Direct3DContext.h"
 #include "Platform/DirectX/Direct3DShader.h"
+#include "Platform/DirectX/Direct3DCommon.h"
 
 namespace BIGOS {
 
@@ -36,10 +37,12 @@ namespace BIGOS {
 		m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		m_BufferDesc.MiscFlags = 0;
 
+		m_BufferHandle = nullptr;
+
 		Resize(m_Size);
 	}
 
-	Direct3DVertexBuffer::Direct3DVertexBuffer(float* vertices, uint32_t size)
+	Direct3DVertexBuffer::Direct3DVertexBuffer(const void* vertices, uint32_t size)
 		: m_Size(size)
 	{
 		ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
@@ -49,14 +52,15 @@ namespace BIGOS {
 		m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		m_BufferDesc.MiscFlags = 0;
 
-		SetData((void*)vertices, size);
+		Resize(m_Size);
+		SetData(vertices, size);
 	}
 
 	Direct3DVertexBuffer::~Direct3DVertexBuffer()
 	{
-		m_InputLayout->Release();
+		ReleaseCOM(m_InputLayout);
 		BGS_CORE_TRACE("D3D11InputLayout succesfully released!");
-		m_BufferHandle->Release();
+		ReleaseCOM(m_BufferHandle);
 		BGS_CORE_TRACE("D3D11VertexBuffer succesfully released!");
 	}
 
@@ -74,7 +78,8 @@ namespace BIGOS {
 
 	void Direct3DVertexBuffer::SetData(const void* data, uint32_t size)
 	{
-		Resize(size);
+		if(size>m_Size)
+			Resize(size);
 		/*
 		Updating a GPU resource dynamically from the CPU incurs a performance hit, 
 		as the new data must be transferred over from CPU memory to GPU memory
@@ -93,6 +98,8 @@ namespace BIGOS {
 		HRESULT hr;
 		m_Size = size;
 		m_BufferDesc.ByteWidth = m_Size;
+		if (m_BufferHandle)
+			ReleaseCOM(m_BufferHandle);
 		hr = Direct3DContext::GetContext()->GetDevice()->CreateBuffer(&m_BufferDesc, NULL, &m_BufferHandle);
 		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11VertexBuffer");
 		if (SUCCEEDED(hr))
@@ -142,7 +149,7 @@ namespace BIGOS {
 
 	Direct3DIndexBuffer::~Direct3DIndexBuffer()
 	{
-		m_BufferHandle->Release();
+		ReleaseCOM(m_BufferHandle);
 		BGS_CORE_TRACE("D3D11IndexBuffer succesfully released!");
 	}
 
@@ -153,6 +160,53 @@ namespace BIGOS {
 	}
 
 	void Direct3DIndexBuffer::Unbind() const
+	{
+	}
+
+	Direct3DConstantBuffer::Direct3DConstantBuffer(uint32_t size)
+		:m_Size(size)
+	{
+		ZeroMemory(&m_BufferDesc, sizeof(D3D11_BUFFER_DESC));
+		m_BufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+		m_BufferDesc.ByteWidth = size;
+		m_BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		m_BufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		m_BufferDesc.MiscFlags = 0;
+
+		m_BufferHandle = nullptr;
+
+		ReleaseCOM(m_BufferHandle);
+
+		HRESULT hr = Direct3DContext::GetDevice()->CreateBuffer(&m_BufferDesc, NULL, &m_BufferHandle);
+		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11ConstantBuffer");
+		if (SUCCEEDED(hr))
+			BGS_CORE_TRACE("D3D11ConstantBuffer succesfully created!");
+	}
+
+	Direct3DConstantBuffer::~Direct3DConstantBuffer()
+	{
+		ReleaseCOM(m_BufferHandle);
+		BGS_CORE_TRACE("D3D11ConstantBuffer succesfully released!");
+	}
+
+	void Direct3DConstantBuffer::SetData(const void* data, uint32_t size)
+	{		
+		//Direct3DContext::GetDeviceContext()->UpdateSubresource(m_BufferHandle, NULL, NULL, data, NULL, NULL);
+		if (SUCCEEDED(Direct3DContext::GetDeviceContext()->Map(m_BufferHandle, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &m_MappedSubresource)))
+		{
+			memcpy(m_MappedSubresource.pData, data, size);
+			Direct3DContext::GetDeviceContext()->Unmap(m_BufferHandle, NULL);
+		}
+	}
+
+	void Direct3DConstantBuffer::Bind() const
+	{
+		Direct3DContext::GetDeviceContext()->VSSetConstantBuffers(0, 1, &m_BufferHandle);
+		Direct3DContext::GetDeviceContext()->PSSetConstantBuffers(0, 1, &m_BufferHandle);
+
+	}
+
+	void Direct3DConstantBuffer::Unbind() const
 	{
 	}
 

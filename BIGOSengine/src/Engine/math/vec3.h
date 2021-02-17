@@ -39,7 +39,7 @@ namespace BIGOS {
 			vec3& Multiply(float other);
 			vec3& Divide(float other);
 
-			//vec3 Multiply(const mat4& transform) const;
+			vec3 Multiply(const mat4& transform) const;
 
 			friend vec3 operator+(vec3 left, const vec3& right);
 			friend vec3 operator-(vec3 left, const vec3& right);

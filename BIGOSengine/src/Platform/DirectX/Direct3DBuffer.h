@@ -8,7 +8,7 @@ namespace BIGOS {
 	{
 	public:
 		Direct3DVertexBuffer(uint32_t size);
-		Direct3DVertexBuffer(float* vertices, uint32_t size);
+		Direct3DVertexBuffer(const void* vertices, uint32_t size);
 		virtual ~Direct3DVertexBuffer();
 
 		virtual void Bind() const override;
@@ -46,4 +46,21 @@ namespace BIGOS {
 		uint32_t m_Count;
 	};
 
+	class Direct3DConstantBuffer : public ConstantBuffer
+	{
+	public:
+		Direct3DConstantBuffer(uint32_t size);
+		~Direct3DConstantBuffer();
+
+		void SetData(const void* data, uint32_t size);
+
+		void Bind() const;
+		void Unbind() const;
+	private:
+		uint32_t m_Size;
+
+		D3D11_BUFFER_DESC m_BufferDesc;
+		ID3D11Buffer* m_BufferHandle;
+		D3D11_MAPPED_SUBRESOURCE m_MappedSubresource;
+	};
 }
