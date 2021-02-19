@@ -325,15 +325,15 @@ namespace BIGOS {
 			return result;
 		}
 
-		mat4 mat4::Rotate(const Quaternion& quat)
+		mat4 mat4::Rotate(const quat& quaternion)
 		{
 			mat4 result = Identity();
 
 			float qx, qy, qz, qw, qx2, qy2, qz2, qxqx2, qyqy2, qzqz2, qxqy2, qyqz2, qzqw2, qxqz2, qyqw2, qxqw2;
-			qx = quat.x;
-			qy = quat.y;
-			qz = quat.z;
-			qw = quat.w;
+			qx = quaternion.x;
+			qy = quaternion.y;
+			qz = quaternion.z;
+			qw = quaternion.w;
 			qx2 = (qx + qx);
 			qy2 = (qy + qy);
 			qz2 = (qz + qz);

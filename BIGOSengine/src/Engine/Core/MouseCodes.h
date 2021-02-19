@@ -20,9 +20,9 @@ namespace BIGOS
 			Button7 = 7,
 			
 			ButtonLast = Button7,
-			ButtonLeft = 0x00,
-			ButtonRight = 0x01,
-			ButtonMiddle = 0x02
+			ButtonLeft = 0x01,
+			ButtonRight = 0x02,
+			ButtonMiddle = 0x04
 		};
 	}
 }

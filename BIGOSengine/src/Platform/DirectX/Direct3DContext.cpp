@@ -145,8 +145,8 @@ namespace BIGOS {
 
 		devcon->OMSetRenderTargets(1, &m_RenderTargetView, m_DepthStencilView); // m_DepthStencilView
 
-		m_ScreenViewport.TopLeftX = x;
-		m_ScreenViewport.TopLeftY = y;
+		m_ScreenViewport.TopLeftX = (float)x;
+		m_ScreenViewport.TopLeftY = (float)y;
 		m_ScreenViewport.Width = (float)width;
 		m_ScreenViewport.Height = (float)height;
 		m_ScreenViewport.MinDepth = 0.0f;

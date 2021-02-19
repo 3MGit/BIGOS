@@ -82,9 +82,9 @@ namespace BIGOS {
 			Resize(size);
 		/*
 		Updating a GPU resource dynamically from the CPU incurs a performance hit, 
-		as the new data must be transferred over from CPU memory to GPU memory
+		as the new data must be transferred over from CPU memory to GPU memory.
 
-		TODO: Change that to use UpdateSubresources method
+		That way is good to animated models, but we need to make static buffers for static models, to be more optimal
 		*/
 		if (SUCCEEDED(Direct3DContext::GetDeviceContext()->Map(m_BufferHandle, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &m_MappedSubresource))) 
 		{

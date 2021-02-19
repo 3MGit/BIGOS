@@ -8,11 +8,11 @@ struct Vertex
 };
 
 __declspec(align(16))
-struct ConstantData
+struct ConstantBufferData
 {
-	BIGOS::math::mat4 u_World;
-	BIGOS::math::mat4 u_View;
-	BIGOS::math::mat4 u_Proj;
+	BIGOS::math::mat4 u_Transform;
+	BIGOS::math::mat4 u_ViewProj;
+	BIGOS::math::vec4 u_Color;
 };
 
 TestLayer::TestLayer()
@@ -24,14 +24,14 @@ void TestLayer::OnAttach()
 {
 	Vertex cubeVertices[] =
 	{
-		{BIGOS::math::vec3(-0.5f,-0.5f,-0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3( 0.5f,-0.5f,-0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3( 0.5f, 0.5f,-0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3(-0.5f, 0.5f,-0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3(-0.5f,-0.5f, 0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3( 0.5f,-0.5f, 0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3( 0.5f, 0.5f, 0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },
-		{BIGOS::math::vec3(-0.5f, 0.5f, 0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) }
+		{{-0.5f,-0.5f,-0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
+		{{ 0.5f,-0.5f,-0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
+		{{ 0.5f, 0.5f,-0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
+		{{-0.5f, 0.5f,-0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
+		{{-0.5f,-0.5f, 0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
+		{{ 0.5f,-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
+		{{ 0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
+		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 1.0f, 1.0f} }
 	};
 
 	uint32_t cubeIndices[] =
@@ -47,20 +47,16 @@ void TestLayer::OnAttach()
 	Vertex list[] =
 	{
 		// X    Y     Z
-		{BIGOS::math::vec3(-0.5f,-0.5f, -0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },	// POS0 + COLOR0
-		{BIGOS::math::vec3(-0.5f, 0.5f, -0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },	// POS1 + COLOR1
-		{BIGOS::math::vec3( 0.5f, 0.5f, -0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },	// POS2 + COLOR2
-		{BIGOS::math::vec3( 0.5f,-0.5f, -0.5f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) }		// POS3 + COLOR3
-		//{BIGOS::math::vec3( 0.6f,-1.0f, 0.0f), BIGOS::math::vec4(1.0f, 1.0f, 0.0f, 1.0f) },	// POS4 + COLOR4
-		//{BIGOS::math::vec3( 1.0f,-0.6f, 0.0f), BIGOS::math::vec4(1.0f, 1.0f, 1.0f, 1.0f) },	// POS5 + COLOR5
-		//{BIGOS::math::vec3( 1.0f,-1.0f, 0.0f), BIGOS::math::vec4(1.0f, 0.0f, 1.0f, 1.0f) }	// POS6 + COLOR6
-	};
+		{{-0.5f,-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS0 + COLOR0
+		{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS1 + COLOR1
+		{{ 0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS2 + COLOR2
+		{{ 0.5f,-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} }	// POS3 + COLOR3
+	};												  
 
 	uint32_t indices[] =
 	{
 		0, 1, 2,			// 1st triangle
 		0, 2, 3				// 2nd triangle
-		//4, 5, 6			// 3rd triangle
 	};
 
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
@@ -77,8 +73,10 @@ void TestLayer::OnAttach()
 	m_IndexBuffer = BIGOS::IndexBuffer::Create(cubeIndices, ARRAYSIZE(cubeIndices));
 	m_IndexBuffer->Bind();	
 
-	m_ConstantBuffer = BIGOS::ConstantBuffer::Create(sizeof(ConstantData));
+	m_ConstantBuffer = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
 	m_ConstantBuffer->Bind();
+
+	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 }
 
 void TestLayer::OnDetach()
@@ -88,7 +86,16 @@ void TestLayer::OnDetach()
 
 void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 {
+	// Resize
+	uint32_t width = BIGOS::Application::Get().GetWindow()->GetWidth();
+	uint32_t height = BIGOS::Application::Get().GetWindow()->GetHeight();
+	m_EditorCamera.SetViewportSize(width, height);
+
 	// Input
+	// Editor cammera controlls movement
+	m_EditorCamera.OnUpdate(ts);
+
+#ifdef INPUT 
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::A))
 		m_Position -= BIGOS::math::vec3(1.0f, 0.0f, 0.0f) * m_Speed;
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::W))
@@ -102,28 +109,22 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::G))
 		m_Position += BIGOS::math::vec3(0.0f, 0.0f, 1.0f) * m_Speed;
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::E))
-		m_Scale += BIGOS::math::vec3(1.0f, 1.0f, 0.0f) * m_Speed;
+		m_Scale += BIGOS::math::vec3(1.0f, 1.0f, 1.0f) * m_Speed;
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::Q))
-		m_Scale -= BIGOS::math::vec3(1.0f, 1.0f, 0.0f) * m_Speed;
+		m_Scale -= BIGOS::math::vec3(1.0f, 1.0f, 1.0f) * m_Speed;
 
-
+#endif // 0
 	// Scene update
-	ConstantData cd;
-	BIGOS::math::mat4 tempPos = BIGOS::math::mat4::Translate(m_Position);
+	ConstantBufferData cbPerObject;
+	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_Position);
 	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(30.0f, { 1, 1, 0 });
 	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale(m_Scale);
-	cd.u_World = BIGOS::math::mat4::Identity();
 
-	uint32_t width = BIGOS::Application::Get().GetWindow()->GetWidth();
-	uint32_t height = BIGOS::Application::Get().GetWindow()->GetHeight();
-
-	cd.u_World *= tempPos;
-	cd.u_World *= tempRot;
-	cd.u_World *= tempScale;
-	cd.u_View = BIGOS::math::mat4::Identity();
-	//cd.u_Proj = BIGOS::math::mat4::Orthographic(-1.0f * width / 400.0f, 1.0f * width / 400.0f, -1.0f * height/400.0f, 1.0f * height / 400.0f, -1.0f, 1.0f);
-	cd.u_Proj = BIGOS::math::mat4::Perspective(65.0f, (float)width / (float)height, 0.1f, 10.0f);
-	m_ConstantBuffer->SetData(&cd, sizeof(cd));
+	cbPerObject.u_Transform = BIGOS::math::mat4::Identity();
+	cbPerObject.u_Transform *= tempTrans * tempRot * tempScale;
+	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
+	cbPerObject.u_Color = m_CubeColor;
+	m_ConstantBuffer->SetData(&cbPerObject, sizeof(cbPerObject));
 
 	// Rendering
 	BIGOS::RenderCommand::SetClearColor(m_ClearColor);
@@ -138,6 +139,9 @@ void TestLayer::OnImGuiRender()
 
 void TestLayer::OnEvent(BIGOS::Event& e)
 {
+	//BGS_TRACE(e.ToString());
+	m_EditorCamera.OnEvent(e);
+
 	BIGOS::EventManager manager(e);
 	manager.Dispatch<BIGOS::KeyPressedEvent>(BGS_BIND_EVENT_FN(TestLayer::OnKeyPressed));
 }

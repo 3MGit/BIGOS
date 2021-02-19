@@ -4,95 +4,95 @@
 namespace BIGOS {
 	namespace math {
 
-		struct Quaternion
+		struct quat
 		{
 			float x, y, z, w;
 
-			Quaternion();
-			Quaternion(const Quaternion& quaternion);
-			Quaternion(float x, float y, float z, float w);
-			Quaternion(const vec3& xyz, float w);
-			Quaternion(const vec4& vec);
-			Quaternion(float scalar);
+			quat();
+			quat(const quat& quaternion);
+			quat(float x, float y, float z, float w);
+			quat(const vec3& xyz, float w);
+			quat(const vec4& vec);
+			quat(float scalar);
 
-			Quaternion& operator=(const Quaternion& quat);
+			quat& operator=(const quat& quaternion);
 
-			Quaternion& SetXYZ(const vec3& vec);
+			quat& SetXYZ(const vec3& vec);
 			const vec3 GetXYZ() const;
 
-			Quaternion& SetElem(uint32_t idx, float value);
+			quat& SetElem(uint32_t idx, float value);
 			float GetElem(uint32_t idx) const;
 			vec3 GetAxis() const;
 			vec3 ToEulerAngles() const;
 
-			const Quaternion operator+(const Quaternion& Quaternion) const;
-			const Quaternion operator-(const Quaternion& Quaternion) const;
-			const Quaternion operator*(const Quaternion& Quaternion) const;
-			const Quaternion operator*(float scalar) const;
-			const Quaternion operator/(float scalar) const;
+			const quat operator+(const quat& quaternion) const;
+			const quat operator-(const quat& quaternion) const;
+			const quat operator*(const quat& quaternion) const;
+			const quat operator*(float scalar) const;
+			const quat operator/(float scalar) const;
 			float operator[](uint32_t idx) const;
 
-			Quaternion& operator+=(const Quaternion& Quaternion)
+			quat& operator+=(const quat& quaternion)
 			{
-				*this = *this + Quaternion;
+				*this = *this + quaternion;
 				return *this;
 			}
 
-			Quaternion& operator-=(const Quaternion& Quaternion)
+			quat& operator-=(const quat& quaternion)
 			{
-				*this = *this - Quaternion;
+				*this = *this - quaternion;
 				return *this;
 			}
 
-			Quaternion& operator*=(const Quaternion& Quaternion)
+			quat& operator*=(const quat& quaternion)
 			{
-				*this = *this * Quaternion;
+				*this = *this * quaternion;
 				return *this;
 			}
 
-			Quaternion& operator*=(float scalar)
+			quat& operator*=(float scalar)
 			{
 				*this = *this * scalar;
 				return *this;
 			}
 
-			Quaternion& operator/=(float scalar)
+			quat& operator/=(float scalar)
 			{
 				*this = *this / scalar;
 				return *this;
 			}
 
-			const Quaternion operator-() const;
-			bool operator==(const Quaternion& quaternion) const;
-			bool operator!=(const Quaternion& quaternion) const;
-			static Quaternion Identity();
-			static Quaternion FromEulerAngles(const vec3& angles);
+			const quat operator-() const;
+			bool operator==(const quat& quaternion) const;
+			bool operator!=(const quat& quaternion) const;
+			static quat Identity();
+			static quat FromEulerAngles(const vec3& angles);
 
-			static vec3 Rotate(const Quaternion& quat, const vec3& vec);
+			static vec3 Rotate(const quat& quaternion, const vec3& vec);
 
-			static const Quaternion Rotation(const vec3& unitVec0, const vec3& unitVec1);
-			static const Quaternion Rotation(float radians, const vec3& unitVec);
+			static const quat Rotation(const vec3& unitVec0, const vec3& unitVec1);
+			static const quat Rotation(float radians, const vec3& unitVec);
 
-			static const Quaternion RotationX(float radians)
+			static const quat RotationX(float radians)
 			{
 				float angle = radians * 0.5f;
-				return Quaternion(sin(angle), 0.0f, 0.0f, cos(angle));
+				return quat(sin(angle), 0.0f, 0.0f, cos(angle));
 			}
 
-			static const Quaternion RotationY(float radians)
+			static const quat RotationY(float radians)
 			{
 				float angle = radians * 0.5f;
-				return Quaternion(0.0f, sin(angle), 0.0f, cos(angle));
+				return quat(0.0f, sin(angle), 0.0f, cos(angle));
 			}
 
-			static const Quaternion RotationZ(float radians)
+			static const quat RotationZ(float radians)
 			{
 				float angle = radians * 0.5f;
-				return Quaternion(0.0f, 0.0f, sin(angle), cos(angle));
+				return quat(0.0f, 0.0f, sin(angle), cos(angle));
 			}
 
-			float Dot(const Quaternion& other) const;
-			Quaternion Conjugate() const;
+			float Dot(const quat& other) const;
+			quat Conjugate() const;
 
 		};
 

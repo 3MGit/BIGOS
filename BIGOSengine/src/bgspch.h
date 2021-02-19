@@ -17,6 +17,7 @@
 #include <cstdarg>
 
 #include <functional>
+#include <algorithm>
 
 #include <memory>
 

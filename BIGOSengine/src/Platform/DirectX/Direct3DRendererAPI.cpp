@@ -1,5 +1,6 @@
 #include "bgspch.h"
 #include "Platform/DirectX/Direct3DRendererAPI.h"
+#include "Platform/DirectX/Direct3DCommon.h"
 
 namespace BIGOS {
 
@@ -12,15 +13,29 @@ namespace BIGOS {
 
 		D3D11_RASTERIZER_DESC rsDesc;
 		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
-		rsDesc.FillMode = D3D11_FILL_SOLID;
+		rsDesc.FillMode = D3D11_FILL_WIREFRAME; 
 		rsDesc.CullMode = D3D11_CULL_NONE;
 		rsDesc.FrontCounterClockwise = false;
 		rsDesc.DepthClipEnable = true;
-		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, nullptr);
+		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, &m_Wireframe);
+
+		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+		rsDesc.FillMode = D3D11_FILL_SOLID; 
+		rsDesc.CullMode = D3D11_CULL_NONE;
+		rsDesc.FrontCounterClockwise = false;
+		rsDesc.DepthClipEnable = true;
+		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, &m_Solid);
+
+
+		// TODO: Think how do we wanna handle that
+		Direct3DContext::GetDeviceContext()->RSSetState(m_Wireframe);
+		// Direct3DContext::GetDeviceContext()->RSSetState(nullptr); // Switch back to default setings
 	}
 
 	void Direct3DRendererAPI::Shutdown()
 	{
+		ReleaseCOM(m_Wireframe);
+		ReleaseCOM(m_Solid);
 		m_Context->Shutdown();
 	}
 

@@ -54,6 +54,7 @@ namespace BIGOS {
 	private:
 		friend void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
 		friend void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
+		friend void MouseScrollCallback(InputManager* inputManager, uint32_t message, float xOffSet, float yOffSet);
 	};
 
 	class Input

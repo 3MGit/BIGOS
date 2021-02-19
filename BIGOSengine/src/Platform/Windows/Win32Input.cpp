@@ -117,4 +117,10 @@ namespace BIGOS {
 			//inputManager->m_EventCallback(MouseButtonReleasedEvent(button));
 	}
 
+	void MouseScrollCallback(InputManager* inputManager, uint32_t message, float xOffSet, float yOffSet) 
+	{
+		Window* window = Window::GetWindowClass(g_hWnd);
+		window->m_Data.EventCallback(MouseScrolledEvent(0, yOffSet));
+	}
+
 }

@@ -6,8 +6,6 @@
 #include "Platform/Windows/Win32Window.h"
 #include "Engine/Renderer/RenderCommand.h"
 
-//#include "Platform/DirectX/Direct3DContext.h"
-
 
 namespace BIGOS {
 
@@ -18,6 +16,7 @@ namespace BIGOS {
 
 	extern void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
 	extern void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
+	extern void MouseScrollCallback(InputManager* inputManager, uint32_t message, float xOffSet, float yOffSet);
 
 	static PIXELFORMATDESCRIPTOR GetPixelFormat()
 	{
@@ -227,6 +226,10 @@ namespace BIGOS {
 		case WM_MBUTTONDOWN:
 		case WM_MBUTTONUP:
 			MouseButtonCallback(inputManager, msg, LOWORD(lParam), HIWORD(lParam));
+			break;
+		case WM_MOUSEWHEEL:
+			// We need offset to be 1 or -1, but win32 api provides us with 120 or -120
+			MouseScrollCallback(inputManager, msg, 0, GET_WHEEL_DELTA_WPARAM(wParam)/120.0f);
 			break;
 		default:
 			return DefWindowProcA(hwnd, msg, wParam, lParam);

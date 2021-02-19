@@ -7,7 +7,7 @@
 namespace BIGOS {
 	namespace math {
 
-		struct Quaternion;
+		struct quat;
 
 		struct mat4
 		{
@@ -48,7 +48,7 @@ namespace BIGOS {
 
 			static mat4 Translate(const vec3& translation);
 			static mat4 Rotate(float angle, const vec3& axis);
-			static mat4 Rotate(const Quaternion& quat);
+			static mat4 Rotate(const quat& quaternion);
 			static mat4 Scale(const vec3& scale);
 			static mat4 Invert(const mat4& matrix);
 

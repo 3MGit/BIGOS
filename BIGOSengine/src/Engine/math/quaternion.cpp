@@ -8,25 +8,25 @@ namespace BIGOS {
 
 #define _VECTORMATH_SLERP_TOL 0.999f
 
-		Quaternion::Quaternion()
+		quat::quat()
 			: x(0), y(0), z(0), w(1)
 		{
 		}
 
-		Quaternion::Quaternion(const Quaternion& Quaternion)
+		quat::quat(const quat& quaternion)
 		{
-			x = Quaternion.x;
-			y = Quaternion.y;
-			z = Quaternion.z;
-			w = Quaternion.w;
+			x = quaternion.x;
+			y = quaternion.y;
+			z = quaternion.z;
+			w = quaternion.w;
 		}
 
-		Quaternion::Quaternion(float x, float y, float z, float w)
+		quat::quat(float x, float y, float z, float w)
 			: x(x), y(y), z(z), w(w)
 		{
 		}
 
-		Quaternion::Quaternion(const vec4& vec)
+		quat::quat(const vec4& vec)
 		{
 			x = vec.x;
 			y = vec.y;
@@ -34,7 +34,7 @@ namespace BIGOS {
 			w = vec.w;
 		}
 
-		Quaternion::Quaternion(float scalar)
+		quat::quat(float scalar)
 		{
 			x = scalar;
 			y = scalar;
@@ -42,35 +42,35 @@ namespace BIGOS {
 			w = scalar;
 		}
 
-		Quaternion::Quaternion(const vec3& xyz, float w)
+		quat::quat(const vec3& xyz, float w)
 		{
 			this->SetXYZ(xyz);
 			this->w = w;
 		}
 
-		Quaternion Quaternion::Identity()
+		quat quat::Identity()
 		{
-			return Quaternion(0.0f, 0.0f, 0.0f, 1.0f);
+			return quat(0.0f, 0.0f, 0.0f, 1.0f);
 		}
 
-		Quaternion Quaternion::FromEulerAngles(const vec3& angles)
+		quat quat::FromEulerAngles(const vec3& angles)
 		{
-			Quaternion pitch(vec3(1.0, 0.0, 0.0), angles.x);
-			Quaternion yaw(vec3(0.0, 1.0, 0.0), angles.y);
-			Quaternion roll(vec3(0.0, 0.0, 1.0), angles.z);
+			quat pitch(vec3(1.0, 0.0, 0.0), angles.x);
+			quat yaw(vec3(0.0, 1.0, 0.0), angles.y);
+			quat roll(vec3(0.0, 0.0, 1.0), angles.z);
 			return pitch * yaw * roll;
 		}
 
-		Quaternion& Quaternion::operator =(const Quaternion& Quaternion)
+		quat& quat::operator =(const quat& quaternion)
 		{
-			x = Quaternion.x;
-			y = Quaternion.y;
-			z = Quaternion.z;
-			w = Quaternion.w;
+			x = quaternion.x;
+			y = quaternion.y;
+			z = quaternion.z;
+			w = quaternion.w;
 			return *this;
 		}
 
-		Quaternion& Quaternion::SetXYZ(const vec3& vec)
+		quat& quat::SetXYZ(const vec3& vec)
 		{
 			x = vec.x;
 			y = vec.y;
@@ -78,28 +78,28 @@ namespace BIGOS {
 			return *this;
 		}
 
-		const vec3 Quaternion::GetXYZ() const
+		const vec3 quat::GetXYZ() const
 		{
 			return vec3(x, y, z);
 		}
 
-		Quaternion& Quaternion::SetElem(uint32_t idx, float value)
+		quat& quat::SetElem(uint32_t idx, float value)
 		{
 			*(&x + idx) = value;
 			return *this;
 		}
 
-		float Quaternion::GetElem(uint32_t idx) const
+		float quat::GetElem(uint32_t idx) const
 		{
 			return *(&x + idx);
 		}
 
-		float Quaternion::operator [](uint32_t idx) const
+		float quat::operator [](uint32_t idx) const
 		{
 			return *(&x + idx);
 		}
 
-		vec3 Quaternion::GetAxis() const
+		vec3 quat::GetAxis() const
 		{
 			float x = 1.0f - w * w;
 			if (x < 0.0000001f) // Divide by zero safety check
@@ -109,49 +109,49 @@ namespace BIGOS {
 			return GetXYZ() / x2;
 		}
 
-		vec3 Quaternion::ToEulerAngles() const
+		vec3 quat::ToEulerAngles() const
 		{
 			return vec3(atan2(2 * x * w - 2 * y * z, 1 - 2 * x * x - 2 * z * z),
 				atan2(2 * y * w - 2 * x * z, 1 - 2 * y * y - 2 * z * z),
 				asin(2 * x * y + 2 * z * w));
 		}
 
-		const Quaternion Quaternion::operator+(const Quaternion& quaternion) const
+		const quat quat::operator+(const quat& quaternion) const
 		{
-			return Quaternion(x + quaternion.x, y + quaternion.y, z + quaternion.z, w + quaternion.w);
+			return quat(x + quaternion.x, y + quaternion.y, z + quaternion.z, w + quaternion.w);
 		}
 
-		const Quaternion Quaternion::operator-(const Quaternion& quaternion) const
+		const quat quat::operator-(const quat& quaternion) const
 		{
-			return Quaternion(x - quaternion.x, y - quaternion.y, z - quaternion.z, w - quaternion.w);
+			return quat(x - quaternion.x, y - quaternion.y, z - quaternion.z, w - quaternion.w);
 		}
 
-		const Quaternion Quaternion::operator*(float scalar) const
+		const quat quat::operator*(float scalar) const
 		{
-			return Quaternion(x * scalar, y * scalar, z * scalar, w * scalar);
+			return quat(x * scalar, y * scalar, z * scalar, w * scalar);
 		}
 
-		const Quaternion Quaternion::operator/(float scalar) const
+		const quat quat::operator/(float scalar) const
 		{
-			return Quaternion(x / scalar, y / scalar, z / scalar, w / scalar);
+			return quat(x / scalar, y / scalar, z / scalar, w / scalar);
 		}
 
-		const Quaternion Quaternion::operator-() const
+		const quat quat::operator-() const
 		{
-			return Quaternion(-x, -y, -z, -w);
+			return quat(-x, -y, -z, -w);
 		}
 
-		bool Quaternion::operator ==(const Quaternion& Quaternion) const
+		bool quat::operator ==(const quat& quaternion) const
 		{
-			return (x == Quaternion.x) && (y == Quaternion.y) && (z == Quaternion.z) && (w == Quaternion.w);
+			return (x == quaternion.x) && (y == quaternion.y) && (z == quaternion.z) && (w == quaternion.w);
 		}
 
-		bool Quaternion::operator !=(const Quaternion& Quaternion) const
+		bool quat::operator !=(const quat& quaternion) const
 		{
-			return !(*this == Quaternion);
+			return !(*this == quaternion);
 		}
 
-		float Norm(const Quaternion& quaternion)
+		float Norm(const quat& quaternion)
 		{
 			float result;
 			result = (quaternion.x * quaternion.x);
@@ -161,12 +161,12 @@ namespace BIGOS {
 			return result;
 		}
 
-		float Length(const Quaternion& quaternion)
+		float Length(const quat& quaternion)
 		{
 			return sqrt(Norm(quaternion));
 		}
 
-		const Quaternion Normalize(const Quaternion& quaternion)
+		const quat Normalize(const quat& quaternion)
 		{
 			float lenSqr, lenInv;
 			lenSqr = Norm(quaternion);
@@ -174,7 +174,7 @@ namespace BIGOS {
 			return quaternion * lenInv;
 		}
 
-		const Quaternion NormalizeEst(const Quaternion& quaternion)
+		const quat NormalizeEst(const quat& quaternion)
 		{
 			float lenSqr, lenInv;
 			lenSqr = Norm(quaternion);
@@ -182,55 +182,55 @@ namespace BIGOS {
 			return quaternion * lenInv;
 		}
 
-		const Quaternion Quaternion::Rotation(const vec3& unitVec0, const vec3& unitVec1)
+		const quat quat::Rotation(const vec3& unitVec0, const vec3& unitVec1)
 		{
 			float cosHalfAngleX2, recipCosHalfAngleX2;
 			cosHalfAngleX2 = sqrt((2.0f * (1.0f + unitVec0.Dot(unitVec1))));
 			recipCosHalfAngleX2 = (1.0f / cosHalfAngleX2);
-			return Quaternion((unitVec0.Cross(unitVec1) * recipCosHalfAngleX2), (cosHalfAngleX2 * 0.5f));
+			return quat((unitVec0.Cross(unitVec1) * recipCosHalfAngleX2), (cosHalfAngleX2 * 0.5f));
 		}
 
-		const Quaternion Quaternion::Rotation(float radians, const vec3& unitVec)
+		const quat quat::Rotation(float radians, const vec3& unitVec)
 		{
 			float angle = radians * 0.5f;
-			return Quaternion((unitVec * sin(angle)), cos(angle));
+			return quat((unitVec * sin(angle)), cos(angle));
 		}
 
-		const Quaternion Quaternion::operator*(const Quaternion& quat) const
+		const quat quat::operator*(const quat& quaternion) const
 		{
-			return Normalize(Quaternion(
-				(((w * quat.x) + (x * quat.w)) + (y * quat.z)) - (z * quat.y),
-				(((w * quat.y) + (y * quat.w)) + (z * quat.x)) - (x * quat.z),
-				(((w * quat.z) + (z * quat.w)) + (x * quat.y)) - (y * quat.x),
-				(((w * quat.w) - (x * quat.x)) - (y * quat.y)) - (z * quat.z)
+			return Normalize(quat(
+				(((w * quaternion.x) + (x * quaternion.w)) + (y * quaternion.z)) - (z * quaternion.y),
+				(((w * quaternion.y) + (y * quaternion.w)) + (z * quaternion.x)) - (x * quaternion.z),
+				(((w * quaternion.z) + (z * quaternion.w)) + (x * quaternion.y)) - (y * quaternion.x),
+				(((w * quaternion.w) - (x * quaternion.x)) - (y * quaternion.y)) - (z * quaternion.z)
 			));
 		}
 
-		vec3 Quaternion::Rotate(const Quaternion& quat, const vec3& vec)
+		vec3 quat::Rotate(const quat& quaternion, const vec3& vec)
 		{
 			float tmpX, tmpY, tmpZ, tmpW;
-			tmpX = (((quat.w * vec.x) + (quat.y * vec.z)) - (quat.z * vec.y));
-			tmpY = (((quat.w * vec.y) + (quat.z * vec.x)) - (quat.x * vec.z));
-			tmpZ = (((quat.w * vec.z) + (quat.x * vec.y)) - (quat.y * vec.x));
-			tmpW = (((quat.x * vec.x) + (quat.y * vec.y)) + (quat.z * vec.z));
+			tmpX = (((quaternion.w * vec.x) + (quaternion.y * vec.z)) - (quaternion.z * vec.y));
+			tmpY = (((quaternion.w * vec.y) + (quaternion.z * vec.x)) - (quaternion.x * vec.z));
+			tmpZ = (((quaternion.w * vec.z) + (quaternion.x * vec.y)) - (quaternion.y * vec.x));
+			tmpW = (((quaternion.x * vec.x) + (quaternion.y * vec.y)) + (quaternion.z * vec.z));
 			return vec3(
-				((((tmpW * quat.x) + (tmpX * quat.w)) - (tmpY * quat.z)) + (tmpZ * quat.y)),
-				((((tmpW * quat.y) + (tmpY * quat.w)) - (tmpZ * quat.x)) + (tmpX * quat.z)),
-				((((tmpW * quat.z) + (tmpZ * quat.w)) - (tmpX * quat.y)) + (tmpY * quat.x))
+				((((tmpW * quaternion.x) + (tmpX * quaternion.w)) - (tmpY * quaternion.z)) + (tmpZ * quaternion.y)),
+				((((tmpW * quaternion.y) + (tmpY * quaternion.w)) - (tmpZ * quaternion.x)) + (tmpX * quaternion.z)),
+				((((tmpW * quaternion.z) + (tmpZ * quaternion.w)) - (tmpX * quaternion.y)) + (tmpY * quaternion.x))
 			);
 		}
 
-		Quaternion Quaternion::Conjugate() const
+		quat quat::Conjugate() const
 		{
-			return Quaternion(-x, -y, -z, w);
+			return quat(-x, -y, -z, w);
 		}
 
-		const Quaternion Select(const Quaternion& quat0, const Quaternion& quat1, bool select1)
+		const quat Select(const quat& quat0, const quat& quat1, bool select1)
 		{
-			return Quaternion(select1 ? quat1.x : quat0.x, select1 ? quat1.y : quat0.y, select1 ? quat1.z : quat0.z, select1 ? quat1.w : quat0.w);
+			return quat(select1 ? quat1.x : quat0.x, select1 ? quat1.y : quat0.y, select1 ? quat1.z : quat0.z, select1 ? quat1.w : quat0.w);
 		}
 
-		float Quaternion::Dot(const Quaternion& other) const
+		float quat::Dot(const quat& other) const
 		{
 			float result = (x * other.x);
 			result = (result + (y * other.y));

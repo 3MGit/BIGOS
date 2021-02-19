@@ -9,7 +9,7 @@ namespace BIGOS
 	{
 		enum : KeyCode
 		{
-			//TODO: Swap to hexadecimal for win 32api, some doesnt match properly
+			//TODO: FIX THIS FUKING KURWA KEYCODES
 			Space = 32,
 			Apostrophe = 39, /* ' */
 			Comma = 44, /* , */
@@ -134,7 +134,7 @@ namespace BIGOS
 
 			LeftShift = 340,
 			LeftControl = 341,
-			LeftAlt = 342,
+			LeftAlt = 0x12,
 			LeftSuper = 343,
 			RightShift = 344,
 			RightControl = 345,

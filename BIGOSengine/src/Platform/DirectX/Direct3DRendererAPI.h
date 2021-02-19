@@ -18,6 +18,8 @@ namespace BIGOS {
 		virtual void DrawIndexed(uint32_t count) override;
 	private:
 		Direct3DContext* m_Context;
+		ID3D11RasterizerState* m_Solid;
+		ID3D11RasterizerState* m_Wireframe;
 		math::vec4 m_ClearColor;
 	};
 

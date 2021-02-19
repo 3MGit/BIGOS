@@ -15,8 +15,8 @@ struct VS_OUTPUT
 cbuffer cbPerObject: register(b0)
 {
     column_major float4x4 u_World;
-    column_major float4x4 u_View;
-    column_major float4x4 u_Proj;
+    column_major float4x4 u_ViewProj;
+    float4 u_Color;
 };
 
 VS_OUTPUT vsmain( VS_INPUT input )
@@ -25,11 +25,10 @@ VS_OUTPUT vsmain( VS_INPUT input )
 
     //WORLD SPACE
     output.position = mul(float4(input.position, 1.0f), u_World);
-    //VIEW SPACE
-    output.position = mul(output.position, u_View);
-    //SCREEN SPACE
-    output.position = mul(output.position, u_Proj);
-    output.color = input.color;
+    //VIEW PROJECTION SPACE
+    output.position = mul(output.position, u_ViewProj);
+    //output.color = input.color;
+    output.color = u_Color;
 
     return output;
 }

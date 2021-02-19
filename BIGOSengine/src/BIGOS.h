@@ -27,6 +27,7 @@
 // -----------------------------------
 
 //-----Renderer-----------------------
+#include "Engine/Renderer/Camera/EditorCamera.h"
 #include "Engine/Renderer/RenderCommand.h"
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/GraphicsContext.h"

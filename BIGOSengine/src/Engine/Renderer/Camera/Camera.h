@@ -7,7 +7,9 @@ namespace BIGOS {
 	{
 	public: 
 		Camera() = default;
-		Camera(const math::mat4& projection) {}
+		Camera(const math::mat4& projection) 
+			: m_Projection(projection)
+		{}
 
 		virtual ~Camera() = default;
 
