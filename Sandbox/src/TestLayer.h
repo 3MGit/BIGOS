@@ -26,7 +26,9 @@ private:
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
 	std::shared_ptr<BIGOS::IndexBuffer> m_IndexBuffer;
-	std::shared_ptr<BIGOS::ConstantBuffer> m_ConstantBuffer;
+	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerObject;
+
+	BIGOS::Mesh* m_Cube = nullptr;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

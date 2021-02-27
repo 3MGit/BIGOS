@@ -1,6 +1,6 @@
 #include "bgspch.h"
-#include "Engine/Renderer/Buffer.h"
-#include "Engine/Renderer/RendererAPI.h"
+#include "Engine/Renderer/API/Buffer.h"
+#include "Engine/Renderer/API/RendererAPI.h"
 #include "Engine/Renderer/Renderer.h"
 
 #include "Platform/DirectX/Direct3DBuffer.h"

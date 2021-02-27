@@ -1,12 +1,6 @@
 #include "TestLayer.h"
 #include <memory>
 
-struct Vertex
-{
-	BIGOS::math::vec3 m_Position;
-	BIGOS::math::vec4 color;
-};
-
 __declspec(align(16))
 struct ConstantBufferData
 {
@@ -22,66 +16,19 @@ TestLayer::TestLayer()
 
 void TestLayer::OnAttach()
 {
-	Vertex cubeVertices[] =
-	{
-		{{-0.5f,-0.5f,-0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
-		{{ 0.5f,-0.5f,-0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
-		{{ 0.5f, 0.5f,-0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
-		{{-0.5f, 0.5f,-0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
-		{{-0.5f,-0.5f, 0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
-		{{ 0.5f,-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },
-		{{ 0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 0.9f, 1.0f} },
-		{{-0.5f, 0.5f, 0.5f}, {0.9f, 0.9f, 1.0f, 1.0f} }
-	};
-
-	uint32_t cubeIndices[] =
-	{
-		0, 1, 3, 3, 1, 2,
-		1, 5, 2, 2, 5, 6,
-		5, 4, 6, 6, 4, 7,
-		4, 0, 7, 7, 0, 3,
-		3, 2, 7, 7, 2, 6,
-		4, 5, 0, 0, 5, 1
-	};
-
-	Vertex list[] =
-	{
-		// X    Y     Z
-		{{-0.5f,-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS0 + COLOR0
-		{{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS1 + COLOR1
-		{{ 0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} },	// POS2 + COLOR2
-		{{ 0.5f,-0.5f, -0.5f}, {1.0f, 1.0f, 1.0f, 1.0f} }	// POS3 + COLOR3
-	};												  
-
-	uint32_t indices[] =
-	{
-		0, 1, 2,			// 1st triangle
-		0, 2, 3				// 2nd triangle
-	};
-
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
 
-	m_VertexBuffer = BIGOS::VertexBuffer::Create(sizeof(list));
-	m_VertexBuffer->SetLayout({
-			{ BIGOS::ShaderDataType::Float3, "POSITION" },
-			{ BIGOS::ShaderDataType::Float4, "COLOR"	}
-		});
-	m_VertexBuffer->SetData(cubeVertices, sizeof(cubeVertices));
-	m_VertexBuffer->Bind();
+	m_Cube = BIGOS::MeshGenerator::CreateCube(1);
 
-	m_IndexBuffer = BIGOS::IndexBuffer::Create(cubeIndices, ARRAYSIZE(cubeIndices));
-	m_IndexBuffer->Bind();	
-
-	m_ConstantBuffer = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
-	m_ConstantBuffer->Bind();
+	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 }
 
 void TestLayer::OnDetach()
 {
-
+	delete m_Cube;
 }
 
 void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -124,13 +71,14 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	cbPerObject.u_Transform *= tempTrans * tempRot * tempScale;
 	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
 	cbPerObject.u_Color = m_CubeColor;
-	m_ConstantBuffer->SetData(&cbPerObject, sizeof(cbPerObject));
+	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
+	m_CBPerObject->Bind(0); // first param is register
 
 	// Rendering
 	BIGOS::RenderCommand::SetClearColor(m_ClearColor);
 	BIGOS::RenderCommand::Clear();
 
-	BIGOS::RenderCommand::DrawIndexed(m_IndexBuffer->GetCount());
+	m_Cube->Render();
 }
 
 void TestLayer::OnImGuiRender()

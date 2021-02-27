@@ -133,6 +133,8 @@ namespace BIGOS {
 		static std::shared_ptr<IndexBuffer> Create(uint32_t* indices, uint32_t count);
 	};
 
+	// TODO: Remove this and project system for handling uniforms like in openGL
+
 	class ConstantBuffer
 	{
 	public:
@@ -140,7 +142,7 @@ namespace BIGOS {
 
 		virtual void SetData(const void* data, uint32_t size) = 0;
 
-		virtual void Bind() const = 0;
+		virtual void Bind(uint32_t slot) const = 0;
 		virtual void Unbind() const = 0;
 
 		static std::shared_ptr<ConstantBuffer> Create(uint32_t size);

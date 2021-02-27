@@ -4,7 +4,7 @@
 #include "Engine/Events/ApplicationEvent.h"
 
 #include "Platform/Windows/Win32Window.h"
-#include "Engine/Renderer/RenderCommand.h"
+#include "Engine/Renderer/API/RenderCommand.h"
 
 
 namespace BIGOS {

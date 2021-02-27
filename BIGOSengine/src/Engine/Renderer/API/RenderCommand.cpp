@@ -1,6 +1,6 @@
 #include "bgspch.h"
 
-#include "Engine/Renderer/RenderCommand.h"
+#include "Engine/Renderer/API/RenderCommand.h"
 
 namespace BIGOS {
 

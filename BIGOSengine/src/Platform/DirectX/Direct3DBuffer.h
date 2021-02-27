@@ -1,5 +1,5 @@
 #pragma once
-#include "Engine/Renderer/Buffer.h"
+#include "Engine/Renderer/API/Buffer.h"
 #include <d3d11.h>
 
 namespace BIGOS {
@@ -53,10 +53,10 @@ namespace BIGOS {
 		Direct3DConstantBuffer(uint32_t size);
 		~Direct3DConstantBuffer();
 
-		void SetData(const void* data, uint32_t size);
+		void SetData(const void* data, uint32_t size) override;
 
-		void Bind() const;
-		void Unbind() const;
+		void Bind(uint32_t slot) const override;
+		void Unbind() const override;
 	private:
 		uint32_t m_Size;
 

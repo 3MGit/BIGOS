@@ -1,7 +1,7 @@
 #include "bgspch.h"
 #include "Engine/Core/Core.h"
-#include "Engine/Renderer/Shader.h"
-#include "Engine/Renderer/RendererAPI.h"
+#include "Engine/Renderer/API/Shader.h"
+#include "Engine/Renderer/API/RendererAPI.h"
 #include "Engine/Renderer/Renderer.h"
 
 #include "Platform/DirectX/Direct3DShader.h"

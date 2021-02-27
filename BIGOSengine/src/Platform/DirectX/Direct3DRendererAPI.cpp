@@ -28,7 +28,7 @@ namespace BIGOS {
 
 
 		// TODO: Think how do we wanna handle that
-		Direct3DContext::GetDeviceContext()->RSSetState(m_Wireframe);
+		Direct3DContext::GetDeviceContext()->RSSetState(m_Solid);
 		// Direct3DContext::GetDeviceContext()->RSSetState(nullptr); // Switch back to default setings
 	}
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Engine/Core/App/Window.h"
-#include "Engine/Renderer/GraphicsContext.h"
+#include "Engine/Renderer/API/GraphicsContext.h"
 
 namespace BIGOS {
 
