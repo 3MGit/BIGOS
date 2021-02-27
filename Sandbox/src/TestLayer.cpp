@@ -7,6 +7,8 @@ struct ConstantBufferData
 	BIGOS::math::mat4 u_Transform;
 	BIGOS::math::mat4 u_ViewProj;
 	BIGOS::math::vec4 u_Color;
+	BIGOS::math::vec3 u_CameraPosition;
+	BIGOS::Light u_Light;
 };
 
 TestLayer::TestLayer()
@@ -19,16 +21,19 @@ void TestLayer::OnAttach()
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
 
-	m_Cube = BIGOS::MeshGenerator::CreateCube(1);
+	m_Cube = BIGOS::MeshGenerator::CreateCube(1.0f);
 
 	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
+
+	m_Light = new BIGOS::Light(BIGOS::math::vec4(1.0f), BIGOS::math::vec3(0.0f, 0.0f, 2.0f), BIGOS::math::vec3(0.0f));
 }
 
 void TestLayer::OnDetach()
 {
 	delete m_Cube;
+	delete m_Light;
 }
 
 void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -37,6 +42,8 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	uint32_t width = BIGOS::Application::Get().GetWindow()->GetWidth();
 	uint32_t height = BIGOS::Application::Get().GetWindow()->GetHeight();
 	m_EditorCamera.SetViewportSize(width, height);
+
+	
 
 	// Input
 	// Editor cammera controlls movement
@@ -64,13 +71,15 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Scene update
 	ConstantBufferData cbPerObject;
 	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_Position);
-	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(30.0f, { 1, 1, 0 });
+	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(10.0f, { 1, 1, 0 });
 	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale(m_Scale);
 
 	cbPerObject.u_Transform = BIGOS::math::mat4::Identity();
 	cbPerObject.u_Transform *= tempTrans * tempRot * tempScale;
 	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
 	cbPerObject.u_Color = m_CubeColor;
+	cbPerObject.u_CameraPosition = m_EditorCamera.GetPosition();
+	cbPerObject.u_Light = *m_Light;
 	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 	m_CBPerObject->Bind(0); // first param is register
 

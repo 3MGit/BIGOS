@@ -12,8 +12,7 @@ namespace BIGOS {
 
 	Mesh::~Mesh()
 	{
-		//m_VertexBuffer->~VertexBuffer();
-		//m_IndexBuffer->~IndexBuffer();
+
 	}
 
 	void Mesh::Render()

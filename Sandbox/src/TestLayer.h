@@ -29,6 +29,7 @@ private:
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerObject;
 
 	BIGOS::Mesh* m_Cube = nullptr;
+	BIGOS::Light* m_Light = nullptr;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

@@ -8,12 +8,17 @@ namespace BIGOS {
 	__declspec(align(16)) 
 	struct Light
 	{
-		BIGOS::math::vec4 Ambient;
-		BIGOS::math::vec4 Diffuse;
-		BIGOS::math::vec4 Specular;
-		BIGOS::math::vec3 Direction;
+		math::vec4 Color;
+		math::vec3 Position;
+		math::vec3 Direction;
 
+		Light()
+		{
 
+		}
+
+		Light(math::vec4 color, math::vec3 position, math::vec3 direction)
+			: Color(color), Position(position), Direction(direction) {}
 	};
 
 }

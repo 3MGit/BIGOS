@@ -14,5 +14,6 @@ namespace BIGOS {
 	namespace MeshGenerator
 	{
 		Mesh* CreateCube(float size);
+		Mesh* CreateSphere(float radius, uint32_t sliceCount, uint32_t stackCount);
 	}	
 }
