@@ -13,5 +13,10 @@ PAUSE
 ```
 Possible builds vs2005-2019
 
+## Fresh material system demo
+<p align="center">
+  <img src="https://github.com/3MGit/BIGOS/blob/main/Resources/Demos/MaterialDemo.png?raw=true" />
+</p>
+
 ## See our progress
 * [Road Map](https://trello.com/b/gB7Valt5/bigos-goals)
