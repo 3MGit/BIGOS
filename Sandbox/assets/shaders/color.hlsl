@@ -4,12 +4,14 @@ struct Material
     float4 Ambient;
     float4 Diffuse;
     float4 Specular; // w = SpecPower
-    float4 Reflect;
 };
 
 struct Light
 {
-    float4 Color;
+    float4 Ambient;
+    float4 Diffuse;
+    float4 Specular;
+
     float3 Position;
     float3 Direction;
 };
@@ -35,6 +37,7 @@ cbuffer cbPerObject: register(b0)
     float4 u_Color;
     float3 u_CameraPosition;
     Light u_Light;
+    Material u_Material;
 };
 
 VS_OUTPUT vsmain( VS_INPUT input )
@@ -70,8 +73,7 @@ float4 psmain(PS_INPUT input) : SV_Target
     float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     // Ambient
-    float ambientStrength = 0.15;
-    ambient = ambientStrength * u_Light.Color;
+    ambient = u_Light.Ambient * u_Material.Ambient;
 
     // Diffuse
     float3 norm = normalize(input.normal);
@@ -83,14 +85,13 @@ float4 psmain(PS_INPUT input) : SV_Target
     if (diff > 0.0f)
     {
         // Specular
-        float specularStrength = 0.5;
         float3 viewDir = normalize(u_CameraPosition - input.position.xyz);
 
         float3 reflectDir = reflect(-lightDir, norm);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.Specular.w);
 
-        specular = specularStrength * spec * u_Light.Color;
-        diffuse = diff * u_Light.Color;
+        specular = u_Light.Specular * (spec * u_Material.Specular);
+        diffuse = u_Light.Diffuse * (diff * u_Material.Diffuse);
     }
     return float4(ambient + diffuse + specular) * input.color;
     //return float4(input.normal, 1.0f);

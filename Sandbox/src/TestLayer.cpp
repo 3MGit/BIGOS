@@ -9,6 +9,7 @@ struct ConstantBufferData
 	BIGOS::math::vec4 u_Color;
 	BIGOS::math::vec3 u_CameraPosition;
 	BIGOS::Light u_Light;
+	BIGOS::Material u_Material;
 };
 
 TestLayer::TestLayer()
@@ -22,18 +23,20 @@ void TestLayer::OnAttach()
 	m_Shader->Bind();
 
 	m_Cube = BIGOS::MeshGenerator::CreateCube(1.0f);
+	m_Material = new BIGOS::Material(BIGOS::math::vec4(1.0f, 0.5f, 0.31f,1.0f), BIGOS::math::vec4(1.0f, 0.5f, 0.31f ,1.0f), BIGOS::math::vec4(0.5f, 0.5f, 0.5f, 32.0f));
 
 	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 
-	m_Light = new BIGOS::Light(BIGOS::math::vec4(1.0f), BIGOS::math::vec3(0.0f, 0.0f, 2.0f), BIGOS::math::vec3(0.0f));
+	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(0.0f, 0.0f, 2.0f), BIGOS::math::vec3(0.0f));
 }
 
 void TestLayer::OnDetach()
 {
 	delete m_Cube;
 	delete m_Light;
+	delete m_Material;
 }
 
 void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -80,6 +83,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	cbPerObject.u_Color = m_CubeColor;
 	cbPerObject.u_CameraPosition = m_EditorCamera.GetPosition();
 	cbPerObject.u_Light = *m_Light;
+	cbPerObject.u_Material = *m_Material;
 	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 	m_CBPerObject->Bind(0); // first param is register
 

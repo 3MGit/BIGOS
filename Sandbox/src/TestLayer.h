@@ -30,6 +30,7 @@ private:
 
 	BIGOS::Mesh* m_Cube = nullptr;
 	BIGOS::Light* m_Light = nullptr;
+	BIGOS::Material* m_Material = nullptr;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

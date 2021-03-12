@@ -30,6 +30,7 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Camera/EditorCamera.h"
 #include "Engine/Renderer/Light.h"
+#include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/MeshGenerator.h"
 
