@@ -18,10 +18,6 @@ public:
 	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-	BIGOS::math::vec4 m_CubeColor = { 0.9f, 0.1f, 0.2f, 1.0f };
-	BIGOS::math::vec3 m_Position = { 0.0f, 0.0f, -2.0f };
-	BIGOS::math::vec3 m_Scale = { 1.0f, 1.0f, 1.0f };
-	float m_Speed = 0.01f;
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
@@ -30,7 +26,8 @@ private:
 
 	BIGOS::Mesh* m_Cube = nullptr;
 	BIGOS::Light* m_Light = nullptr;
-	BIGOS::Material* m_Material = nullptr;
+
+	std::vector<BIGOS::Material> m_Materials;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

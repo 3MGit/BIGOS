@@ -127,8 +127,8 @@ namespace BIGOS {
 
 		// Creating DepthStencil buffer
 		D3D11_TEXTURE2D_DESC depthStencilDesc;
-		depthStencilDesc.Width = width;
-		depthStencilDesc.Height = height;
+		depthStencilDesc.Width = width + 1;
+		depthStencilDesc.Height = height + 1;
 		depthStencilDesc.MipLevels = 1;
 		depthStencilDesc.ArraySize = 1;
 		depthStencilDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;

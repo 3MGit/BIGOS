@@ -34,7 +34,6 @@ cbuffer cbPerObject: register(b0)
 {
     column_major float4x4 u_Transform;
     column_major float4x4 u_ViewProj;
-    float4 u_Color;
     float3 u_CameraPosition;
     Light u_Light;
     Material u_Material;
@@ -52,7 +51,7 @@ VS_OUTPUT vsmain( VS_INPUT input )
     //PARAMETERS TO PS
     output.position = mul(float4(input.position, 1.0f), u_Transform);
     output.normal = mul(input.normal, (float3x3)u_Transform);
-    output.color = u_Color;
+    output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     return output;
 }
@@ -77,22 +76,25 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     // Diffuse
     float3 norm = normalize(input.normal);
-    float3 lightDir = normalize(u_Light.Position - input.position.xyz);
-    //float diff = max(dot(norm, lightDir), 0.0);
-    float diff = dot(norm, lightDir);
+    float3 lightDir = normalize(-u_Light.Direction);
+    float diffuseFactor = dot(norm, lightDir);
 
     [flatten]
-    if (diff > 0.0f)
+    if (diffuseFactor > 0.0f)
     {
         // Specular
         float3 viewDir = normalize(u_CameraPosition - input.position.xyz);
 
         float3 reflectDir = reflect(-lightDir, norm);
-        float spec = pow(max(dot(viewDir, reflectDir), 0.0), u_Material.Specular.w);
+        float specFactor = pow(max(dot(reflectDir, viewDir), 0.0), u_Material.Specular.w);
 
-        specular = u_Light.Specular * (spec * u_Material.Specular);
-        diffuse = u_Light.Diffuse * (diff * u_Material.Diffuse);
+        specular = u_Light.Specular * (specFactor * u_Material.Specular);
+        diffuse = u_Light.Diffuse * (diffuseFactor * u_Material.Diffuse);
     }
-    return float4(ambient + diffuse + specular) * input.color;
+
+    float4 litColor = ambient + diffuse + specular;
+    litColor.a = u_Material.Ambient.a;
+
+    return litColor;
     //return float4(input.normal, 1.0f);
  }
