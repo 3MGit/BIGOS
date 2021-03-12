@@ -30,12 +30,16 @@ struct VS_OUTPUT
     float4 color: COLOR;
 };
 
-cbuffer cbPerObject: register(b0)
+cbuffer cbPerFrame: register(b0)
+{
+    float3 u_CameraPosition;
+    Light u_Light;
+};
+
+cbuffer cbPerObject: register(b1)
 {
     column_major float4x4 u_Transform;
     column_major float4x4 u_ViewProj;
-    float3 u_CameraPosition;
-    Light u_Light;
     Material u_Material;
 };
 

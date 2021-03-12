@@ -3,12 +3,17 @@
 #include "DemoMaterials.h"
 
 __declspec(align(16))
-struct ConstantBufferData
+struct PFConstantBufferData
+{
+	BIGOS::math::vec3 u_CameraPosition;
+	BIGOS::Light u_Light;
+};
+
+__declspec(align(16))
+struct POConstantBufferData
 {
 	BIGOS::math::mat4 u_Transform;
 	BIGOS::math::mat4 u_ViewProj;
-	BIGOS::math::vec3 u_CameraPosition;
-	BIGOS::Light u_Light;
 	BIGOS::Material u_Material;
 };
 
@@ -24,7 +29,8 @@ void TestLayer::OnAttach()
 
 	m_Cube = BIGOS::MeshGenerator::CreateCube(1.0f);
 	
-	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(ConstantBufferData));
+	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(POConstantBufferData));
+	m_CBPerFrame = BIGOS::ConstantBuffer::Create(sizeof(PFConstantBufferData));
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 
@@ -54,26 +60,31 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Editor cammera controlls movement
 	m_EditorCamera.OnUpdate(ts);
 
+
 	// Scene update
-	ConstantBufferData cbPerObject;
+	PFConstantBufferData cbPerFrame;
+	cbPerFrame.u_CameraPosition = m_EditorCamera.GetPosition();
+	cbPerFrame.u_Light = *m_Light;
+	m_CBPerFrame->SetData(&cbPerFrame, sizeof(cbPerFrame));
+	m_CBPerFrame->Bind(0);
+
+	POConstantBufferData cbPerObject;
 	
 	size_t matIndex = 0;
 	for (size_t i = 0; i < 4; i++)
 	{
 		for (size_t j = 0; j < 4; j++)
 		{
-			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -4.0f + 2 * j, 4.0f - 2 * i, 0.0f });
+			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, 0.0f });
 			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0.0f, { 1, 1, 0 });
 			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 1.0f, 1.0f, 1.0f });
 
 			cbPerObject.u_Transform = BIGOS::math::mat4::Identity();
 			cbPerObject.u_Transform *= tempTrans * tempRot * tempScale;
 			cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
-			cbPerObject.u_CameraPosition = m_EditorCamera.GetPosition();
-			cbPerObject.u_Light = *m_Light;
 			cbPerObject.u_Material = m_Materials[matIndex];
 			m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
-			m_CBPerObject->Bind(0); // first param is register
+			m_CBPerObject->Bind(1); // param is register
 
 			m_Cube->Render();
 			matIndex++;

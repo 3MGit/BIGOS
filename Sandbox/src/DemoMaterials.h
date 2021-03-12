@@ -2,8 +2,6 @@
 #include "BIGOS.h"
 #include <vector>
 
-
-
 BIGOS::Material emerald({ 0.0215 , 0.1745, 0.0215, 1.0000 }, { 0.07568 , 0.61424, 0.07568, 1.0000 }, { 0.633 , 0.727811, 0.633, 128 * 0.6 });
 BIGOS::Material jade({ 0.135 , 0.2225, 0.1575, 1.0000 }, { 0.54 , 0.89, 0.63, 1.0000 }, { 0.316228 , 0.316228, 0.316228, 128 * 0.1 });
 BIGOS::Material obsidian({ 0.05375 , 0.05, 0.06625, 1.0000 }, { 0.18275 , 0.17, 0.22525, 1.0000 }, { 0.332741 , 0.328634, 0.346435, 128 * 0.2 });
@@ -19,10 +17,18 @@ BIGOS::Material silver({ 0.19225 , 0.19225, 0.19225, 1.0000 }, { 0.50754 , 0.507
 BIGOS::Material black_plastic({ 0.0 , 0.0, 0.0, 1.0000 }, { 0.01 , 0.01, 0.01, 1.0000 }, { 0.50 , 0.50, 0.50, 128 * 0.25 });
 BIGOS::Material cyan_plastic({ 0.0 , 0.1, 0.06, 1.0000 }, { 0.0 , 0.50980392, 0.50980392, 1.0000 }, { 0.50196078 , 0.50196078, 0.50196078, 128 * 0.25 });
 BIGOS::Material green_plastic({ 0.0 , 0.0, 0.0, 1.0000 }, { 0.1 , 0.35, 0.1, 1.0000 }, { 0.45 , 0.55, 0.45, 128 * 0.25 });
-
+BIGOS::Material red_plastic({ 0.0 , 0.0, 0.0, 1.0000 }, { 0.5 , 0.0, 0.0, 1.0000 }, { 0.7 , 0.6, 0.6, 128 * 0.25 });
+BIGOS::Material white_plastic({ 0.0 , 0.0, 0.0, 1.0000 }, { 0.55 , 0.55, 0.55, 1.0000 }, { 0.7 , 0.7, 0.7, 128 * 0.25 });
+BIGOS::Material yellow_plastic({ 0.0 , 0.0, 0.0, 1.0000 }, { 0.5 , 0.5, 0.0, 1.0000 }, { 0.60 , 0.60, 0.50, 128 * 0.25 });
 BIGOS::Material black_rubber({ 0.02 , 0.02, 0.02, 1.0000 }, { 0.01 , 0.01, 0.01, 1.0000 }, { 0.4 , 0.4, 0.4, 128 * 0.078125 });
+BIGOS::Material cyan_rubber({ 0.0 , 0.05, 0.05, 1.0000 }, { 0.4 , 0.5, 0.5, 1.0000 }, { 0.04 , 0.7, 0.7, 128 * 0.078125 });
+BIGOS::Material green_rubber({ 0.0 , 0.05, 0.0, 1.0000 }, { 0.4 , 0.5, 0.4, 1.0000 }, { 0.04 , 0.7, 0.04, 128 * 0.078125 });
+BIGOS::Material red_rubber({ 0.05 , 0.0, 0.0, 1.0000 }, { 0.5 , 0.4, 0.4, 1.0000 }, { 0.7 , 0.04, 0.04, 128 * 0.078125 });
+BIGOS::Material white_rubber({ 0.05 , 0.05, 0.05, 1.0000 }, { 0.5 , 0.5, 0.5, 1.0000 }, { 0.7 , 0.7, 0.7, 128 * 0.078125 });
+BIGOS::Material yellow_rubber({ 0.05 , 0.05, 0.0, 1.0000 }, { 0.5 , 0.5, 0.4, 1.0000 }, { 0.7 , 0.7, 0.04, 128 * 0.078125 });
 
 std::vector<BIGOS::Material> materialPallete = { emerald, jade, obsidian, pearl,
-												 ruby, turquoise, brass, bronze,
+												 //ruby, turquoise, brass, bronze,
 												 chrome, copper, gold, silver,
-												 black_plastic, cyan_plastic, green_plastic, black_rubber};
+												 yellow_plastic, cyan_plastic, green_plastic, red_plastic,
+												 yellow_rubber, cyan_rubber, green_rubber, red_rubber };

@@ -202,7 +202,7 @@ namespace BIGOS {
 	void Direct3DConstantBuffer::Bind(uint32_t slot) const
 	{
 		
-		Direct3DContext::GetDeviceContext()->PSSetConstantBuffers(0, 1, &m_BufferHandle);
+		Direct3DContext::GetDeviceContext()->PSSetConstantBuffers(slot, 1, &m_BufferHandle);
 		Direct3DContext::GetDeviceContext()->VSSetConstantBuffers(slot, 1, &m_BufferHandle);
 
 	}
