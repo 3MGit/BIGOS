@@ -27,16 +27,19 @@ void TestLayer::OnAttach()
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
 
-	m_Cube = BIGOS::MeshGenerator::CreateCube(1.0f);
+	m_Cube = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
+	//m_Cube = BIGOS::MeshGenerator::CreateSmoothCube(1.0f);
+	//m_Cube = BIGOS::MeshGenerator::CreateSphere(1.0f, 32, 10);
 	
 	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(POConstantBufferData));
 	m_CBPerFrame = BIGOS::ConstantBuffer::Create(sizeof(PFConstantBufferData));
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 
-	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(0.0f, 0.0f, 2.0f), BIGOS::math::vec3(-0.2f, -1.0f, -0.3f));
+	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.2f, -0.3f, -1.0f));
 
 	m_Materials = materialPallete;
+
 }
 
 void TestLayer::OnDetach()
@@ -70,17 +73,17 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	POConstantBufferData cbPerObject;
 	
+
 	size_t matIndex = 0;
 	for (size_t i = 0; i < 4; i++)
 	{
 		for (size_t j = 0; j < 4; j++)
 		{
 			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, 0.0f });
-			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0.0f, { 1, 1, 0 });
-			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 1.0f, 1.0f, 1.0f });
+			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(m_Rotation, { 0, 1, 0 });
+			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 1.2f, 1.2f, 1.2f });
 
-			cbPerObject.u_Transform = BIGOS::math::mat4::Identity();
-			cbPerObject.u_Transform *= tempTrans * tempRot * tempScale;
+			cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
 			cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
 			cbPerObject.u_Material = m_Materials[matIndex];
 			m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
@@ -90,6 +93,8 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			matIndex++;
 		}
 	}
+
+	m_Rotation += ts/50.0f;
 }
 
 void TestLayer::OnImGuiRender()

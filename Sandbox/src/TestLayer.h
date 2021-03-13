@@ -19,6 +19,8 @@ public:
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 
+	float m_Rotation = 0;
+
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
 	std::shared_ptr<BIGOS::IndexBuffer> m_IndexBuffer;

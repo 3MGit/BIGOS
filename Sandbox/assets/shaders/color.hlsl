@@ -12,7 +12,6 @@ struct Light
     float4 Diffuse;
     float4 Specular;
 
-    float3 Position;
     float3 Direction;
 };
 
@@ -20,6 +19,7 @@ struct VS_INPUT
 {
     float3 position: POSITION;
     float3 normal: NORMAL;
+    float2 uv: TEXCOORD;
 };
 
 struct VS_OUTPUT
@@ -27,7 +27,7 @@ struct VS_OUTPUT
     float4 positionH: SV_POSITION;
     float4 position: POSITION;
     float3 normal: NORMAL;
-    float4 color: COLOR;
+    float2 uv: TEXCOORD;
 };
 
 cbuffer cbPerFrame: register(b0)
@@ -51,11 +51,10 @@ VS_OUTPUT vsmain( VS_INPUT input )
     output.positionH = mul(float4(input.position, 1.0f), u_Transform);
     //VIEW PROJECTION SPACE
     output.positionH = mul(output.positionH, u_ViewProj);
-
     //PARAMETERS TO PS
     output.position = mul(float4(input.position, 1.0f), u_Transform);
     output.normal = mul(input.normal, (float3x3)u_Transform);
-    output.color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    output.uv = input.uv;
 
     return output;
 }
@@ -66,7 +65,7 @@ struct PS_INPUT
     float4 positionH: SV_POSITION;
     float4 position: POSITION;
     float3 normal : NORMAL;
-    float4 color: COLOR;
+    float2 uv: TEXCOORD;
 };
 
 float4 psmain(PS_INPUT input) : SV_Target
