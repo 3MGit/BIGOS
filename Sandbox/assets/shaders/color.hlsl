@@ -43,6 +43,10 @@ cbuffer cbPerObject: register(b1)
     Material u_Material;
 };
 
+//Textures
+Texture2D u_Texture : register(t0);
+SamplerState u_TextureSampler : register(s0);
+
 VS_OUTPUT vsmain( VS_INPUT input )
 {
     VS_OUTPUT output = (VS_OUTPUT)0;
@@ -74,6 +78,8 @@ float4 psmain(PS_INPUT input) : SV_Target
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+    float4 texColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
+
     // Ambient
     ambient = u_Light.Ambient * u_Material.Ambient;
 
@@ -95,7 +101,9 @@ float4 psmain(PS_INPUT input) : SV_Target
         diffuse = u_Light.Diffuse * (diffuseFactor * u_Material.Diffuse);
     }
 
-    float4 litColor = ambient + diffuse + specular;
+    texColor = u_Texture.Sample(u_TextureSampler, input.uv);
+
+    float4 litColor = texColor * (ambient + diffuse) + specular;
     litColor.a = u_Material.Ambient.a;
 
     return litColor;

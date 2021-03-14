@@ -27,7 +27,11 @@ void TestLayer::OnAttach()
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
 
-	m_Cube = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
+	m_Texture = BIGOS::Texture2D::Create("assets/textures/bricks.png");
+	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
+
+	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
+	m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
 	//m_Cube = BIGOS::MeshGenerator::CreateSmoothCube(1.0f);
 	//m_Cube = BIGOS::MeshGenerator::CreateSphere(1.0f, 32, 10);
 	
@@ -44,7 +48,8 @@ void TestLayer::OnAttach()
 
 void TestLayer::OnDetach()
 {
-	delete m_Cube;
+	delete m_GridMesh;
+	delete m_CubeMesh;
 	delete m_Light;
 }
 
@@ -72,7 +77,20 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_CBPerFrame->Bind(0);
 
 	POConstantBufferData cbPerObject;
-	
+
+	m_Texture->Bind();
+	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, -3.0f });
+	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
+	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0f, 5.0f, 5.0f });
+
+	cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
+	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
+	cbPerObject.u_Material = m_Materials[4];
+	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
+	m_CBPerObject->Bind(1); // param is register
+	m_GridMesh->Render();
+
+	m_WhiteTexture->Bind();
 
 	size_t matIndex = 0;
 	for (size_t i = 0; i < 4; i++)
@@ -89,10 +107,12 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 			m_CBPerObject->Bind(1); // param is register
 
-			m_Cube->Render();
+			m_CubeMesh->Render();
 			matIndex++;
 		}
 	}
+
+
 
 	m_Rotation += ts/50.0f;
 }

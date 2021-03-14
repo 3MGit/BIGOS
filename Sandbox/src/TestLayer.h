@@ -22,13 +22,15 @@ private:
 	float m_Rotation = 0;
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
-	std::shared_ptr<BIGOS::VertexBuffer> m_VertexBuffer;
-	std::shared_ptr<BIGOS::IndexBuffer> m_IndexBuffer;
+
+	std::shared_ptr<BIGOS::Texture2D> m_Texture;
+	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
 
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerObject;
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerFrame;
 
-	BIGOS::Mesh* m_Cube = nullptr;
+	BIGOS::Mesh* m_CubeMesh = nullptr;
+	BIGOS::Mesh* m_GridMesh = nullptr;
 	BIGOS::Light* m_Light = nullptr;
 
 	std::vector<BIGOS::Material> m_Materials;

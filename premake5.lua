@@ -15,6 +15,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["ImGui"] = "%{wks.location}/BIGOSengine/ThirdParty/imgui"
 IncludeDir["Glad"] = "%{wks.location}/BIGOSengine/ThirdParty/Glad/include"
+IncludeDir["stb_image"] = "%{wks.location}/BIGOSengine/ThirdParty/stb_image"
 
 group "Dependencies"
 	include "BIGOSengine/ThirdParty/imgui"
@@ -37,7 +38,9 @@ project "BIGOSengine"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/ThirdParty/stb_image/**.h",
+		"%{prj.name}/ThirdParty/stb_image/**.cpp"
 	}
 
 	defines
@@ -49,7 +52,8 @@ project "BIGOSengine"
 	{
 		"%{prj.name}/src",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.Glad}"
+		"%{IncludeDir.Glad}",
+		"%{IncludeDir.stb_image}"
 	}
 
 	links 

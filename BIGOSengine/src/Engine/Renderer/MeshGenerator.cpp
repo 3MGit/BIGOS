@@ -180,6 +180,9 @@ namespace BIGOS {
 		std::vector<Vertex> vertices;
 		std::vector<uint32_t> indices;
 
+		vertices.clear();
+		indices.clear();
+
 		Vertex topVertex = { { 0.0f, +radius, 0.0f }, { 0.0f, +1.0f, 0.0f } };
 		Vertex bottomVertex = { { 0.0f, -radius, 0.0f,  }, { 0.0f, -1.0f, 0.0f } };
 
@@ -276,6 +279,84 @@ namespace BIGOS {
 		}
 
 		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(),indices.size());
+
+		return new Mesh(vb, ib);
+	}
+
+	Mesh* MeshGenerator::CreateGrid(float width, float depth, uint32_t m, uint32_t n)
+	{
+		using namespace math;
+
+		uint32_t vertexCount = m * n;
+		uint32_t faceCount = (m - 1) * (n - 1) * 2;
+
+		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
+
+		//
+		// Create the vertices.
+		//
+
+		float halfWidth = 0.5f * width;
+		float halfDepth = 0.5f * depth;
+
+		float dx = width / (n - 1);
+		float dz = depth / (m - 1);
+
+		float du = 1.0f / (n - 1);
+		float dv = 1.0f / (m - 1);
+
+		vertices.resize(vertexCount);
+		for (UINT i = 0; i < m; ++i)
+		{
+			float z = halfDepth - i * dz;
+			for (UINT j = 0; j < n; ++j)
+			{
+				float x = -halfWidth + j * dx;
+
+				vertices[i * n + j].Position = vec3(x, 0.0f, z);
+				vertices[i * n + j].Normal = vec3(0.0f, 1.0f, 0.0f);
+				//vertices[i * n + j].TangentU = vec3(1.0f, 0.0f, 0.0f);
+
+				// Stretch texture over grid.
+				vertices[i * n + j].UV.x = j * du;
+				vertices[i * n + j].UV.y = i * dv;
+			}
+		}
+
+		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.size() * sizeof(Vertex));
+		vb->SetLayout({
+			{ BIGOS::ShaderDataType::Float3, "POSITION" },
+			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
+			});
+		vb->SetData(vertices.data(), vertices.size() * sizeof(Vertex));
+
+		//
+		// Create the indices.
+		//
+
+		indices.resize(faceCount * 3); // 3 indices per face
+
+		// Iterate over each quad and compute indices.
+		UINT k = 0;
+		for (UINT i = 0; i < m - 1; ++i)
+		{
+			for (UINT j = 0; j < n - 1; ++j)
+			{
+				indices[k] = i * n + j;
+				indices[k + 1] = i * n + j + 1;
+				indices[k + 2] = (i + 1) * n + j;
+				
+				indices[k + 3] = (i + 1) * n + j;
+				indices[k + 4] = i * n + j + 1;
+				indices[k + 5] = (i + 1) * n + j + 1;
+
+				k += 6; // next quad
+			}
+		}
+
+		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(), indices.size());
 
 		return new Mesh(vb, ib);
 	}
