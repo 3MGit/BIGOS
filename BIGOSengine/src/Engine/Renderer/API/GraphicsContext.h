@@ -7,6 +7,8 @@ namespace BIGOS {
 	{
 	public:
 		static void Create(WindowProps properties, void* deviceContext);
+
+		
 	protected:
 		static GraphicsContext* s_Context;
 	};

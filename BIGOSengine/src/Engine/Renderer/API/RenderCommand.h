@@ -37,6 +37,21 @@ namespace BIGOS {
 			s_RendererAPI->DrawIndexed(count);
 		}
 
+		static void SetBlending(bool enable)
+		{
+			s_RendererAPI->SetBlending(enable);
+		}
+
+		static void SetDepthTesting(bool enable) 
+		{
+			s_RendererAPI->SetDepthTesting(enable);
+		}
+
+		static void SetWireframeMode(bool enable)
+		{
+			s_RendererAPI->SetWireframeMode(enable);
+		}
+
 	private:
 		// Think should that be handled by RenderCommand, only window should use that metod
 		static void Present()

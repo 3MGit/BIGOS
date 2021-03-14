@@ -14,13 +14,22 @@ namespace BIGOS {
 		virtual void SetClearColor(const math::vec4& color) override;
 		virtual void Clear() override;
 
+		virtual void SetBlending(bool enable) override;
+		virtual void SetDepthTesting(bool enable) override;
+		virtual void SetWireframeMode(bool enable) override;
+
 		virtual void Present() override;
 		virtual void DrawIndexed(uint32_t count) override;
 	private:
+		void CreateBlendStates();
+		void CreateDepthStencilStates();
+		void CreateRasterizerStates();
+	private:
 		Direct3DContext* m_Context;
-		ID3D11RasterizerState* m_Solid;
-		ID3D11RasterizerState* m_Wireframe;
 		math::vec4 m_ClearColor;
+
+		static ID3D11RasterizerState* s_RasterizerStates[2];
+		static ID3D11BlendState* s_BlendStates[2];
 	};
 
 }

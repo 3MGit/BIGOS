@@ -45,7 +45,6 @@ void TestLayer::OnAttach()
 	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.2f, -0.3f, -1.0f));
 
 	m_Materials = materialPallete;
-
 }
 
 void TestLayer::OnDetach()

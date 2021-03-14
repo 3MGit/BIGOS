@@ -102,6 +102,8 @@ namespace BIGOS {
 		uint32_t m_Stride = 0;
 	};
 
+	//TODO: Specifie buffer usage type
+
 	class VertexBuffer
 	{
 	public:

@@ -4,44 +4,38 @@
 
 namespace BIGOS {
 
+	ID3D11RasterizerState* Direct3DRendererAPI::s_RasterizerStates[2];
+	ID3D11BlendState* Direct3DRendererAPI::s_BlendStates[2];
+
 	void Direct3DRendererAPI::Init()
 	{
 		// SetViewport is called earlier than Init();
 		//m_Context = Direct3DContext::GetContext();
 
+		CreateRasterizerStates();
+		CreateDepthStencilStates();
+		CreateBlendStates();
+
+		SetWireframeMode(false);
+		SetDepthTesting(true);
+		SetBlending(true);
+
 		// TODO: Log device and drivers properties
 
-		D3D11_RASTERIZER_DESC rsDesc;
-		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
-		rsDesc.FillMode = D3D11_FILL_WIREFRAME; 
-		rsDesc.CullMode = D3D11_CULL_NONE;
-		rsDesc.FrontCounterClockwise = false;
-		rsDesc.DepthClipEnable = true;
-		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, &m_Wireframe);
-
-		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
-		rsDesc.FillMode = D3D11_FILL_SOLID; 
-		rsDesc.CullMode = D3D11_CULL_NONE;
-		rsDesc.FrontCounterClockwise = false;
-		rsDesc.DepthClipEnable = true;
-		m_Context->GetDevice()->CreateRasterizerState(&rsDesc, &m_Solid);
-
-
-		// TODO: Think how do we wanna handle that
-		Direct3DContext::GetDeviceContext()->RSSetState(m_Solid);
-		// Direct3DContext::GetDeviceContext()->RSSetState(nullptr); // Switch back to default setings
 	}
 
 	void Direct3DRendererAPI::Shutdown()
 	{
-		ReleaseCOM(m_Wireframe);
-		ReleaseCOM(m_Solid);
+		for (size_t i = 0; i < 2; i++)
+		{
+			ReleaseCOM(s_RasterizerStates[i]);
+			ReleaseCOM(s_BlendStates[i]);
+		}
 		m_Context->Shutdown();
 	}
 
 	void Direct3DRendererAPI::SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 	{
-		// Read accet violitation
 		m_Context = Direct3DContext::GetContext();
 		m_Context->SetViewport(x, y, width, height);	
 	}
@@ -58,6 +52,20 @@ namespace BIGOS {
 		Direct3DContext::GetDeviceContext()->ClearDepthStencilView(Direct3DContext::GetDepthStencilBuffer(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 	}
 
+	void Direct3DRendererAPI::SetBlending(bool enable)
+	{
+		Direct3DContext::GetDeviceContext()->OMSetBlendState(enable ? s_BlendStates[1] : s_BlendStates[0], NULL, 0xffffffff);
+	}
+
+	void Direct3DRendererAPI::SetDepthTesting(bool enable)
+	{
+	}
+
+	void Direct3DRendererAPI::SetWireframeMode(bool enable)
+	{
+		Direct3DContext::GetDeviceContext()->RSSetState(enable ? s_RasterizerStates[0]: s_RasterizerStates[1]);
+	}
+
 	void Direct3DRendererAPI::Present()
 	{
 		m_Context->Present();
@@ -68,6 +76,53 @@ namespace BIGOS {
 		Direct3DContext::GetDeviceContext()->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		Direct3DContext::GetDeviceContext()->DrawIndexed(count, 0, 0);
 		// TODO: During optimilization maby expand API to handle a lot of object in one buffer and draw call
+	}
+
+	void Direct3DRendererAPI::CreateBlendStates()
+	{
+		D3D11_BLEND_DESC desc;
+		ZeroMemory(&desc, sizeof(D3D11_BLEND_DESC));
+		desc.RenderTarget[0].BlendEnable = false;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+		Direct3DContext::GetDevice()->CreateBlendState(&desc, &s_BlendStates[0]);
+	
+		ZeroMemory(&desc, sizeof(D3D11_BLEND_DESC));
+		desc.AlphaToCoverageEnable = false;
+		desc.IndependentBlendEnable = false;
+
+		desc.RenderTarget[0].BlendEnable = true;
+
+		desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+		desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_SRC_ALPHA;
+		desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_INV_SRC_ALPHA;
+		desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		desc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+		Direct3DContext::GetDevice()->CreateBlendState(&desc, &s_BlendStates[1]);
+	}
+
+	void Direct3DRendererAPI::CreateDepthStencilStates()
+	{
+	}
+
+	void Direct3DRendererAPI::CreateRasterizerStates()
+	{
+		D3D11_RASTERIZER_DESC rsDesc;
+		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+		rsDesc.FillMode = D3D11_FILL_WIREFRAME;
+		rsDesc.CullMode = D3D11_CULL_NONE;
+		rsDesc.FrontCounterClockwise = false;
+		rsDesc.DepthClipEnable = true;
+		Direct3DContext::GetDevice()->CreateRasterizerState(&rsDesc, &s_RasterizerStates[0]);
+
+		ZeroMemory(&rsDesc, sizeof(D3D11_RASTERIZER_DESC));
+		rsDesc.FillMode = D3D11_FILL_SOLID;
+		rsDesc.CullMode = D3D11_CULL_NONE;
+		rsDesc.FrontCounterClockwise = false;
+		rsDesc.DepthClipEnable = true;
+		Direct3DContext::GetDevice()->CreateRasterizerState(&rsDesc, &s_RasterizerStates[1]);
 	}
 
 }

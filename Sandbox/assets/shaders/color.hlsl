@@ -104,7 +104,7 @@ float4 psmain(PS_INPUT input) : SV_Target
     texColor = u_Texture.Sample(u_TextureSampler, input.uv);
 
     float4 litColor = texColor * (ambient + diffuse) + specular;
-    litColor.a = u_Material.Ambient.a;
+    litColor.a = u_Material.Diffuse.a * texColor.a;
 
     return litColor;
     //return float4(input.normal, 1.0f);
