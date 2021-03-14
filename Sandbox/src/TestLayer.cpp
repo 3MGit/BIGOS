@@ -2,6 +2,8 @@
 #include <memory>
 #include "DemoMaterials.h"
 
+#include <imgui/imgui.h>
+
 __declspec(align(16))
 struct PFConstantBufferData
 {
@@ -78,8 +80,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	POConstantBufferData cbPerObject;
 
-	m_Texture->Bind();
-	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, -3.0f });
+	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
 	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
 	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0f, 5.0f, 5.0f });
 
@@ -88,6 +89,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	cbPerObject.u_Material = m_Materials[4];
 	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 	m_CBPerObject->Bind(1); // param is register
+	m_Texture->Bind();
 	m_GridMesh->Render();
 
 	m_WhiteTexture->Bind();
@@ -119,6 +121,13 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 void TestLayer::OnImGuiRender()
 {
+	static bool show_demo_window = true;
+	ImGui::ShowDemoWindow(&show_demo_window);
+
+	ImGui::Begin("Test");
+	ImGui::Text("Hello World");
+	ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
+	ImGui::End();
 }
 
 void TestLayer::OnEvent(BIGOS::Event& e)

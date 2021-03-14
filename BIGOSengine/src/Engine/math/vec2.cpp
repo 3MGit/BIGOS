@@ -28,6 +28,12 @@ namespace BIGOS {
 			this->y = vector.y;
 		}
 
+		float* vec2::ptr()
+		{
+			float* v[2] = { &x, &y };
+			return *v;
+		}
+
 		vec2& vec2::Add(const vec2& other)
 		{
 			x += other.x;

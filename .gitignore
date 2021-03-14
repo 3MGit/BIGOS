@@ -3,8 +3,9 @@
 !vendor/premake/bin/
 bin-int/
 
-# Hazel files
+# BIGOS files
 *.log
+*.ini
 
 # Visual Studio files and folder
 .vs/

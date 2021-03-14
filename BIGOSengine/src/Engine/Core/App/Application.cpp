@@ -31,6 +31,9 @@ namespace BIGOS {
 
 		Renderer::Init();
 
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
+
 		return true;
 	}
 
@@ -94,15 +97,23 @@ namespace BIGOS {
 				layer->OnUpdate(timestep);
 				frames++;
 			}
+			
+			m_ImGuiLayer->Begin();
+			{
+				for (Layer* layer : m_LayerStack)
+					layer->OnImGuiRender();
+			}
+			m_ImGuiLayer->End();
 
 			m_Window->OnUpdate();
+			
 			if (m_Timer->Elapsed() - timer > 1.0f)
 			{
 				timer += 1.0f;
-				m_FramesPerSecond = frames;
+				m_UpdatesPerSecond = frames;
 				frames = 0;
 			}
-			m_Window->SetTitle(m_Name + std::string(" (FPS: ") + std::to_string(m_FramesPerSecond) + std::string(") "));
+			m_Window->SetTitle(m_Name + std::string(" (UPS: ") + std::to_string(m_UpdatesPerSecond) + std::string(") "));
 		}
 	}
 

@@ -19,6 +19,8 @@ namespace BIGOS {
 			vec3(float x, float y);
 			vec3(const vec4& other);
 
+			float* ptr();
+
 			static vec3 Up();
 			static vec3 Down();
 			static vec3 Left();

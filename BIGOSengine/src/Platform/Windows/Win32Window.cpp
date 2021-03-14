@@ -6,6 +6,8 @@
 #include "Platform/Windows/Win32Window.h"
 #include "Engine/Renderer/API/RenderCommand.h"
 
+#include <imgui.h>
+#include <examples/imgui_impl_win32.h>
 
 namespace BIGOS {
 
@@ -140,6 +142,8 @@ namespace BIGOS {
 		ShowWindow(g_hWnd, SW_SHOW);
 		SetFocus(g_hWnd);
 
+		m_hWnd = g_hWnd;
+
 		return true;
 	}
 
@@ -173,6 +177,9 @@ namespace BIGOS {
 
 	LRESULT CALLBACK WindowsWindow::WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 	{
+		if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wParam, lParam))
+			return true;
+
 		Window* window = Window::GetWindowClass(hwnd);
 		if (window == nullptr)
 			return DefWindowProcA(hwnd, msg, wParam, lParam);
@@ -230,6 +237,15 @@ namespace BIGOS {
 		case WM_MOUSEWHEEL:
 			// We need offset to be 1 or -1, but win32 api provides us with 120 or -120
 			MouseScrollCallback(inputManager, msg, 0, GET_WHEEL_DELTA_WPARAM(wParam)/120.0f);
+			break;
+		case WM_DPICHANGED:
+			if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DpiEnableScaleViewports)
+			{
+				//const int dpi = HIWORD(wParam);
+				//printf("WM_DPICHANGED to %d (%.0f%%)\n", dpi, (float)dpi / 96.0f * 100.0f);
+				const RECT* suggested_rect = (RECT*)lParam;
+				::SetWindowPos(hwnd, NULL, suggested_rect->left, suggested_rect->top, suggested_rect->right - suggested_rect->left, suggested_rect->bottom - suggested_rect->top, SWP_NOZORDER | SWP_NOACTIVATE);
+			}
 			break;
 		default:
 			return DefWindowProcA(hwnd, msg, wParam, lParam);

@@ -20,6 +20,12 @@ namespace BIGOS {
 		{
 		}
 
+		float* vec4::ptr()
+		{
+			float* v[4] = { &x, &y, &z, &w };
+			return *v;
+		}
+
 		vec4& vec4::Add(const vec4& other)
 		{
 			x += other.x;

@@ -18,6 +18,7 @@ public:
 	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+	BIGOS::math::vec3 m_WallPosition = { 0.0f, 0.0f, -3.0f };
 
 	float m_Rotation = 0;
 

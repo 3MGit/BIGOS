@@ -38,6 +38,12 @@ namespace BIGOS {
 		{
 		}
 
+		float* vec3::ptr()
+		{
+			float* v[3] = { &x, &y, &z };
+			return *v;
+		}
+
 		vec3 vec3::Up()
 		{
 			return vec3(0.0f, 1.0f, 0.0f);

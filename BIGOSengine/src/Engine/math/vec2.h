@@ -13,6 +13,8 @@ namespace BIGOS {
 			vec2(float x, float y);
 			vec2(const vec3& vector);
 
+			float* ptr();
+
 			vec2& Add(const vec2& other);
 			vec2& Subtract(const vec2& other);
 			vec2& Multiply(const vec2& other);

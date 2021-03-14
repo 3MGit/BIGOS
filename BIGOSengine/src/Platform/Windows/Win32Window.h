@@ -27,12 +27,13 @@ namespace BIGOS {
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 
-		//virtual void* GetNativeWindow() const { return m_Hwnd; }
+		virtual void* GetNativeWindow() const override { return m_hWnd; }
+
 		friend class RendererAPI;
 	private:
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	protected:
-		//std::shared_ptr<GraphicsContext> m_Context;
+	private:
+		HWND m_hWnd;
 	};
 
 	//void FocusCallback(Window* window, bool focused);
