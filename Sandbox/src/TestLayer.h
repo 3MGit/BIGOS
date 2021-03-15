@@ -23,6 +23,9 @@ private:
 	float m_Rotation = 0;
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
+	std::shared_ptr<BIGOS::Shader> m_ScreenShader;
+
+	std::shared_ptr<BIGOS::Framebuffer> m_Framebuffer;
 
 	std::shared_ptr<BIGOS::Texture2D> m_Texture;
 	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
@@ -32,6 +35,8 @@ private:
 
 	BIGOS::Mesh* m_CubeMesh = nullptr;
 	BIGOS::Mesh* m_GridMesh = nullptr;
+	BIGOS::Mesh* m_ScreenMesh = nullptr;
+
 	BIGOS::Light* m_Light = nullptr;
 
 	std::vector<BIGOS::Material> m_Materials;

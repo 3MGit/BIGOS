@@ -37,6 +37,7 @@
 #include "Engine/Renderer/API/RenderCommand.h"
 #include "Engine/Renderer/API/GraphicsContext.h"
 #include "Engine/Renderer/API/Buffer.h"
+#include "Engine/Renderer/API/Framebuffer.h"
 #include "Engine/Renderer/API/Shader.h"
 #include "Engine/Renderer/API/Texture.h"
 // -----------------------------------

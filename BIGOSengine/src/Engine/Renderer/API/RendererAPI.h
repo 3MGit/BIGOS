@@ -22,9 +22,9 @@ namespace BIGOS {
 		virtual void SetClearColor(const math::vec4& color) = 0;
 		virtual void Clear() = 0;
 
-		virtual void SetBlending(bool enable) = 0;
-		virtual void SetDepthTesting(bool enable) = 0;
-		virtual void SetWireframeMode(bool enable) = 0;
+		virtual void SetBlending(bool enabled) = 0;
+		virtual void SetDepthTesting(bool enabled) = 0;
+		virtual void SetWireframeMode(bool enabled) = 0;
 
 		virtual void Present() = 0;
 		virtual void DrawIndexed(uint32_t count) = 0;

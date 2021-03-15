@@ -119,6 +119,7 @@ namespace BIGOS {
 
 		swapchain->ResizeBuffers(1, width, height, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 
+		//TODO: Think how to handle that with framebuffers
 		// Creating backbuffer
 		ID3D11Texture2D* backBuffer;
 		swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));

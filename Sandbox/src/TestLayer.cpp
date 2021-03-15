@@ -28,12 +28,14 @@ void TestLayer::OnAttach()
 {
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
 	m_Shader->Bind();
+	m_ScreenShader = BIGOS::Shader::Create("assets/shaders/screen.hlsl");
 
 	m_Texture = BIGOS::Texture2D::Create("assets/textures/bricks.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
 	m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
+	m_ScreenMesh = BIGOS::MeshGenerator::CreateScreen();
 	//m_Cube = BIGOS::MeshGenerator::CreateSmoothCube(1.0f);
 	//m_Cube = BIGOS::MeshGenerator::CreateSphere(1.0f, 32, 10);
 	
@@ -45,12 +47,15 @@ void TestLayer::OnAttach()
 	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.2f, -0.3f, -1.0f));
 
 	m_Materials = materialPallete;
+
+	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8});
 }
 
 void TestLayer::OnDetach()
 {
 	delete m_GridMesh;
 	delete m_CubeMesh;
+	delete m_ScreenMesh;
 	delete m_Light;
 }
 
@@ -69,6 +74,10 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Editor cammera controlls movement
 	m_EditorCamera.OnUpdate(ts);
 
+	//Framebuffer
+	m_Shader->Bind();
+	m_Framebuffer->Bind();
+	m_Framebuffer->ClearAttachment(0, m_ClearColor);
 
 	// Scene update
 	PFConstantBufferData cbPerFrame;
@@ -112,20 +121,23 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			matIndex++;
 		}
 	}
+	m_Framebuffer->Unbind();
+	m_Shader->Unbind();
 
-
+	m_ScreenShader->Bind();
+	m_Framebuffer->BindTexture(0);
+	m_ScreenMesh->Render();
+	m_ScreenShader->Unbind();
 
 	m_Rotation += ts/50.0f;
 }
 
 void TestLayer::OnImGuiRender()
 {
-	static bool show_demo_window = true;
-	ImGui::ShowDemoWindow(&show_demo_window);
-
 	ImGui::Begin("Test");
 	ImGui::Text("Hello World");
 	ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
+	//ImGui::Image(m_Framebuffer->GetTexture(), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
 	ImGui::End();
 }
 

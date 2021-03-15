@@ -15,9 +15,12 @@ namespace BIGOS {
 
 		inline static Direct3DContext* GetContext() { return (Direct3DContext*)s_Context; }
 		inline static ID3D11DeviceContext* GetDeviceContext() { return GetContext()->devcon; }
-		inline static ID3D11RenderTargetView* GetBackBuffer() { return GetContext()->m_RenderTargetView; }
+		inline static ID3D11RenderTargetView* GetRenderTargetView() { return GetContext()->m_RenderTargetView; }
+		inline static ID3D11DepthStencilView* GetDepthStencilView() { return GetContext()->m_DepthStencilView; }
 		inline static ID3D11Device* GetDevice() { return GetContext()->dev; }
-		inline static ID3D11DepthStencilView* GetDepthStencilBuffer() { return GetContext()->m_DepthStencilView; }
+
+		inline bool IsMSAAEnabled() const { return m_MSAAEnabled; }
+		inline uint32_t GetMSAAQuality() const { return m_MSAAQuality; }
 	private:
 		void Init();
 	public:

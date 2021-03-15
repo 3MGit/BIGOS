@@ -37,19 +37,19 @@ namespace BIGOS {
 			s_RendererAPI->DrawIndexed(count);
 		}
 
-		static void SetBlending(bool enable)
+		static void SetBlending(bool enabled)
 		{
-			s_RendererAPI->SetBlending(enable);
+			s_RendererAPI->SetBlending(enabled);
 		}
 
-		static void SetDepthTesting(bool enable) 
+		static void SetDepthTesting(bool enabled) 
 		{
-			s_RendererAPI->SetDepthTesting(enable);
+			s_RendererAPI->SetDepthTesting(enabled);
 		}
 
-		static void SetWireframeMode(bool enable)
+		static void SetWireframeMode(bool enabled)
 		{
-			s_RendererAPI->SetWireframeMode(enable);
+			s_RendererAPI->SetWireframeMode(enabled);
 		}
 
 	private:

@@ -57,12 +57,11 @@ namespace BIGOS {
 
 		Direct3DContext::GetDeviceContext()->VSSetShader(m_Data.vertexShader, NULL, 0);
 		Direct3DContext::GetDeviceContext()->PSSetShader(m_Data.pixelShader, NULL, 0);
-
-		BGS_CORE_TRACE("Shaders bound");
 	}
 
 	void Direct3DShader::Unbind() const
 	{
+
 	}
 	
 }

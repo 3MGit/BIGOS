@@ -361,6 +361,42 @@ namespace BIGOS {
 		return new Mesh(vb, ib);
 	}
 
+	Mesh* MeshGenerator::CreateScreen()
+	{
+		using namespace math;
+		std::vector<Vertex> vertices;
+		std::vector<uint32_t> indices;
+
+		vertices.resize(4);
+		indices.resize(6);
+
+		// Position coordinates specified in NDC space.
+		vertices[0].Position = vec3(-1.0f, -1.0f, 0.0f);  vertices[0].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[0].UV = vec2(0.0f, 1.0f);
+		vertices[1].Position = vec3(-1.0f, +1.0f, 0.0f);  vertices[1].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[1].UV = vec2(0.0f, 0.0f);
+		vertices[2].Position = vec3(+1.0f, +1.0f, 0.0f);  vertices[2].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[2].UV = vec2(1.0f, 0.0f);
+		vertices[3].Position = vec3(+1.0f, -1.0f, 0.0f);  vertices[3].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[3].UV = vec2(1.0f, 1.0f);
+
+		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.size() * sizeof(Vertex));
+		vb->SetLayout({
+			{ BIGOS::ShaderDataType::Float3, "POSITION" },
+			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
+			});
+		vb->SetData(vertices.data(), vertices.size() * sizeof(Vertex));
+
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		
+		indices[3] = 0;
+		indices[4] = 2;
+		indices[5] = 3;
+
+		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(), indices.size());
+
+		return new Mesh(vb, ib);
+	}
+
 }
 
 
