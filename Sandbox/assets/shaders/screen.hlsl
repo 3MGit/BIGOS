@@ -14,7 +14,6 @@ struct VS_OUTPUT
 };
 
 Texture2D u_Texture : register(t0);
-//SamplerState u_TextureSampler : register(s0);
 SamplerState u_TextureSampler
 {
     Filter = MIN_MAG_MIP_LINEAR;

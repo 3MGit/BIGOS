@@ -44,6 +44,7 @@ cbuffer cbPerObject: register(b1)
 };
 
 //Textures
+//Texture2DMS : register(t0);
 Texture2D u_Texture : register(t0);
 SamplerState u_TextureSampler : register(s0);
 

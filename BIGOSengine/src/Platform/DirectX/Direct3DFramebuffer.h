@@ -23,6 +23,7 @@ namespace BIGOS {
 		// TEMP
 		virtual void* GetTexture() const override { return (void*)m_ShaderResourceView; }
 		virtual void BindTexture(uint32_t slot) const override;
+		virtual void UnbindTexture(uint32_t slot) const override;
 
 		virtual const FramebufferSpecification& GetSpecification() const { return m_Specification; };
 	private:
@@ -31,6 +32,7 @@ namespace BIGOS {
 		FramebufferSpecification m_Specification;
 
 		ID3D11Texture2D* m_RenderTargetTexture;
+		ID3D11Texture2D* notMultisampled;
 		ID3D11RenderTargetView* m_RenderTargetView;
 		ID3D11ShaderResourceView* m_ShaderResourceView;
 	};

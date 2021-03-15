@@ -47,7 +47,7 @@ namespace BIGOS {
 		hr = dev->CheckMultisampleQualityLevels(
 			DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_MSAAQuality);
 		BGS_CORE_ASSERT(m_MSAAQuality > 0, "");
-		m_MSAAEnabled = true;
+		m_MSAAEnabled = false;
 
 		// SwapChain descriptor
 		DXGI_SWAP_CHAIN_DESC scd;

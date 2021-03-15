@@ -99,6 +99,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_CBPerObject->Bind(1); // param is register
 	m_Texture->Bind();
 	m_GridMesh->Render();
+	m_Texture->Unbind();
 
 	m_WhiteTexture->Bind();
 
@@ -121,12 +122,15 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			matIndex++;
 		}
 	}
+	m_WhiteTexture->Unbind();
+
 	m_Framebuffer->Unbind();
 	m_Shader->Unbind();
 
 	m_ScreenShader->Bind();
 	m_Framebuffer->BindTexture(0);
 	m_ScreenMesh->Render();
+	m_Framebuffer->UnbindTexture(0);
 	m_ScreenShader->Unbind();
 
 	m_Rotation += ts/50.0f;

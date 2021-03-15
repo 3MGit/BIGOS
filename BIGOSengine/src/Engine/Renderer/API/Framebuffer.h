@@ -34,6 +34,7 @@ namespace BIGOS {
 
 		virtual void* GetTexture() const = 0;
 		virtual void BindTexture(uint32_t slot) const = 0;
+		virtual void UnbindTexture(uint32_t slot) const = 0;
 
 		virtual const FramebufferSpecification& GetSpecification() const = 0;
 

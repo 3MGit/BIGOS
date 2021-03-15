@@ -78,6 +78,12 @@ namespace BIGOS {
 		Direct3DContext::GetDeviceContext()->PSSetShaderResources(slot, 1, &m_ShaderResourceView);	
 	}
 
+	void Direct3DFramebuffer::UnbindTexture(uint32_t slot) const
+	{
+		ID3D11ShaderResourceView* rv = nullptr;
+		Direct3DContext::GetDeviceContext()->PSSetShaderResources(slot, 1, &rv);
+	}
+
 	void Direct3DFramebuffer::Invalidate()
 	{
 		ReleaseCOM(m_RenderTargetTexture);
@@ -105,7 +111,7 @@ namespace BIGOS {
 		D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc;
 		ZeroMemory(&renderTargetViewDesc, sizeof(D3D11_RENDER_TARGET_VIEW_DESC));
 		renderTargetViewDesc.Format = textureDesc.Format;
-		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+		renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		renderTargetViewDesc.Texture2D.MipSlice = 0;
 		hr = Direct3DContext::GetDevice()->CreateRenderTargetView(m_RenderTargetTexture, &renderTargetViewDesc, &m_RenderTargetView);
 		if (SUCCEEDED(hr))
@@ -114,12 +120,13 @@ namespace BIGOS {
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 		ZeroMemory(&shaderResourceViewDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
 		shaderResourceViewDesc.Format = textureDesc.Format;
-		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 		hr = Direct3DContext::GetDevice()->CreateShaderResourceView(m_RenderTargetTexture, &shaderResourceViewDesc, &m_ShaderResourceView);
 		if (SUCCEEDED(hr))
 			BGS_CORE_TRACE("FRAMEBUFFER::SHADERRESOURCEVIEW succesfully created!");
+
 		
 	}
 
