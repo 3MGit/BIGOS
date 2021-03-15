@@ -113,7 +113,7 @@ namespace BIGOS {
 		ZeroMemory(&desc, sizeof(D3D11_DEPTH_STENCIL_DESC));
 		desc.DepthEnable = true;
 		desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-		desc.DepthFunc = D3D11_COMPARISON_LESS;
+		desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
 		desc.StencilEnable = false;
 		desc.StencilReadMask = 0xff;
 		desc.StencilWriteMask = 0xff;

@@ -24,16 +24,20 @@ private:
 
 	std::shared_ptr<BIGOS::Shader> m_Shader;
 	std::shared_ptr<BIGOS::Shader> m_ScreenShader;
+	std::shared_ptr<BIGOS::Shader> m_SkyboxShader;
 
 	std::shared_ptr<BIGOS::Framebuffer> m_Framebuffer;
 
 	std::shared_ptr<BIGOS::Texture2D> m_Texture;
 	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
+	std::shared_ptr<BIGOS::TextureCube> m_EnvironmentMap;
 
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerObject;
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerFrame;
+	std::shared_ptr<BIGOS::ConstantBuffer> m_SkyboxCB;
 
 	BIGOS::Mesh* m_CubeMesh = nullptr;
+	BIGOS::Mesh* m_Skybox = nullptr;
 	BIGOS::Mesh* m_GridMesh = nullptr;
 	BIGOS::Mesh* m_ScreenMesh = nullptr;
 

@@ -26,4 +26,11 @@ namespace BIGOS {
 
 	};
 
+	class TextureCube : public Texture
+	{
+	public:
+		static std::shared_ptr<TextureCube> Create(const std::string* files);
+
+	};
+
 }
