@@ -34,12 +34,12 @@ void TestLayer::OnAttach()
 {
 	std::string environmentFiles[6] =
 	{
-		"assets/textures/skybox/posx.png",
-		"assets/textures/skybox/negx.png",
-		"assets/textures/skybox/posy.png",
-		"assets/textures/skybox/negy.png",
-		"assets/textures/skybox/posz.png",
-		"assets/textures/skybox/negz.png"
+		"assets/textures/skybox/lycksele/posx.png",
+		"assets/textures/skybox/lycksele/negx.png",
+		"assets/textures/skybox/lycksele/posy.png",
+		"assets/textures/skybox/lycksele/negy.png",
+		"assets/textures/skybox/lycksele/posz.png",
+		"assets/textures/skybox/lycksele/negz.png"
 	};
 
 	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
@@ -55,7 +55,7 @@ void TestLayer::OnAttach()
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
 	m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
-	m_Skybox = BIGOS::MeshGenerator::CreateBox({ 10.0f, 10.0f, 10.0f });
+	m_Skybox = BIGOS::MeshGenerator::CreateBox({ 30.0f, 30.0f, 30.0f });
 	m_ScreenMesh = BIGOS::MeshGenerator::CreateScreen();
 	//m_Cube = BIGOS::MeshGenerator::CreateSmoothCube(1.0f);
 	//m_Cube = BIGOS::MeshGenerator::CreateSphere(1.0f, 32, 10);
@@ -142,7 +142,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	{
 		for (size_t j = 0; j < 4; j++)
 		{
-			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, 0.0f });
+			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, -0.0f });
 			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(m_Rotation, { 0, 1, 0 });
 			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 1.2f, 1.2f, 1.2f });
 

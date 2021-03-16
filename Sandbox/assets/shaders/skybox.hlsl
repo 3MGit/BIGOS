@@ -40,5 +40,5 @@ struct PS_INPUT
 float4 psmain(PS_INPUT input) : SV_Target
 {
 	//return float4(u_EnvironmentMap.SampleLevel(u_EnvironmentMapSampler, input.positionL, 4));
-	return float4(u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL));
+	return float4(u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL.xyz));
 }
