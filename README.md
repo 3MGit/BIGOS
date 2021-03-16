@@ -13,7 +13,7 @@ PAUSE
 ```
 Possible builds vs2005-2019
 
-## Fresh material system demo
+## Fresh demo
 <p align="center">
   <img src="https://github.com/3MGit/BIGOS/blob/main/Resources/Demos/MaterialDemo.png?raw=true" />
 </p>
