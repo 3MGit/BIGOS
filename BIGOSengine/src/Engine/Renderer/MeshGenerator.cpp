@@ -4,63 +4,6 @@
 
 namespace BIGOS {
 
-	Mesh* MeshGenerator::CreateSmoothCube(float size)
-	{
-		using namespace math;
-
-		Vertex data[8];
-
-		memset(data, 0, 8 * sizeof(Vertex));
-
-		data[0].Position = vec3(-size / 2.0f, -size / 2.0f, size / 2.0f);
-		data[1].Position = vec3(size / 2.0f, -size / 2.0f, size / 2.0f);
-		data[2].Position = vec3(size / 2.0f, size / 2.0f, size / 2.0f);
-		data[3].Position = vec3(-size / 2.0f, size / 2.0f, size / 2.0f);
-		data[4].Position = vec3(-size / 2.0f, -size / 2.0f, -size / 2.0f);
-		data[5].Position = vec3(size / 2.0f, -size / 2.0f, -size / 2.0f);
-		data[6].Position = vec3(size / 2.0f, size / 2.0f, -size / 2.0f);
-		data[7].Position = vec3(-size / 2.0f, size / 2.0f, -size / 2.0f);
-
-		data[0].Normal = vec3(-1.0f, -1.0f, 1.0f);
-		data[1].Normal = vec3(1.0f, -1.0f, 1.0f);
-		data[2].Normal = vec3(1.0f, 1.0f, 1.0f);
-		data[3].Normal = vec3(-1.0f, 1.0f, 1.0f);
-		data[4].Normal = vec3(-1.0f, -1.0f, -1.0f);
-		data[5].Normal = vec3(1.0f, -1.0f, -1.0f);
-		data[6].Normal = vec3(1.0f, 1.0f, -1.0f);
-		data[7].Normal = vec3(-1.0f, 1.0f, -1.0f);
-
-		data[0].UV = vec2(0.0f, 0.0f);
-		data[1].UV = vec2(0.0f, 0.0f);
-		data[2].UV = vec2(0.0f, 0.0f);
-		data[3].UV = vec2(0.0f, 0.0f);
-		data[4].UV = vec2(0.0f, 0.0f);
-		data[5].UV = vec2(0.0f, 0.0f);
-		data[6].UV = vec2(0.0f, 0.0f);
-		data[7].UV = vec2(0.0f, 0.0f);
-
-		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(8 * sizeof(Vertex));
-		vb->SetLayout({
-			{ BIGOS::ShaderDataType::Float3, "POSITION" },
-			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
-			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
-			});
-		vb->SetData(data, 8 * sizeof(Vertex));
-
-		uint32_t indices[] = {
-			0, 1, 2, 2, 3, 0,
-			3, 2, 6, 6, 7, 3,
-			7, 6, 5, 5, 4, 7,
-			4, 0, 3, 3, 7, 4,
-			0, 1, 5, 5, 4, 0,
-			1, 5, 6, 6, 2, 1
-		};
-
-		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices, ARRAYSIZE(indices));
-
-		return new Mesh(vb, ib);
-	}
-
 	Mesh* MeshGenerator::CreateBox(math::vec3 size)
 	{
 		using namespace math;
@@ -73,73 +16,46 @@ namespace BIGOS {
 		float d2 = 0.5f * size.z;
 
 		// Fill in the front face vertex data.
-		data[0].Position = vec3(-w2, -h2, -d2);		data[0].Normal = vec3(0.0f, 0.0f, -1.0f);	data[0].UV = vec2(0.0f, 1.0f);
-		data[1].Position = vec3(-w2, +h2, -d2);		data[1].Normal = vec3(0.0f, 0.0f, -1.0f);	data[1].UV = vec2(0.0f, 0.0f);
-		data[2].Position = vec3(+w2, +h2, -d2);		data[2].Normal = vec3(0.0f, 0.0f, -1.0f);	data[2].UV = vec2(1.0f, 0.0f);
-		data[3].Position = vec3(+w2, -h2, -d2);		data[3].Normal = vec3(0.0f, 0.0f, -1.0f);	data[3].UV = vec2(1.0f, 1.0f);
-		//v[0] = Vertex(-w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		//v[1] = Vertex(-w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		//v[2] = Vertex(+w2, +h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-		//v[3] = Vertex(+w2, -h2, -d2, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		data[0].Position = vec3(-w2, -h2, -d2);		data[0].Normal = vec3(0.0f, 0.0f, -1.0f); data[0].TangentU = vec3(1.0f, 0.0f, 0.0f);	data[0].UV = vec2(0.0f, 1.0f);
+		data[1].Position = vec3(-w2, +h2, -d2);		data[1].Normal = vec3(0.0f, 0.0f, -1.0f); data[1].TangentU = vec3(1.0f, 0.0f, 0.0f);	data[1].UV = vec2(0.0f, 0.0f);
+		data[2].Position = vec3(+w2, +h2, -d2);		data[2].Normal = vec3(0.0f, 0.0f, -1.0f); data[2].TangentU = vec3(1.0f, 0.0f, 0.0f);	data[2].UV = vec2(1.0f, 0.0f);
+		data[3].Position = vec3(+w2, -h2, -d2);		data[3].Normal = vec3(0.0f, 0.0f, -1.0f); data[3].TangentU = vec3(1.0f, 0.0f, 0.0f);	data[3].UV = vec2(1.0f, 1.0f);
 
 		// Fill in the back face vertex data.
-		data[4].Position = vec3(-w2, -h2, +d2);		data[4].Normal = vec3(0.0f, 0.0f, 1.0f);	data[4].UV = vec2(1.0f, 1.0f);
-		data[5].Position = vec3(+w2, -h2, +d2);		data[5].Normal = vec3(0.0f, 0.0f, 1.0f);	data[5].UV = vec2(0.0f, 1.0f);
-		data[6].Position = vec3(+w2, +h2, +d2);		data[6].Normal = vec3(0.0f, 0.0f, 1.0f);	data[6].UV = vec2(0.0f, 0.0f);
-		data[7].Position = vec3(-w2, +h2, +d2);		data[7].Normal = vec3(0.0f, 0.0f, 1.0f);	data[7].UV = vec2(1.0f, 0.0f);
-
-		//v[4] = Vertex(-w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-		//v[5] = Vertex(+w2, -h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		//v[6] = Vertex(+w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		//v[7] = Vertex(-w2, +h2, +d2, 0.0f, 0.0f, 1.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		data[4].Position = vec3(-w2, -h2, +d2);		data[4].Normal = vec3(0.0f, 0.0f, 1.0f);	data[4].TangentU = vec3(-1.0f, 0.0f, 0.0f);	 data[4].UV = vec2(1.0f, 1.0f);
+		data[5].Position = vec3(+w2, -h2, +d2);		data[5].Normal = vec3(0.0f, 0.0f, 1.0f);	data[5].TangentU = vec3(-1.0f, 0.0f, 0.0f);	 data[5].UV = vec2(0.0f, 1.0f);
+		data[6].Position = vec3(+w2, +h2, +d2);		data[6].Normal = vec3(0.0f, 0.0f, 1.0f);	data[6].TangentU = vec3(-1.0f, 0.0f, 0.0f);	 data[6].UV = vec2(0.0f, 0.0f);
+		data[7].Position = vec3(-w2, +h2, +d2);		data[7].Normal = vec3(0.0f, 0.0f, 1.0f);	data[7].TangentU = vec3(-1.0f, 0.0f, 0.0f);	 data[7].UV = vec2(1.0f, 0.0f);
 
 		// Fill in the top face vertex data.
-		data[8].Position = vec3(-w2, +h2, -d2);		data[8].Normal = vec3(0.0f, 1.0f, 0.0f);	data[8].UV = vec2(0.0f, 1.0f);
-		data[9].Position = vec3(-w2, +h2, +d2);		data[9].Normal = vec3(0.0f, 1.0f, 0.0f);	data[9].UV = vec2(0.0f, 0.0f);
-		data[10].Position = vec3(+w2, +h2, +d2);	data[10].Normal = vec3(0.0f, 1.0f, 0.0f);	data[10].UV = vec2(1.0f, 0.0f);
-		data[11].Position = vec3(+w2, +h2, -d2);	data[11].Normal = vec3(0.0f, 1.0f, 0.0f);	data[11].UV = vec2(1.0f, 1.0f);
-		//v[8] = Vertex(-w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 1.0f);
-		//v[9] = Vertex(-w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,  0.0f, 0.0f);
-		//v[10] = Vertex(+w2, +h2, +d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
-		//v[11] = Vertex(+w2, +h2, -d2, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
+		data[8].Position = vec3(-w2, +h2, -d2);		data[8].Normal = vec3(0.0f, 1.0f, 0.0f);	data[8].TangentU = vec3(1.0f, 0.0f, 0.0f); data[8].UV = vec2(0.0f, 1.0f);
+		data[9].Position = vec3(-w2, +h2, +d2);		data[9].Normal = vec3(0.0f, 1.0f, 0.0f);	data[9].TangentU = vec3(1.0f, 0.0f, 0.0f); data[9].UV = vec2(0.0f, 0.0f);
+		data[10].Position = vec3(+w2, +h2, +d2);	data[10].Normal = vec3(0.0f, 1.0f, 0.0f);	data[10].TangentU = vec3(1.0f, 0.0f, 0.0f); data[10].UV = vec2(1.0f, 0.0f);
+		data[11].Position = vec3(+w2, +h2, -d2);	data[11].Normal = vec3(0.0f, 1.0f, 0.0f);	data[11].TangentU = vec3(1.0f, 0.0f, 0.0f); data[11].UV = vec2(1.0f, 1.0f);
 
 		// Fill in the bottom face vertex data.
-		data[12].Position = vec3(-w2, -h2, -d2);	data[12].Normal = vec3(0.0f, -1.0f, 0.0f);	data[12].UV = vec2(1.0f, 1.0f);
-		data[13].Position = vec3(+w2, -h2, -d2);	data[13].Normal = vec3(0.0f, -1.0f, 0.0f);	data[13].UV = vec2(0.0f, 1.0f);
-		data[14].Position = vec3(+w2, -h2, +d2);	data[14].Normal = vec3(0.0f, -1.0f, 0.0f);	data[14].UV = vec2(0.0f, 0.0f);
-		data[15].Position = vec3(-w2, -h2, +d2);	data[15].Normal = vec3(0.0f, -1.0f, 0.0f);	data[15].UV = vec2(1.0f, 0.0f);
-
-		//v[12] = Vertex(-w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f);
-		//v[13] = Vertex(+w2, -h2, -d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f);
-		//v[14] = Vertex(+w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f);
-		//v[15] = Vertex(-w2, -h2, +d2, 0.0f, -1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f);
+		data[12].Position = vec3(-w2, -h2, -d2);	data[12].Normal = vec3(0.0f, -1.0f, 0.0f); data[12].TangentU = vec3(-1.0f, 0.0f, 0.0f); 	data[12].UV = vec2(1.0f, 1.0f);
+		data[13].Position = vec3(+w2, -h2, -d2);	data[13].Normal = vec3(0.0f, -1.0f, 0.0f); data[13].TangentU = vec3(-1.0f, 0.0f, 0.0f); 	data[13].UV = vec2(0.0f, 1.0f);
+		data[14].Position = vec3(+w2, -h2, +d2);	data[14].Normal = vec3(0.0f, -1.0f, 0.0f); data[14].TangentU = vec3(-1.0f, 0.0f, 0.0f);		data[14].UV = vec2(0.0f, 0.0f);
+		data[15].Position = vec3(-w2, -h2, +d2);	data[15].Normal = vec3(0.0f, -1.0f, 0.0f); data[15].TangentU = vec3(-1.0f, 0.0f, 0.0f);		data[15].UV = vec2(1.0f, 0.0f);
 
 		// Fill in the left face vertex data.
-		data[16].Position = vec3(-w2, -h2, +d2);	data[16].Normal = vec3(-1.0f, 0.0f, 0.0f);	data[16].UV = vec2(0.0f, 1.0f);
-		data[17].Position = vec3(-w2, +h2, +d2);	data[17].Normal = vec3(-1.0f, 0.0f, 0.0f);	data[17].UV = vec2(0.0f, 0.0f);
-		data[18].Position = vec3(-w2, +h2, -d2);	data[18].Normal = vec3(-1.0f, 0.0f, 0.0f);	data[18].UV = vec2(1.0f, 0.0f);
-		data[19].Position = vec3(-w2, -h2, -d2);	data[19].Normal = vec3(-1.0f, 0.0f, 0.0f);	data[19].UV = vec2(1.0f, 1.0f);
-
-		//v[16] = Vertex(-w2, -h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f);
-		//v[17] = Vertex(-w2, +h2, +d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f);
-		//v[18] = Vertex(-w2, +h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f);
-		//v[19] = Vertex(-w2, -h2, -d2, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f);
+		data[16].Position = vec3(-w2, -h2, +d2);	data[16].Normal = vec3(-1.0f, 0.0f, 0.0f); data[16].TangentU = vec3(0.0f, 0.0f, -1.0f);	data[16].UV = vec2(0.0f, 1.0f);
+		data[17].Position = vec3(-w2, +h2, +d2);	data[17].Normal = vec3(-1.0f, 0.0f, 0.0f); data[17].TangentU = vec3(0.0f, 0.0f, -1.0f);	data[17].UV = vec2(0.0f, 0.0f);
+		data[18].Position = vec3(-w2, +h2, -d2);	data[18].Normal = vec3(-1.0f, 0.0f, 0.0f); data[18].TangentU = vec3(0.0f, 0.0f, -1.0f);	data[18].UV = vec2(1.0f, 0.0f);
+		data[19].Position = vec3(-w2, -h2, -d2);	data[19].Normal = vec3(-1.0f, 0.0f, 0.0f); data[19].TangentU = vec3(0.0f, 0.0f, -1.0f);	data[19].UV = vec2(1.0f, 1.0f);
 
 		// Fill in the right face vertex data.
-		data[20].Position = vec3(+w2, -h2, -d2);	data[20].Normal = vec3(1.0f, 0.0f, 0.0f);	data[20].UV = vec2(0.0f, 1.0f);
-		data[21].Position = vec3(+w2, +h2, -d2);	data[21].Normal = vec3(1.0f, 0.0f, 0.0f);	data[21].UV = vec2(0.0f, 0.0f);
-		data[22].Position = vec3(+w2, +h2, +d2);	data[22].Normal = vec3(1.0f, 0.0f, 0.0f);	data[22].UV = vec2(1.0f, 0.0f);
-		data[23].Position = vec3(+w2, -h2, +d2);	data[23].Normal = vec3(1.0f, 0.0f, 0.0f);	data[23].UV = vec2(1.0f, 1.0f);
-
-		//v[20] = Vertex(+w2, -h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f);
-		//v[21] = Vertex(+w2, +h2, -d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f);
-		//v[22] = Vertex(+w2, +h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f);
-		//v[23] = Vertex(+w2, -h2, +d2, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f);
+		data[20].Position = vec3(+w2, -h2, -d2);	data[20].Normal = vec3(1.0f, 0.0f, 0.0f); data[20].TangentU = vec3(0.0f, 0.0f, 1.0f);	data[20].UV = vec2(0.0f, 1.0f);
+		data[21].Position = vec3(+w2, +h2, -d2);	data[21].Normal = vec3(1.0f, 0.0f, 0.0f); data[21].TangentU = vec3(0.0f, 0.0f, 1.0f);	data[21].UV = vec2(0.0f, 0.0f);
+		data[22].Position = vec3(+w2, +h2, +d2);	data[22].Normal = vec3(1.0f, 0.0f, 0.0f); data[22].TangentU = vec3(0.0f, 0.0f, 1.0f);	data[22].UV = vec2(1.0f, 0.0f);
+		data[23].Position = vec3(+w2, -h2, +d2);	data[23].Normal = vec3(1.0f, 0.0f, 0.0f); data[23].TangentU = vec3(0.0f, 0.0f, 1.0f);	data[23].UV = vec2(1.0f, 1.0f);
 
 		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(24 * sizeof(Vertex));
 		vb->SetLayout({
 			{ BIGOS::ShaderDataType::Float3, "POSITION" },
 			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float3, "TANGENT"	},
 			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
 			});
 		vb->SetData(data, 24 * sizeof(Vertex));
@@ -316,7 +232,7 @@ namespace BIGOS {
 
 				vertices[i * n + j].Position = vec3(x, 0.0f, z);
 				vertices[i * n + j].Normal = vec3(0.0f, 1.0f, 0.0f);
-				//vertices[i * n + j].TangentU = vec3(1.0f, 0.0f, 0.0f);
+				vertices[i * n + j].TangentU = vec3(1.0f, 0.0f, 0.0f);
 
 				// Stretch texture over grid.
 				vertices[i * n + j].UV.x = j * du;
@@ -328,6 +244,7 @@ namespace BIGOS {
 		vb->SetLayout({
 			{ BIGOS::ShaderDataType::Float3, "POSITION" },
 			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float3, "TANGENT" },
 			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
 			});
 		vb->SetData(vertices.data(), vertices.size() * sizeof(Vertex));
@@ -371,15 +288,16 @@ namespace BIGOS {
 		indices.resize(6);
 
 		// Position coordinates specified in NDC space.
-		vertices[0].Position = vec3(-1.0f, -1.0f, 0.0f);  vertices[0].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[0].UV = vec2(0.0f, 1.0f);
-		vertices[1].Position = vec3(-1.0f, +1.0f, 0.0f);  vertices[1].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[1].UV = vec2(0.0f, 0.0f);
-		vertices[2].Position = vec3(+1.0f, +1.0f, 0.0f);  vertices[2].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[2].UV = vec2(1.0f, 0.0f);
-		vertices[3].Position = vec3(+1.0f, -1.0f, 0.0f);  vertices[3].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[3].UV = vec2(1.0f, 1.0f);
+		vertices[0].Position = vec3(-1.0f, -1.0f, 0.0f);  vertices[0].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[0].TangentU = vec3(1.0f, 0.0f, 0.0f); vertices[0].UV = vec2(0.0f, 1.0f);
+		vertices[1].Position = vec3(-1.0f, +1.0f, 0.0f);  vertices[1].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[1].TangentU = vec3(1.0f, 0.0f, 0.0f); vertices[1].UV = vec2(0.0f, 0.0f);
+		vertices[2].Position = vec3(+1.0f, +1.0f, 0.0f);  vertices[2].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[2].TangentU = vec3(1.0f, 0.0f, 0.0f); vertices[2].UV = vec2(1.0f, 0.0f);
+		vertices[3].Position = vec3(+1.0f, -1.0f, 0.0f);  vertices[3].Normal = vec3(0.0f, 0.0f, -1.0f); vertices[3].TangentU = vec3(1.0f, 0.0f, 0.0f); vertices[3].UV = vec2(1.0f, 1.0f);
 
 		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.size() * sizeof(Vertex));
 		vb->SetLayout({
 			{ BIGOS::ShaderDataType::Float3, "POSITION" },
 			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float3, "TANGENT"	},
 			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
 			});
 		vb->SetData(vertices.data(), vertices.size() * sizeof(Vertex));

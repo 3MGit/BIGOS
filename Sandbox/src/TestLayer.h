@@ -18,7 +18,7 @@ public:
 	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-	BIGOS::math::vec3 m_WallPosition = { 0.0f, 0.0f, -4.0f };
+	BIGOS::math::vec3 m_WallPosition = { 0.0f, 0.0f, 4.0f };
 
 	float m_Rotation = 0;
 
@@ -29,6 +29,7 @@ private:
 	std::shared_ptr<BIGOS::Framebuffer> m_Framebuffer;
 
 	std::shared_ptr<BIGOS::Texture2D> m_Texture;
+	std::shared_ptr<BIGOS::Texture2D> m_NormalTexture;
 	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
 	std::shared_ptr<BIGOS::TextureCube> m_EnvironmentMap;
 
@@ -44,6 +45,7 @@ private:
 	BIGOS::Light* m_Light = nullptr;
 
 	std::vector<BIGOS::Material> m_Materials;
+	BIGOS::Material* m_BrickMaterial;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

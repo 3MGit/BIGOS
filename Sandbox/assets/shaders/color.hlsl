@@ -15,10 +15,29 @@ struct Light
     float3 Direction;
 };
 
+float3 NormalSampleToWorldSpace(float3 normalMapSample,
+    float3 unitNormalW,
+    float3 tangentW)
+{
+    // Uncompress each component from [0,1] to [-1,1].
+    float3 normalT = 2.0f * normalMapSample - 1.0f;
+    // Build orthonormal basis.
+    float3 N = unitNormalW;
+    float3 T = normalize(tangentW - dot(tangentW, N) * N);
+    //float3 T = tangentW;
+    float3 B = cross(N, T);
+    float3x3 TBN = float3x3(T, B, N);
+    // Transform from tangent space to world space.
+    float3 bumpedNormalW = mul(normalT, TBN);
+    bumpedNormalW = normalize(bumpedNormalW);
+    return bumpedNormalW;
+}
+
 struct VS_INPUT
 {
     float3 position: POSITION;
     float3 normal: NORMAL;
+    float3 tangent : TANGENT;
     float2 uv: TEXCOORD;
 };
 
@@ -27,6 +46,7 @@ struct VS_OUTPUT
     float4 positionH: SV_POSITION;
     float4 position: POSITION;
     float3 normal: NORMAL;
+    float3 tangent : TANGENT;
     float2 uv: TEXCOORD;
 };
 
@@ -40,6 +60,7 @@ cbuffer cbPerObject: register(b1)
 {
     column_major float4x4 u_Transform;
     column_major float4x4 u_ViewProj;
+    column_major float4x4 u_InvModelViewProj;
     Material u_Material;
 };
 
@@ -47,6 +68,9 @@ cbuffer cbPerObject: register(b1)
 //Texture2DMS : register(t0);
 Texture2D u_Texture : register(t0);
 SamplerState u_TextureSampler : register(s0);
+
+Texture2D u_NormalMap : register(t1);
+SamplerState u_NormalMapSampler : register(s1);
 
 VS_OUTPUT vsmain( VS_INPUT input )
 {
@@ -58,6 +82,7 @@ VS_OUTPUT vsmain( VS_INPUT input )
     output.positionH = mul(output.positionH, u_ViewProj);
     //PARAMETERS TO PS
     output.position = mul(float4(input.position, 1.0f), u_Transform);
+    output.tangent = mul(input.tangent, (float3x3)u_Transform);
     output.normal = mul(input.normal, (float3x3)u_Transform);
     output.uv = input.uv;
 
@@ -70,6 +95,7 @@ struct PS_INPUT
     float4 positionH: SV_POSITION;
     float4 position: POSITION;
     float3 normal : NORMAL;
+    float3 tangent : TANGENT;
     float2 uv: TEXCOORD;
 };
 
@@ -81,11 +107,15 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     float4 texColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
+    //NormalMap
+    float3 normalMapSample = u_NormalMap.Sample(u_NormalMapSampler, input.uv).rgb;
+
     // Ambient
     ambient = u_Light.Ambient * u_Material.Ambient;
 
     // Diffuse
-    float3 norm = normalize(input.normal);
+    //float3 norm = normalize(input.normal);
+    float3 norm = NormalSampleToWorldSpace(normalMapSample, input.normal, input.tangent);
     float3 lightDir = normalize(-u_Light.Direction);
     float diffuseFactor = dot(norm, lightDir);
 
