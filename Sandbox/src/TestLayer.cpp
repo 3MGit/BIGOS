@@ -14,7 +14,7 @@ __declspec(align(16))
 struct PFConstantBufferData
 {
 	BIGOS::math::vec3 u_CameraPosition;
-	BIGOS::Light u_Light;
+	BIGOS::PhongLight u_Light;
 };
 
 __declspec(align(16))
@@ -23,7 +23,7 @@ struct POConstantBufferData
 	BIGOS::math::mat4 u_Transform;
 	BIGOS::math::mat4 u_ViewProj;
 	BIGOS::math::mat4 u_InvModelViewProj;
-	BIGOS::Material u_Material;
+	BIGOS::PhongMaterial u_Material;
 };
 
 TestLayer::TestLayer()
@@ -49,8 +49,8 @@ void TestLayer::OnAttach()
 
 	m_SkyboxShader = BIGOS::Shader::Create("assets/shaders/skybox.hlsl");
 
-	m_Texture = BIGOS::Texture2D::Create("assets/textures/Brick_Wall_010_SD/Brick_Wall_010_COLOR.png");
-	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Brick_Wall_010_SD/Brick_Wall_010_NORM.png");
+	m_Texture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_color.png");
+	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_normal.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
 
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
@@ -68,10 +68,10 @@ void TestLayer::OnAttach()
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 
-	m_Light = new BIGOS::Light(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.0f, 0.0f, -1.0f));
+	m_Light = new BIGOS::PhongLight(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.3f, 0.2f, -1.0f));
 
 	m_Materials = materialPallete;
-	m_BrickMaterial = new BIGOS::Material(BIGOS::math::vec4(0.6f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(0.2f));
+	m_BrickMaterial = new BIGOS::PhongMaterial(BIGOS::math::vec4(0.6f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(0.2f));
 
 	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8});
 }
@@ -126,15 +126,15 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	POConstantBufferData cbPerObject;
 
-	BIGOS::RenderCommand::SetBlending(false);
+	//BIGOS::RenderCommand::SetBlending(false);
 	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
-	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(-90.0f, { 1, 0, 0 });
+	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
 	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0, 5.0f, 5.0f });
 
 	cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
 	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
 	cbPerObject.u_InvModelViewProj = BIGOS::math::mat4::Invert(cbPerObject.u_Transform * cbPerObject.u_ViewProj);
-	cbPerObject.u_Material = *m_BrickMaterial;
+	cbPerObject.u_Material = m_Materials[7];
 	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 	m_CBPerObject->Bind(1); // param is register
 	m_Texture->Bind();

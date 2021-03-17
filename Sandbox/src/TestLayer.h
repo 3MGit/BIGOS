@@ -18,7 +18,7 @@ public:
 	bool OnKeyPressed(BIGOS::KeyPressedEvent& e);
 private:
 	BIGOS::math::vec4 m_ClearColor = { 0.1f, 0.1f, 0.1f, 1.0f };
-	BIGOS::math::vec3 m_WallPosition = { 0.0f, 0.0f, 4.0f };
+	BIGOS::math::vec3 m_WallPosition = { 0.0f, 0.0f, -4.0f };
 
 	float m_Rotation = 0;
 
@@ -42,10 +42,10 @@ private:
 	BIGOS::Mesh* m_GridMesh = nullptr;
 	BIGOS::Mesh* m_ScreenMesh = nullptr;
 
-	BIGOS::Light* m_Light = nullptr;
+	BIGOS::PhongLight* m_Light = nullptr;
 
-	std::vector<BIGOS::Material> m_Materials;
-	BIGOS::Material* m_BrickMaterial;
+	std::vector<BIGOS::PhongMaterial> m_Materials;
+	BIGOS::PhongMaterial* m_BrickMaterial;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

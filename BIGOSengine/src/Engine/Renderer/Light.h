@@ -6,7 +6,7 @@
 namespace BIGOS {
 
 	__declspec(align(16)) 
-	struct Light
+	struct PhongLight
 	{
 		math::vec4 Ambient;
 		math::vec4 Diffuse;
@@ -14,12 +14,12 @@ namespace BIGOS {
 
 		math::vec3 Direction;
 
-		Light()
+		PhongLight()
 		{
 
 		}
 
-		Light(math::vec4 ambient, math::vec4 diffuse, math::vec4 specular, math::vec3 direction)
+		PhongLight(math::vec4 ambient, math::vec4 diffuse, math::vec4 specular, math::vec3 direction)
 			: Ambient(ambient), Diffuse(diffuse), Specular(specular), Direction(direction) {}
 	};
 

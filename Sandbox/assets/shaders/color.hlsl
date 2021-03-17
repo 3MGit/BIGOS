@@ -1,12 +1,12 @@
 // VertexShader code
-struct Material
+struct PhongMaterial
 {
     float4 Ambient;
     float4 Diffuse;
     float4 Specular; // w = SpecPower
 };
 
-struct Light
+struct PhongLight
 {
     float4 Ambient;
     float4 Diffuse;
@@ -53,15 +53,15 @@ struct VS_OUTPUT
 cbuffer cbPerFrame: register(b0)
 {
     float3 u_CameraPosition;
-    Light u_Light;
+    PhongLight u_Light;
 };
 
 cbuffer cbPerObject: register(b1)
 {
     column_major float4x4 u_Transform;
     column_major float4x4 u_ViewProj;
-    column_major float4x4 u_InvModelViewProj;
-    Material u_Material;
+    column_major float4x4 u_InvModelViewProj;    
+    PhongMaterial u_Material;
 };
 
 //Textures
@@ -114,8 +114,8 @@ float4 psmain(PS_INPUT input) : SV_Target
     ambient = u_Light.Ambient * u_Material.Ambient;
 
     // Diffuse
-    //float3 norm = normalize(input.normal);
-    float3 norm = NormalSampleToWorldSpace(normalMapSample, input.normal, input.tangent);
+    float3 norm = normalize(input.normal);
+    //float3 norm = NormalSampleToWorldSpace(normalMapSample, input.normal, input.tangent);
     float3 lightDir = normalize(-u_Light.Direction);
     float diffuseFactor = dot(norm, lightDir);
 
