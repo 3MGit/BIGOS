@@ -56,11 +56,10 @@ void TestLayer::OnAttach()
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
-	m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
+	//m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
 	m_Skybox = BIGOS::MeshGenerator::CreateBox({ 30.0f, 30.0f, 30.0f });
 	m_ScreenMesh = BIGOS::MeshGenerator::CreateScreen();
-	//m_Cube = BIGOS::MeshGenerator::CreateSmoothCube(1.0f);
-	//m_Cube = BIGOS::MeshGenerator::CreateSphere(1.0f, 32, 10);
+	m_CubeMesh = BIGOS::MeshGenerator::CreateSphere(1.0f, 64, 64);
 	
 	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(POConstantBufferData));
 	m_CBPerFrame = BIGOS::ConstantBuffer::Create(sizeof(PFConstantBufferData));
@@ -125,8 +124,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_CBPerFrame->Bind(0);
 
 	POConstantBufferData cbPerObject;
-
-	//BIGOS::RenderCommand::SetBlending(false);
+	 /*
 	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
 	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
 	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0, 5.0f, 5.0f });
@@ -142,7 +140,7 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_GridMesh->Render();
 	m_NormalTexture->Unbind(1);
 	m_Texture->Unbind();
-	
+	*/
 	
 	m_WhiteTexture->Bind();
 
@@ -152,8 +150,8 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 		for (size_t j = 0; j < 4; j++)
 		{
 			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, -0.0f });
-			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(m_Rotation, { 0, 1, 0 });
-			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 1.2f, 1.2f, 1.2f });
+			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0, { 0, 1, 0 });
+			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 0.7f, 0.7f, 0.7f });
 
 			cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
 			cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();

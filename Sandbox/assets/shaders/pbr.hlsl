@@ -1,11 +1,20 @@
 struct Material
 {
-
+    float4 u_Albedo;
+    float u_usingAlbedoMap;
+    float u_Metalic;
+    float u_usingMetalicMap;
+    float u_Roughness;
+    float u_usingRoughnessMap;
+    float u_AO;
 };
 
 struct Light
 {
-
+    float4 u_Color;
+    float3 u_Position;
+    float3 u_Direction;
+    float  u_Intensity;
 };
 
 
@@ -56,8 +65,14 @@ cbuffer cbPerObjectMaterial: register(b2)
 
 VS_OUTPUT vsmain(VS_INPUT input)
 {
-    VS_OUTPUT output = (VS_OUTPUT)0;
+    float3x3 wsTransform = (float3x3)u_Transform;
 
+    VS_OUTPUT output = (VS_OUTPUT)0;
+    output.position = mul(input.position, u_Transform);
+    output.positionH = mul(output.position, u_ViewProj);
+    output.normal = mul(input.normal, wsTransform);
+    output.tangent = mul(input.tangent, wsTransform);
+    output.uv = input.uv;
 
     return output;
 }

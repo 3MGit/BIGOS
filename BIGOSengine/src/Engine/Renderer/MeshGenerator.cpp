@@ -129,18 +129,29 @@ namespace BIGOS {
 				//v.Normal.y = 1.0f;
 				//v.Normal.z = 1.0f;
 
+				v.TangentU.x = -radius * sinf(phi) * sinf(theta);
+				v.TangentU.y = 0.0f;
+				v.TangentU.z = +radius * sinf(phi) * cosf(theta);
+
+				v.TangentU = v.TangentU.Normalize();
+
+				v.UV.x = theta / PI;
+				v.UV.y = phi /PI;
+
 				vertices.push_back(v);
 			}
 		}
 
 		vertices.push_back(bottomVertex);
 
-		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.size());
+		std::shared_ptr<VertexBuffer> vb = VertexBuffer::Create(vertices.size() * sizeof(Vertex));
 		vb->SetLayout({
 			{ BIGOS::ShaderDataType::Float3, "POSITION" },
-			{ BIGOS::ShaderDataType::Float3, "NORMAL"	}
+			{ BIGOS::ShaderDataType::Float3, "NORMAL"	},
+			{ BIGOS::ShaderDataType::Float3, "TANGENT"	},
+			{ BIGOS::ShaderDataType::Float2, "TEXCOORD"	}
 			});
-		vb->SetData(vertices.data(), vertices.size());
+		vb->SetData(vertices.data(), vertices.size() * sizeof(Vertex));
 
 		//
 		// Compute indices for top stack.  The top stack was written first to the vertex buffer
@@ -169,7 +180,7 @@ namespace BIGOS {
 				indices.push_back(baseIndex + i * ringVertexCount + j);
 				indices.push_back(baseIndex + i * ringVertexCount + j + 1);
 				indices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
-				
+
 				indices.push_back(baseIndex + (i + 1) * ringVertexCount + j);
 				indices.push_back(baseIndex + i * ringVertexCount + j + 1);
 				indices.push_back(baseIndex + (i + 1) * ringVertexCount + j + 1);
@@ -194,7 +205,7 @@ namespace BIGOS {
 			indices.push_back(baseIndex + i + 1);
 		}
 
-		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(),indices.size());
+		std::shared_ptr<IndexBuffer> ib = IndexBuffer::Create(indices.data(), indices.size());
 
 		return new Mesh(vb, ib);
 	}
