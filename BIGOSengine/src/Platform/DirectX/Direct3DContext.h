@@ -15,6 +15,7 @@ namespace BIGOS {
 
 		inline static Direct3DContext* GetContext() { return (Direct3DContext*)s_Context; }
 		inline static ID3D11DeviceContext* GetDeviceContext() { return GetContext()->devcon; }
+		inline static IDXGISwapChain* GetSwapChain() { return GetContext()->swapchain; }
 		inline static ID3D11RenderTargetView* GetRenderTargetView() { return GetContext()->m_RenderTargetView; }
 		inline static ID3D11DepthStencilView* GetDepthStencilView() { return GetContext()->m_DepthStencilView; }
 		inline static ID3D11Device* GetDevice() { return GetContext()->dev; }

@@ -20,13 +20,13 @@ namespace BIGOS {
 
 		MaterialUniform() 
 		{
-			Albedo = { 0.0f, 0.0f, 0.0f, 1.0f };
+			Albedo = { 0.5f, 0.0f, 0.0f, 1.0f };
 			usingAlbedoMap = 0.0f;
-			Metalic = 0.8f;
+			Metalic = 0.0f;
 			usingMetalicMap = 0.0f;
-			Roughness = 1.0 - Metalic;
+			Roughness = 0.05;
 			usingRoughnessMap = 0.0f;
-			AO = 0.0f;
+			AO = 1.0f;
 		}
 	};
 

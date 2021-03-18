@@ -20,7 +20,7 @@ namespace BIGOS
 			texture->Bind();
 		}
 
-		m_MaterialBuffer->SetData(&m_MaterialData, sizeof(MaterialUniform));
+		m_MaterialBuffer->SetData(&m_MaterialData, sizeof(m_MaterialData));
 		m_MaterialBuffer->Bind(2);
 	}
 

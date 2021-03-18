@@ -39,6 +39,11 @@ namespace BIGOS {
 		}
 		Direct3DContext::GetDevice()->CreateVertexShader(m_Data.vs->GetBufferPointer(), m_Data.vs->GetBufferSize(), nullptr, &m_Data.vertexShader);
 		Direct3DContext::GetDevice()->CreatePixelShader(m_Data.ps->GetBufferPointer(), m_Data.ps->GetBufferSize(), nullptr, &m_Data.pixelShader);
+
+		if (!s_CurrentlyBound)
+		{
+			Bind();
+		}
 	}
 
 	Direct3DShader::~Direct3DShader()

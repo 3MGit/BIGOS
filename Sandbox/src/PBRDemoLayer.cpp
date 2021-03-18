@@ -1,6 +1,5 @@
-#include "TestLayer.h"
+#include "PBRDemoLayer.h"
 #include <memory>
-#include "DemoMaterials.h"
 
 #include <imgui/imgui.h>
 
@@ -14,7 +13,7 @@ __declspec(align(16))
 struct PFConstantBufferData
 {
 	BIGOS::math::vec3 u_CameraPosition;
-	BIGOS::PhongLight u_Light;
+	BIGOS::Light u_Light;
 };
 
 __declspec(align(16))
@@ -23,15 +22,14 @@ struct POConstantBufferData
 	BIGOS::math::mat4 u_Transform;
 	BIGOS::math::mat4 u_ViewProj;
 	BIGOS::math::mat4 u_InvModelViewProj;
-	BIGOS::PhongMaterial u_Material;
 };
 
-TestLayer::TestLayer()
-	: Layer("TestLayer")
+PBRDemoLayer::PBRDemoLayer()
+	: Layer("PBRDemoLayer")
 {
 }
 
-void TestLayer::OnAttach()
+void PBRDemoLayer::OnAttach()
 {
 	std::string environmentFiles[6] =
 	{
@@ -43,50 +41,44 @@ void TestLayer::OnAttach()
 		"assets/textures/skybox/lycksele/negz.png"
 	};
 
-	m_Shader = BIGOS::Shader::Create("assets/shaders/color.hlsl");
-	m_Shader->Bind();
-	m_ScreenShader = BIGOS::Shader::Create("assets/shaders/screen.hlsl");
 	m_PBRShader = BIGOS::Shader::Create("assets/shaders/pbr.hlsl");
-
+	m_ScreenShader = BIGOS::Shader::Create("assets/shaders/screen.hlsl");
 	m_SkyboxShader = BIGOS::Shader::Create("assets/shaders/skybox.hlsl");
 
-	m_Texture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_color.png");
 	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_normal.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
-
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
+	
+	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8 });
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
 	//m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
 	m_Skybox = BIGOS::MeshGenerator::CreateBox({ 30.0f, 30.0f, 30.0f });
 	m_ScreenMesh = BIGOS::MeshGenerator::CreateScreen();
-	m_CubeMesh = BIGOS::MeshGenerator::CreateSphere(1.0f, 64, 64);
-	
+	m_SphereMesh = BIGOS::MeshGenerator::CreateSphere(1.0f, 64, 64);
+
 	m_CBPerObject = BIGOS::ConstantBuffer::Create(sizeof(POConstantBufferData));
 	m_CBPerFrame = BIGOS::ConstantBuffer::Create(sizeof(PFConstantBufferData));
 	m_SkyboxCB = BIGOS::ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
 
+	m_PBRMaterial = new BIGOS::Material(m_PBRShader);
+	m_PBRLight = new BIGOS::Light({ 0.0f, 0.0f, -1.0f }, {0.0f, 0.0f, 2.0f});
+
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
-
-	m_Light = new BIGOS::PhongLight(BIGOS::math::vec4(0.2f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(1.0f), BIGOS::math::vec3(-0.3f, 0.2f, -1.0f));
-
-	m_Materials = materialPallete;
-	m_BrickMaterial = new BIGOS::PhongMaterial(BIGOS::math::vec4(0.6f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(0.2f));
-
-	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8});
 }
 
-void TestLayer::OnDetach()
+void PBRDemoLayer::OnDetach()
 {
 	delete m_GridMesh;
-	delete m_CubeMesh;
+	delete m_SphereMesh;
 	delete m_Skybox;
 	delete m_ScreenMesh;
-	delete m_BrickMaterial;
 	delete m_Light;
+	delete m_PBRMaterial;
+	delete m_PBRLight;
 }
 
-void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
+void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 {
 	// Resize
 	uint32_t width = BIGOS::Application::Get().GetWindow()->GetWidth();
@@ -117,32 +109,32 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 
 	// Scene update
-	m_Shader->Bind();
 	PFConstantBufferData cbPerFrame;
 	cbPerFrame.u_CameraPosition = m_EditorCamera.GetPosition();
-	cbPerFrame.u_Light = *m_Light;
+	cbPerFrame.u_Light = *m_PBRLight;
 	m_CBPerFrame->SetData(&cbPerFrame, sizeof(cbPerFrame));
 	m_CBPerFrame->Bind(0);
 
 	POConstantBufferData cbPerObject;
-	 /*
-	BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
-	BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
-	BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0, 5.0f, 5.0f });
+	/*
+   BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
+   BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
+   BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0, 5.0f, 5.0f });
 
-	cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
-	cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
-	cbPerObject.u_InvModelViewProj = BIGOS::math::mat4::Invert(cbPerObject.u_Transform * cbPerObject.u_ViewProj);
-	cbPerObject.u_Material = m_Materials[7];
-	m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
-	m_CBPerObject->Bind(1); // param is register
-	m_Texture->Bind();
-	m_NormalTexture->Bind(1);
-	m_GridMesh->Render();
-	m_NormalTexture->Unbind(1);
-	m_Texture->Unbind();
-	*/
-	
+   cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
+   cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
+   cbPerObject.u_InvModelViewProj = BIGOS::math::mat4::Invert(cbPerObject.u_Transform * cbPerObject.u_ViewProj);
+   cbPerObject.u_Material = m_Materials[7];
+   m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
+   m_CBPerObject->Bind(1); // param is register
+   m_Texture->Bind();
+   m_NormalTexture->Bind(1);
+   m_GridMesh->Render();
+   m_NormalTexture->Unbind(1);
+   m_Texture->Unbind();
+   */
+
+	m_PBRMaterial->Bind();
 	m_WhiteTexture->Bind();
 
 	size_t matIndex = 0;
@@ -157,18 +149,19 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
 			cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
 			cbPerObject.u_InvModelViewProj = BIGOS::math::mat4::Invert(cbPerObject.u_Transform * cbPerObject.u_ViewProj);
-			cbPerObject.u_Material = m_Materials[matIndex];
 			m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 			m_CBPerObject->Bind(1); // param is register
 
-			m_CubeMesh->Render();
+			m_SphereMesh->Render();
 			matIndex++;
 		}
 	}
+
+	m_PBRMaterial->Unbind();
+
 	m_WhiteTexture->Unbind();
-	
+
 	m_Framebuffer->Unbind();
-	m_Shader->Unbind();
 
 	m_ScreenShader->Bind();
 	m_Framebuffer->BindTexture(0);
@@ -176,10 +169,10 @@ void TestLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_Framebuffer->UnbindTexture(0);
 	m_ScreenShader->Unbind();
 
-	m_Rotation += ts/50.0f;
+	m_Rotation += ts / 50.0f;
 }
 
-void TestLayer::OnImGuiRender()
+void PBRDemoLayer::OnImGuiRender()
 {
 	ImGui::Begin("Test");
 	ImGui::Text("Hello World");
@@ -188,19 +181,19 @@ void TestLayer::OnImGuiRender()
 	ImGui::End();
 }
 
-void TestLayer::OnEvent(BIGOS::Event& e)
+void PBRDemoLayer::OnEvent(BIGOS::Event& e)
 {
 	//BGS_TRACE(e.ToString());
 	m_EditorCamera.OnEvent(e);
 
 	BIGOS::EventManager manager(e);
-	manager.Dispatch<BIGOS::KeyPressedEvent>(BGS_BIND_EVENT_FN(TestLayer::OnKeyPressed));
+	manager.Dispatch<BIGOS::KeyPressedEvent>(BGS_BIND_EVENT_FN(PBRDemoLayer::OnKeyPressed));
 }
 
-bool TestLayer::OnKeyPressed(BIGOS::KeyPressedEvent& e)
+bool PBRDemoLayer::OnKeyPressed(BIGOS::KeyPressedEvent& e)
 {
 	if (BIGOS::Input::IsKeyPressed(BIGOS::Key::Escape))
 		BIGOS::Application::Get().Close();
-		
+
 	return true;
 }
