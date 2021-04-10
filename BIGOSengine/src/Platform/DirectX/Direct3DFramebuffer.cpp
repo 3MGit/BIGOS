@@ -55,6 +55,7 @@ namespace BIGOS {
 
 	void Direct3DFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
+		// Need to think how to handle this framebuffers, as a part of context? Or another static class storing and manageing render target views.
 		if (width == 0 || height == 0 )
 		{
 			BGS_CORE_WARN("Attempted to rezize framebuffer to (%i, %i)", width, height);
