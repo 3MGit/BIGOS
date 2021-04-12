@@ -19,7 +19,7 @@ namespace BIGOS {
 
 		}
 
-		Light(const math::vec3& direction, const math::vec3& position, float intensity = 1.0f, const math::vec4& color = math::vec4(300.0f))
+		Light(const math::vec3& direction, const math::vec3& position, float intensity = 10.0f, const math::vec4& color = math::vec4(300.0f))
 			: Direction(direction), Position(position), Color(color), Intensity(intensity) {}
 	};
 

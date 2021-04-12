@@ -82,6 +82,7 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     float a = roughness * roughness;
     float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0);
+    //float NdotH = saturate(dot(N, H));
     float NdotH2 = NdotH * NdotH;
 
     float nom = a2;
@@ -106,6 +107,8 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
+    //float NdotV = saturate(dot(N, V));
+    //float NdotL = saturate(dot(N, L));
     float ggx2 = GeometrySchlickGGX(NdotV, roughness);
     float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
@@ -147,6 +150,7 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     float3 nominator = NDF * G * F;
     float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+    //float denominator = 4 * saturate(dot(N, V)) * saturate(dot(N, L));
     float3 specular = nominator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
 
     // kS is equal to Fresnel
@@ -162,6 +166,7 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     // scale light by NdotL
     float NdotL = max(dot(N, L), 0.0);
+    //float NdotL = saturate(dot(N, L));
 
     // add to outgoing radiance Lo
     Lo += (kD * u_Material.Albedo.rbg / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
@@ -171,6 +176,8 @@ float4 psmain(PS_INPUT input) : SV_Target
     // this ambient lighting with environment lighting).
     float3 ambient = float3(0.03, 0.03, 0.03) * u_Material.Albedo.rbg * u_Material.AO;
 
+    //float3 ambient = u_Material.Albedo.rbg * u_Material.AO;
+
     float3 color = ambient + Lo;
 
     // HDR tonemapping
@@ -179,5 +186,5 @@ float4 psmain(PS_INPUT input) : SV_Target
     color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
 
     return float4(color, 1.0f);
-    //return float4(u_Material.Roughness, 0.0f, 0.0f, 1.0f);
+    //return float4(G, 0.0f, 0.0f, 1.0f);
 }
