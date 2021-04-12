@@ -62,7 +62,7 @@ void PBRDemoLayer::OnAttach()
 	m_SkyboxCB = BIGOS::ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
 
 	m_PBRMaterial = new BIGOS::Material(m_PBRShader);
-	m_PBRLight = new BIGOS::Light({ 0.0f, 0.0f, -1.0f }, {0.0f, 0.0f, 2.0f});
+	m_PBRLight = new BIGOS::Light({ 0.0f, 0.0f, -1.0f }, {0.0f, 0.0f, 5.0f});
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 }
