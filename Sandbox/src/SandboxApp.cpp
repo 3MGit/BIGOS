@@ -10,8 +10,8 @@ public:
 	Sandbox()
 		: Application("SandboxApp")
 	{
-		//PushLayer(new TestLayer());
-		PushLayer(new PBRDemoLayer());
+		PushLayer(new TestLayer());
+		//PushLayer(new PBRDemoLayer());
 	}
 
 	~Sandbox()
