@@ -4,7 +4,7 @@
 #include "Engine/Renderer/API/RendererAPI.h"
 #include "Engine/Renderer/Renderer.h"
 
-#include "Platform/DirectX/Direct3DShader.h"
+#include "Platform/DX11/DX11Shader.h"
 
 namespace BIGOS {
 
@@ -16,7 +16,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::NONE is currently not supported!"); return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!"); return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_unique<Direct3DShader>(filepath);
+		case RendererAPI::API::DIRECTX11:	return std::make_unique<DX11Shader>(filepath);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!"); return nullptr;
 		}
 		BGS_CORE_ASSERT(false, "Unknown RendererAPI!");

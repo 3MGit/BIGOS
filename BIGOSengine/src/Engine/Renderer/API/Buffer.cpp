@@ -3,7 +3,7 @@
 #include "Engine/Renderer/API/RendererAPI.h"
 #include "Engine/Renderer/Renderer.h"
 
-#include "Platform/DirectX/Direct3DBuffer.h"
+#include "Platform/DX11/DX11Buffer.h"
 
 namespace BIGOS {
 
@@ -13,7 +13,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DVertexBuffer>(size);				
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11VertexBuffer>(size);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 
@@ -27,7 +27,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DVertexBuffer>(vertices, size);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11VertexBuffer>(vertices, size);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 
@@ -41,7 +41,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DIndexBuffer>(indices, count);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11IndexBuffer>(indices, count);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 
@@ -55,7 +55,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DConstantBuffer>(size);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11ConstantBuffer>(size);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 

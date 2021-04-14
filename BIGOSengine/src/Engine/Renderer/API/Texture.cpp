@@ -4,7 +4,7 @@
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Core/Core.h"
 
-#include "Platform/DirectX/Direct3DTexture.h"
+#include "Platform/DX11/DX11Texture.h"
 
 namespace BIGOS {
 
@@ -14,7 +14,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DTexture2D>(width, height);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11Texture2D>(width, height);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 
@@ -28,7 +28,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DTexture2D>(path);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11Texture2D>(path);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 
@@ -42,7 +42,7 @@ namespace BIGOS {
 		{
 		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
 		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
-		case RendererAPI::API::DIRECT3D:	return std::make_shared<Direct3DTextureCube>(files);
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11TextureCube>(files);
 		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
 		}
 

@@ -10,7 +10,7 @@ namespace BIGOS {
 	public:
 		enum class API
 		{
-			NONE = 0, OPENGL = 1, DIRECT3D = 2, VULKAN = 3
+			NONE = 0, OPENGL = 1, DIRECTX11 = 2, VULKAN = 3
 		};
 	public:
 		virtual ~RendererAPI() = default;

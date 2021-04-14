@@ -2,7 +2,7 @@
 #include "Engine/ImGui/ImGuiLayer.h"
 #include "Engine/Core/App/Application.h"
 
-#include "Platform/DirectX/Direct3DContext.h"
+#include "Platform/DX11/DX11Context.h"
 #include "Platform/Windows/Win32Window.h"
 
 #include <imgui.h>
@@ -52,7 +52,7 @@ namespace BIGOS {
 
 		// Setup Platform/Renderer bindings
 		ImGui_ImplWin32_Init(g_hWnd);
-		ImGui_ImplDX11_Init(Direct3DContext::GetDevice(), Direct3DContext::GetDeviceContext());
+		ImGui_ImplDX11_Init(DX11Context::GetDevice(), DX11Context::GetDeviceContext());
 	}
 
 	void ImGuiLayer::OnDetach()
