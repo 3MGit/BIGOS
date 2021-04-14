@@ -1,5 +1,5 @@
 # Welcome to BIGOS
-Advanced game engine and rendering technology almost as good as Polish traditional food.
+Advanced game engine and rendering technology almost as good as Polish traditional food. Currently supports DirectX11 (Vulkan and DirectX12 support is in development).
 
 ## Getting Started
 Use Win-GenProjects.bat in "scripts" folder to genetate default Visual Studio 2019 solution
