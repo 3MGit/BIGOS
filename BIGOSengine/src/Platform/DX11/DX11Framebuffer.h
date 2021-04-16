@@ -32,7 +32,6 @@ namespace BIGOS {
 		FramebufferSpecification m_Specification;
 
 		ID3D11Texture2D* m_RenderTargetTexture;
-		ID3D11Texture2D* notMultisampled;
 		ID3D11RenderTargetView* m_RenderTargetView;
 		ID3D11ShaderResourceView* m_ShaderResourceView;
 	};

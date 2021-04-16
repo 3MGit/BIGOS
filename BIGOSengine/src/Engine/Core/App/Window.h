@@ -49,7 +49,9 @@ namespace BIGOS {
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
 
-		virtual void* GetNativeWindow() const = 0;
+		virtual void* GetNativeWindowHandle() const = 0;
+		virtual void* GetNativeWindowInstance() const = 0;
+
 
 		inline InputManager* GetInputManager() const { return m_Data.InputManager; }
 

@@ -11,8 +11,6 @@
 
 namespace BIGOS {
 
-	extern HWND g_hWnd;
-
 	ImGuiLayer::ImGuiLayer()
 	{
 		
@@ -48,10 +46,10 @@ namespace BIGOS {
 
 		Application& app = Application::Get();
 
-		HWND hwnd = static_cast<HWND>(app.GetWindow()->GetNativeWindow());
+		HWND hwnd = static_cast<HWND>(app.GetWindow()->GetNativeWindowHandle());
 
 		// Setup Platform/Renderer bindings
-		ImGui_ImplWin32_Init(g_hWnd);
+		ImGui_ImplWin32_Init(hwnd);
 		ImGui_ImplDX11_Init(DX11Context::GetDevice(), DX11Context::GetDeviceContext());
 	}
 

@@ -39,6 +39,7 @@ project "BIGOSengine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.c",
 		"%{prj.name}/ThirdParty/stb_image/**.h",
 		"%{prj.name}/ThirdParty/stb_image/**.cpp"
 	}
@@ -70,7 +71,8 @@ project "BIGOSengine"
 
 		defines
 		{
-			"BGS_PLATFORM_WINDOWS"
+			"BGS_PLATFORM_WINDOWS",
+			"VK_USE_PLATFORM_WIN32_KHR"
 		}
 
 	filter "configurations:Debug"
@@ -120,7 +122,8 @@ project "Sandbox"
 
 		defines
 		{
-			"BGS_PLATFORM_WINDOWS"
+			"BGS_PLATFORM_WINDOWS",
+			"VK_USE_PLATFORM_WIN32_KHR"
 		}
 
 	filter "configurations:Debug"

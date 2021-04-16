@@ -27,13 +27,15 @@ namespace BIGOS {
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 
-		virtual void* GetNativeWindow() const override { return m_hWnd; }
+		virtual void* GetNativeWindowHandle() const override { return m_hWnd; }
+		virtual void* GetNativeWindowInstance() const override { return m_hInstance; }
 
 		friend class RendererAPI;
 	private:
 		static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	private:
 		HWND m_hWnd;
+		HINSTANCE m_hInstance;
 	};
 
 	//void FocusCallback(Window* window, bool focused);

@@ -143,6 +143,7 @@ namespace BIGOS {
 		SetFocus(g_hWnd);
 
 		m_hWnd = g_hWnd;
+		m_hInstance = g_hInstance;
 
 		return true;
 	}
