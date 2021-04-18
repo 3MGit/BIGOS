@@ -1,6 +1,8 @@
 # Welcome to BIGOS
 Advanced game engine and rendering technology almost as good as Polish traditional food. Currently supports DirectX11 (Vulkan and DirectX12 support is in development).
 
+Engine is written by me in my free time. Some basic features are still missing, because my goal is to leran graphics programming with modern API's. I put all my strength into rendering. Code is kind of rough sometimes, there are some lines, that do nothing. I am going to do big cleanup if i decide to release 0.1.0 alpha version.
+
 ## Demos
 <p>Phong lightning demo</p>
 <p align="center">
