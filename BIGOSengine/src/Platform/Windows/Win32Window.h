@@ -24,6 +24,7 @@ namespace BIGOS {
 		virtual bool IsVSync() const override { return m_Data.Vsync; }
 
 		virtual void SetTitle(const std::string& title) override;
+		virtual const std::string& GetTitle() override { return m_Data.Title; }
 
 		virtual void SetEventCallback(const EventCallbackFn& callback) override;
 
@@ -36,6 +37,7 @@ namespace BIGOS {
 	private:
 		HWND m_hWnd;
 		HINSTANCE m_hInstance;
+		HDC m_hDc;
 	};
 
 	//void FocusCallback(Window* window, bool focused);

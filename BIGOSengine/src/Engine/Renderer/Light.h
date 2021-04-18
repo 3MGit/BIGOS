@@ -12,15 +12,15 @@ namespace BIGOS {
 		math::vec4 Color;
 		math::vec3 Position;
 		math::vec3 Direction;
-		float Intensity;
+		//float Intensity;
 
 		Light()
 		{
 
 		}
 
-		Light(const math::vec3& direction, const math::vec3& position, float intensity = 10.0f, const math::vec4& color = math::vec4(300.0f))
-			: Direction(direction), Position(position), Color(color), Intensity(intensity) {}
+		Light(const math::vec3& position, const math::vec4& color)
+			: Position(position), Color(color) {}
 	};
 
 	__declspec(align(16)) 

@@ -22,9 +22,9 @@ namespace BIGOS {
 		{
 			Albedo = { 0.5f, 0.0f, 0.0f, 1.0f };
 			usingAlbedoMap = 0.0f;
-			Metalic = 0.0f;
+			Metalic = 1.0f;
 			usingMetalicMap = 0.0f;
-			Roughness = 0.05;
+			Roughness = 0.2;
 			usingRoughnessMap = 0.0f;
 			AO = 1.0f;
 		}
@@ -38,6 +38,9 @@ namespace BIGOS {
 
 		void Bind();
 		void Unbind();
+
+		void SetMetalic(float metalic);
+		void SetRoughness(float roughness);
 
 		MaterialUniform GetMaterialUniform() const { return m_MaterialData; }
 	private:

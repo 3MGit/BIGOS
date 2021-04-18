@@ -8,7 +8,7 @@ namespace BIGOS {
 	class DX11Context : public GraphicsContext
 	{
 	public:
-		DX11Context(WindowProps properties, void* deviceContext);
+		DX11Context(WindowProps properties, void* windowHandle, void* windowInstance);
 
 		void Present();
 		void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
@@ -42,6 +42,7 @@ namespace BIGOS {
 	private:
 		WindowProps m_WindowProperties;
 		HWND m_hWnd;
+		HINSTANCE m_hInstance;
 
 		friend class WindowsWindow;
 	};

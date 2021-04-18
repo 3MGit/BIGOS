@@ -43,6 +43,7 @@ namespace BIGOS {
 		virtual bool IsVSync() const = 0;
 
 		virtual void SetTitle(const std::string& title) = 0;
+		virtual const std::string& GetTitle() = 0;
 		
 		virtual bool Init() = 0;
 		virtual void ShutDown() = 0;

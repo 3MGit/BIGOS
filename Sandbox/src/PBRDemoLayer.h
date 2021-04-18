@@ -41,10 +41,8 @@ private:
 	BIGOS::Mesh* m_GridMesh = nullptr;
 	BIGOS::Mesh* m_ScreenMesh = nullptr;
 
-	BIGOS::PhongLight* m_Light = nullptr;
-	BIGOS::Light* m_PBRLight = nullptr;
-
-	BIGOS::Material* m_PBRMaterial;
+	BIGOS::Light* m_Light[4];
+	BIGOS::Material* m_Material;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

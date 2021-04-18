@@ -14,10 +14,8 @@ struct Light
     float4 Color;
     float3 Position;
     float3 Direction;
-    float  Intensity;
+    //float  Intensity;
 };
-
-float PI = 3.14159265359;
 
 struct VS_INPUT
 {
@@ -45,10 +43,12 @@ struct PS_INPUT
     float2 uv: TEXCOORD;
 };
 
+static const float PI = 3.14159265359;
+
 cbuffer cbPerFrame: register(b0)
 {
     float3 u_CameraPosition;
-    Light u_Light;
+    Light u_Light[4];
 };
 
 cbuffer cbPerObject: register(b1)
@@ -82,7 +82,6 @@ float DistributionGGX(float3 N, float3 H, float roughness)
     float a = roughness * roughness;
     float a2 = a * a;
     float NdotH = max(dot(N, H), 0.0);
-    //float NdotH = saturate(dot(N, H));
     float NdotH2 = NdotH * NdotH;
 
     float nom = a2;
@@ -107,8 +106,6 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
 {
     float NdotV = max(dot(N, V), 0.0);
     float NdotL = max(dot(N, L), 0.0);
-    //float NdotV = saturate(dot(N, V));
-    //float NdotL = saturate(dot(N, L));
     float ggx2 = GeometrySchlickGGX(NdotV, roughness);
     float ggx1 = GeometrySchlickGGX(NdotL, roughness);
 
@@ -130,61 +127,64 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
-    float3 F0 = float3(0.04f, 0.04f, 0.04f);
+    float3 F0 = 0.04f;
     F0 = lerp(F0, u_Material.Albedo.rbg, u_Material.Metalic);
 
     // reflectance equation
-    float3 Lo = float3(0.0, 0.0, 0.0);
+    float3 Lo = 0.0f;
+    for (int i = 0; i < 4; ++i)
+    {
 
-    // calculate per-light radiance
-    float3 L = normalize(u_Light.Position - input.position.xyz);
-    float3 H = normalize(V + L);
-    float distance = length(u_Light.Position - input.position.xyz);
-    float attenuation = 1.0 / (distance * distance);
-    float3 radiance = u_Light.Color.rbg * attenuation;
+        // calculate per-light radiance
+        float3 L = normalize(u_Light[i].Position - input.position.xyz);
+        //float3 L = normalize(u_Light.Direction);
+        float3 H = normalize(V + L);
+        float distance = length(u_Light[i].Position - input.position.xyz);
+        float attenuation = 1.0f / (distance * distance);
+        float3 radiance = u_Light[i].Color.rbg * attenuation;
+        //radiance = u_Light.Color.rbg;
 
-    // Cook-Torrance BRDF
-    float NDF = DistributionGGX(N, H, u_Material.Roughness);
-    float G = GeometrySmith(N, V, L, u_Material.Roughness);
-    float3 F = fresnelSchlick(saturate(dot(H, V)), F0);
+        // Cook-Torrance BRDF
+        float NDF = DistributionGGX(N, H, u_Material.Roughness);
+        float G = GeometrySmith(N, V, L, u_Material.Roughness);
+        float3 F = fresnelSchlick(max(dot(H, V), 0.0f), F0);
 
-    float3 nominator = NDF * G * F;
-    float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
-    //float denominator = 4 * saturate(dot(N, V)) * saturate(dot(N, L));
-    float3 specular = nominator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
+        float3 nominator = NDF * G * F;
+        float denominator = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
+        float3 specular = nominator / max(denominator, 0.001); // prevent divide by zero for NdotV=0.0 or NdotL=0.0
 
-    // kS is equal to Fresnel
-    float3 kS = F;
-    // for energy conservation, the diffuse and specular light can't
-    // be above 1.0 (unless the surface emits light); to preserve this
-    // relationship the diffuse component (kD) should equal 1.0 - kS.
-    float3 kD = float3(1.0, 1.0, 1.0) - kS;
-    // multiply kD by the inverse metalness such that only non-metals 
-    // have diffuse lighting, or a linear blend if partly metal (pure metals
-    // have no diffuse light).
-    kD *= 1.0 - u_Material.Metalic;
+        // kS is equal to Fresnel
+        float3 kS = F;
+        // for energy conservation, the diffuse and specular light can't
+        // be above 1.0 (unless the surface emits light); to preserve this
+        // relationship the diffuse component (kD) should equal 1.0 - kS.
+        float3 kD = 1.0f - kS;
+        // multiply kD by the inverse metalness such that only non-metals 
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
+        kD *= 1.0 - u_Material.Metalic;
 
-    // scale light by NdotL
-    float NdotL = max(dot(N, L), 0.0);
-    //float NdotL = saturate(dot(N, L));
+        // scale light by NdotL
+        float NdotL = max(dot(N, L), 0.0);
 
-    // add to outgoing radiance Lo
-    Lo += (kD * u_Material.Albedo.rbg / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
-
+        // add to outgoing radiance Lo
+        Lo += 4.0f * ((kD * (u_Material.Albedo.rbg / PI) + specular) * radiance * NdotL);  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+    }
 
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
-    float3 ambient = float3(0.03, 0.03, 0.03) * u_Material.Albedo.rbg * u_Material.AO;
+    float3 ambient = 0.03f * u_Material.Albedo.rbg * u_Material.AO;
 
     //float3 ambient = u_Material.Albedo.rbg * u_Material.AO;
 
     float3 color = ambient + Lo;
 
     // HDR tonemapping
-    color = color / (color + float3(1.0, 1.0, 1.0));
+    color = color / (color + 1.0f);
     // gamma correct
-    color = pow(color, float3(1.0 / 2.2, 1.0 / 2.2, 1.0 / 2.2));
+    color = pow(abs(color), 1.0f / 2.2f);
 
     return float4(color, 1.0f);
-    //return float4(G, 0.0f, 0.0f, 1.0f);
+    //return float4(NDF, 0.0f, 0.0f, 1.0f);
+    //return u_Material.Albedo;
 }

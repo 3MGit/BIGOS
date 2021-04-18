@@ -8,20 +8,19 @@
 
 
 namespace BIGOS {
-
-	extern HWND g_hWnd;
 	
 	void InputManager::PlatformUpdate()
 	{
 		// Mouse Events
 		POINT mouse;
 		GetCursorPos(&mouse);
-		ScreenToClient(g_hWnd, &mouse);
+		auto hwnd = Application::Get().GetWindow()->GetNativeWindowHandle();
+		ScreenToClient((HWND)hwnd, &mouse);
 
 		math::vec2 mousePos = math::vec2((float)mouse.x, (float)mouse.y);
 		if (mousePos != m_MousePosition)
 		{
-			Window* window = Window::GetWindowClass(g_hWnd);
+			Window* window = Window::GetWindowClass(hwnd);
 			window->m_Data.EventCallback(MouseMovedEvent(mousePos.x, mousePos.y));
 			//m_EventCallback(MouseMovedEvent(mousePos.x, mousePos.y));
 			m_MousePosition = mousePos;
@@ -31,7 +30,8 @@ namespace BIGOS {
 	void InputManager::SetMousePosition(const math::vec2& position)
 	{
 		POINT pt = { (LONG)position.x, (LONG)position.y };
-		ClientToScreen(g_hWnd, &pt);
+		auto hwnd = Application::Get().GetWindow()->GetNativeWindowHandle();
+		ClientToScreen((HWND)hwnd, &pt);
 		SetCursorPos(pt.x, pt.y);
 	}
 
@@ -58,7 +58,8 @@ namespace BIGOS {
 
 		bool repeat = (flags >> 30) & 1;
 
-		Window* window = Window::GetWindowClass(g_hWnd);
+		auto hwnd = Application::Get().GetWindow()->GetNativeWindowHandle();
+		Window* window = Window::GetWindowClass(hwnd);
 		if (pressed)
 			window->m_Data.EventCallback(KeyPressedEvent(key, repeat));
 			//inputManager->m_EventCallback(KeyPressedEvent(key, repeat));
@@ -69,11 +70,12 @@ namespace BIGOS {
 
 	void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y)
 	{
+		auto hwnd = Application::Get().GetWindow()->GetNativeWindowHandle();
 		bool down = false;
 		switch (button)
 		{
 		case WM_LBUTTONDOWN:
-			SetCapture(g_hWnd);
+			SetCapture((HWND)hwnd);
 			button = Mouse::ButtonLeft;
 			down = true;
 			break;
@@ -83,7 +85,7 @@ namespace BIGOS {
 			down = false;
 			break;
 		case WM_RBUTTONDOWN:
-			SetCapture(g_hWnd);
+			SetCapture((HWND)hwnd);
 			button = Mouse::ButtonRight;
 			down = true;
 			break;
@@ -93,7 +95,7 @@ namespace BIGOS {
 			down = false;
 			break;
 		case WM_MBUTTONDOWN:
-			SetCapture(g_hWnd);
+			SetCapture((HWND)hwnd);
 			button = Mouse::ButtonMiddle;
 			down = true;
 			break;
@@ -108,7 +110,7 @@ namespace BIGOS {
 		inputManager->m_MousePosition.y = (float)y;
 
 		//BGS_CORE_ASSERT(inputManager->m_EventCallback);
-		Window* window = Window::GetWindowClass(g_hWnd);
+		Window* window = Window::GetWindowClass(hwnd);
 		if (down)
 			window->m_Data.EventCallback(MouseButtonPressedEvent(button));
 			//inputManager->m_EventCallback(MouseButtonPressedEvent(button));
@@ -119,7 +121,8 @@ namespace BIGOS {
 
 	void MouseScrollCallback(InputManager* inputManager, uint32_t message, float xOffSet, float yOffSet) 
 	{
-		Window* window = Window::GetWindowClass(g_hWnd);
+		auto hwnd = Application::Get().GetWindow()->GetNativeWindowHandle();
+		Window* window = Window::GetWindowClass((HWND)hwnd);
 		window->m_Data.EventCallback(MouseScrolledEvent(0, yOffSet));
 	}
 

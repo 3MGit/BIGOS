@@ -12,9 +12,6 @@
 namespace BIGOS {
 
 	//TODO: Change windows handle to be more protected
-	HWND g_hWnd;
-	HINSTANCE g_hInstance;
-	HDC g_hDc;
 
 	extern void MouseButtonCallback(InputManager* inputManager, MouseCode button, uint32_t x, uint32_t y);
 	extern void KeyCallback(InputManager* inputManager, uint32_t flags, KeyCode key, uint32_t message);
@@ -74,7 +71,7 @@ namespace BIGOS {
 		winClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 		winClass.hCursor = LoadCursor(NULL, IDC_ARROW);
 		winClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-		winClass.hInstance = g_hInstance;
+		winClass.hInstance = m_hInstance;
 		winClass.lpszClassName = "Bigos Win32 Window";
 		winClass.lpszMenuName = "";
 		winClass.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
@@ -90,7 +87,7 @@ namespace BIGOS {
 		AdjustWindowRectEx(&size, WS_OVERLAPPEDWINDOW | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, false, WS_EX_APPWINDOW | WS_EX_WINDOWEDGE);
 
 
-		g_hWnd = ::CreateWindowExA(
+		m_hWnd = ::CreateWindowExA(
 			WS_EX_APPWINDOW | WS_EX_WINDOWEDGE,                             // Optional window styles.
 			winClass.lpszClassName,         // Window class
 			(LPCSTR)m_Data.Title.c_str(),		    // Window text
@@ -104,11 +101,11 @@ namespace BIGOS {
 
 			NULL,       // Parent window    
 			NULL,       // Menu
-			g_hInstance,  // Instance handle
+			m_hInstance,  // Instance handle
 			NULL        // Additional application data
 		);
 
-		if (!g_hWnd)
+		if (!m_hWnd)
 		{
 			BGS_CORE_FATAL("Could not create Win32 window!");
 			return false;
@@ -116,14 +113,14 @@ namespace BIGOS {
 		else
 			BGS_CORE_TRACE("Win32 window succesfully created!");
 
-		RegisterWindowClass(g_hWnd, this);
+		RegisterWindowClass(m_hWnd, this);
 
-		g_hDc = GetDC(g_hWnd);
+		m_hDc = GetDC(m_hWnd);
 		PIXELFORMATDESCRIPTOR pfd = GetPixelFormat();
-		uint32_t pixelFormat = ChoosePixelFormat(g_hDc, &pfd);
+		uint32_t pixelFormat = ChoosePixelFormat(m_hDc, &pfd);
 		if (pixelFormat)
 		{
-			if (!SetPixelFormat(g_hDc, pixelFormat, &pfd))
+			if (!SetPixelFormat(m_hDc, pixelFormat, &pfd))
 			{
 				BGS_CORE_FATAL("Failed setting pixel format!");
 				return false;
@@ -136,14 +133,14 @@ namespace BIGOS {
 		}
 
 		//creating graphic context
-		GraphicsContext::Create({ m_Data.Title, m_Data.Width, m_Data.Height, m_Data.Vsync}, g_hWnd);
+		GraphicsContext::Create({ m_Data.Title, m_Data.Width, m_Data.Height, m_Data.Vsync}, m_hWnd, m_hInstance);
 
 		//show up the window
-		ShowWindow(g_hWnd, SW_SHOW);
-		SetFocus(g_hWnd);
+		ShowWindow(m_hWnd, SW_SHOW);
+		SetFocus(m_hWnd);
 
-		m_hWnd = g_hWnd;
-		m_hInstance = g_hInstance;
+		//m_hWnd = g_hWnd;
+		//m_hInstance = g_hInstance;
 
 		return true;
 	}
@@ -153,8 +150,8 @@ namespace BIGOS {
 		// Release Context
 
 		// Destroy window
-		if (g_hWnd)
-			if(DestroyWindow(g_hWnd))
+		if (m_hWnd)
+			if(DestroyWindow(m_hWnd))
 				BGS_CORE_TRACE("Win32 window succesfully destroyed!");
 
 	}
@@ -167,7 +164,7 @@ namespace BIGOS {
 	void WindowsWindow::SetTitle(const std::string& title)
 	{
 		m_Data.Title = title;
-		SetWindowTextA(g_hWnd, m_Data.Title.c_str());
+		SetWindowTextA(m_hWnd, m_Data.Title.c_str());
 	}
 
 	void WindowsWindow::SetEventCallback(const EventCallbackFn& callback)

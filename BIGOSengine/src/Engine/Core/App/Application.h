@@ -41,8 +41,6 @@ namespace BIGOS {
 		void Run();
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
-		//bool OnMouseMoved(MouseMovedEvent& e);
-		//bool OnMousePressed(MouseButtonPressedEvent& e);
 	private:
 		Window* m_Window = nullptr;
 		ImGuiLayer* m_ImGuiLayer;

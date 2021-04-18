@@ -4,6 +4,7 @@
 #include "Engine/Core/App/Application.h"
 
 #include "Engine/Renderer/Renderer.h"
+#include "Engine/Renderer/API/GraphicsContext.h"
 
 namespace BIGOS {
 
@@ -130,17 +131,4 @@ namespace BIGOS {
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 		return true;
 	}
-	/*
-	bool Application::OnMouseMoved(MouseMovedEvent& e)
-	{
-		//BGS_CORE_TRACE(e.ToString());
-		return true;
-	}
-
-	bool Application::OnMousePressed(MouseButtonPressedEvent& e)
-	{
-		//BGS_CORE_TRACE(e.ToString());
-		return true;
-	}
-	*/
 }

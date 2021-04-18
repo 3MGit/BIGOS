@@ -3,6 +3,7 @@
 
 #include <imgui/imgui.h>
 
+
 __declspec(align(16))
 struct SkyboxConstantBufferData
 {
@@ -13,7 +14,7 @@ __declspec(align(16))
 struct PFConstantBufferData
 {
 	BIGOS::math::vec3 u_CameraPosition;
-	BIGOS::Light u_Light;
+	BIGOS::Light u_Light[4];
 };
 
 __declspec(align(16))
@@ -48,7 +49,7 @@ void PBRDemoLayer::OnAttach()
 	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_normal.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
-	
+
 	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8 });
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
@@ -61,8 +62,11 @@ void PBRDemoLayer::OnAttach()
 	m_CBPerFrame = BIGOS::ConstantBuffer::Create(sizeof(PFConstantBufferData));
 	m_SkyboxCB = BIGOS::ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
 
-	m_PBRMaterial = new BIGOS::Material(m_PBRShader);
-	m_PBRLight = new BIGOS::Light({ 0.0f, 0.0f, -1.0f }, {0.0f, 0.0f, 5.0f});
+	m_Material = new BIGOS::Material(m_PBRShader);
+	m_Light[0] = new BIGOS::Light({ -10.0f, 10.0f, 10.0f }, {300.0f, 300.0f, 300.0f, 300.0f});
+	m_Light[1] = new BIGOS::Light({ 10.0f, 10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
+	m_Light[2] = new BIGOS::Light({ -10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
+	m_Light[3] = new BIGOS::Light({ 10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 }
@@ -73,9 +77,11 @@ void PBRDemoLayer::OnDetach()
 	delete m_SphereMesh;
 	delete m_Skybox;
 	delete m_ScreenMesh;
-	delete m_Light;
-	delete m_PBRMaterial;
-	delete m_PBRLight;
+	delete m_Material;
+	delete m_Light[0];
+	delete m_Light[1];
+	delete m_Light[2];
+	delete m_Light[3];
 }
 
 void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -111,7 +117,10 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Scene update
 	PFConstantBufferData cbPerFrame;
 	cbPerFrame.u_CameraPosition = m_EditorCamera.GetPosition();
-	cbPerFrame.u_Light = *m_PBRLight;
+	cbPerFrame.u_Light[0] = *m_Light[0];
+	cbPerFrame.u_Light[1] = *m_Light[1];
+	cbPerFrame.u_Light[2] = *m_Light[2];
+	cbPerFrame.u_Light[3] = *m_Light[3];
 	m_CBPerFrame->SetData(&cbPerFrame, sizeof(cbPerFrame));
 	m_CBPerFrame->Bind(0);
 
@@ -134,13 +143,14 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
    m_Texture->Unbind();
    */
 
-	m_PBRMaterial->Bind();
-	m_WhiteTexture->Bind();
+	//m_WhiteTexture->Bind();
 
+	size_t rows = 7, cols = 7;
 	size_t matIndex = 0;
-	for (size_t i = 0; i < 4; i++)
+	for (size_t i = 0; i < rows; i++)
 	{
-		for (size_t j = 0; j < 4; j++)
+		m_Material->SetMetalic((float)i / (float)rows);
+		for (size_t j = 0; j < cols; j++)
 		{
 			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, -0.0f });
 			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0, { 0, 1, 0 });
@@ -152,14 +162,17 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
 			m_CBPerObject->Bind(1); // param is register
 
+			m_Material->SetRoughness(BIGOS::math::clamp((float)j / (float)cols, 0.05f, 1.0f));
+			m_Material->Bind();
+			
 			m_SphereMesh->Render();
 			matIndex++;
+			
 		}
 	}
+	//m_PBRMaterial->Unbind();
 
-	m_PBRMaterial->Unbind();
-
-	m_WhiteTexture->Unbind();
+	//m_WhiteTexture->Unbind();
 
 	m_Framebuffer->Unbind();
 
@@ -174,11 +187,13 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 void PBRDemoLayer::OnImGuiRender()
 {
+	/*
 	ImGui::Begin("Test");
 	ImGui::Text("Hello World");
 	ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
 	//ImGui::Image(m_Framebuffer->GetTexture(), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
 	ImGui::End();
+	*/
 }
 
 void PBRDemoLayer::OnEvent(BIGOS::Event& e)

@@ -4,14 +4,15 @@
 
 namespace BIGOS {
 
-	DX11Context::DX11Context(WindowProps properties, void* deviceContext)
+	DX11Context::DX11Context(WindowProps properties, void* windowHandle, void* windowInstance)
 		:m_WindowProperties(properties)
 	{
 		m_RenderTargetView = nullptr;
 		m_DepthStencilView = nullptr;
 		m_DepthStencilBuffer = nullptr;
 
-		m_hWnd = (HWND)deviceContext;
+		m_hWnd = (HWND)windowHandle;
+		m_hInstance = (HINSTANCE)windowInstance;
 		Init();
 	}
 
@@ -47,6 +48,7 @@ namespace BIGOS {
 		hr = dev->CheckMultisampleQualityLevels(
 			DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m_MSAAQuality);
 		BGS_CORE_ASSERT(m_MSAAQuality > 0, "");
+		// Enabling MSAA causesa lot of warrnings connected with wrong type of texture binding in shader
 		m_MSAAEnabled = false;
 
 		// SwapChain descriptor

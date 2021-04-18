@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["ImGui"] = "%{wks.location}/BIGOSengine/ThirdParty/imgui"
 IncludeDir["Glad"] = "%{wks.location}/BIGOSengine/ThirdParty/Glad/include"
 IncludeDir["stb_image"] = "%{wks.location}/BIGOSengine/ThirdParty/stb_image"
+IncludeDir["Vulkan"] = "%{wks.location}/BIGOSengine/ThirdParty/Vulkan"
 
 group "Dependencies"
 	include "BIGOSengine/ThirdParty/imgui"
@@ -39,8 +40,8 @@ project "BIGOSengine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.c",
 		"%{prj.name}/ThirdParty/stb_image/**.h",
+		"%{prj.name}/ThirdParty/Vulkan/**.h",
 		"%{prj.name}/ThirdParty/stb_image/**.cpp"
 	}
 
@@ -54,7 +55,8 @@ project "BIGOSengine"
 		"%{prj.name}/src",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Glad}",
-		"%{IncludeDir.stb_image}"
+		"%{IncludeDir.stb_image}",
+		"%{IncludeDir.Vulkan}"
 	}
 
 	links 
@@ -66,13 +68,18 @@ project "BIGOSengine"
 		"D3DCompiler.lib"
 	}
 
+	filter "files:**.c"
+		flags {"NoPCH"}
+
 	filter "system:windows"
 		systemversion "latest"
 
 		defines
 		{
 			"BGS_PLATFORM_WINDOWS",
-			"VK_USE_PLATFORM_WIN32_KHR"
+			"VK_USE_PLATFORM_WIN32_KHR",
+			"VK_NO_PROTOTYPES",
+			" BUILD_VK"
 		}
 
 	filter "configurations:Debug"
@@ -116,6 +123,7 @@ project "Sandbox"
 	{
 		"BIGOSengine"
 	}
+
 
 	filter "system:windows"
 		systemversion "latest"
