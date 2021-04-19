@@ -8,7 +8,7 @@
 namespace BIGOS {
 
 	__declspec(align(16))
-		struct MaterialUniform
+	struct MaterialUniform
 	{
 		math::vec4 Albedo;
 		float usingAlbedoMap;
@@ -39,8 +39,16 @@ namespace BIGOS {
 		void Bind();
 		void Unbind();
 
+		void SetAlbedo(const math::vec4& albedo);
+		void SetAlbedoTexture(std::shared_ptr<Texture2D> albedoTextuere);
+
 		void SetMetalic(float metalic);
+		void SetMetalicTexture(std::shared_ptr<Texture2D> metalicTextuere);
+
 		void SetRoughness(float roughness);
+		void SetRoughnessTexture(std::shared_ptr<Texture2D> roughnessTextuere);
+
+		void SetAO(float ao);
 
 		MaterialUniform GetMaterialUniform() const { return m_MaterialData; }
 	private:

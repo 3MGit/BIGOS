@@ -33,7 +33,8 @@ Possible builds vs2005-2019
 //PushLayer(new PhongDemoLayer());
 //PushLayer(new PBRDemoLayer());
 ```
-3. Enjoy the view
+3. Control camera with mouse buttons and wheel holding left alt key (the same way as in Autodeks's Maya)
+4. Enjoy the view
 
 ## See our progress
 * [Road Map](https://trello.com/b/gB7Valt5/bigos-goals)

@@ -3,6 +3,7 @@
 #include "Platform/DX11/DX11Context.h"
 #include "Platform/DX11/DX11Common.h"
 #include "Engine/Core/Core.h"
+#include "Engine/System/Memory.h"
 
 #include <stb_image.h>
 
@@ -12,12 +13,19 @@ namespace BIGOS {
 
 		static unsigned char* LoadTextureImage(const std::string& path, uint32_t* width, uint32_t* height, int* channels, DXGI_FORMAT* format)
 		{
+			size_t size;
+			uint8_t* result;
 			stbi_set_flip_vertically_on_load(0);
 			stbi_uc* data = nullptr;
 			{
-				BGS_CORE_TRACE("Stbi loading texture from: %s", path.c_str());
+				BGS_CORE_TRACE("Stbi loading texture from: {0}", path.c_str());
 				data = stbi_load(path.c_str(), (int*)width, (int*)height, channels, 0);
-				if (data) BGS_CORE_TRACE("Image loaded!");
+				if (data)
+				{
+					size = (*width) * (*height) *(*channels);
+					result = bigos_new uint8_t[size];
+					BGS_CORE_TRACE("{0}Image loaded!", '\t');
+				}
 			}
 			BGS_CORE_ASSERT(data, "Failed to load image!");
 
@@ -31,7 +39,10 @@ namespace BIGOS {
 				//BGS_CORE_TRACE("Texture format with %i channels is currently not supported!", channels);
 			}
 
-			return data;
+			memcpy(result, data, size);
+			stbi_image_free(data);
+
+			return result;
 		}
 
 	}
@@ -44,8 +55,8 @@ namespace BIGOS {
 	DX11Texture2D::DX11Texture2D(const std::string& path)
 		: m_Path(path)
 	{	
-		int channels;
-		unsigned char* data = Utils::LoadTextureImage(path, &m_Width, &m_Height, &channels, &m_Format);
+		int chanels;
+		unsigned char* data = Utils::LoadTextureImage(path, &m_Width, &m_Height, &chanels, &m_Format);
 
 		uint32_t fmtSupport = 0;
 		DX11Context::GetDevice()->CheckFormatSupport(m_Format, &fmtSupport);
@@ -53,8 +64,8 @@ namespace BIGOS {
 
 		D3D11_SUBRESOURCE_DATA initData;
 		initData.pSysMem = data;
-		initData.SysMemPitch = channels * m_Width;
-		initData.SysMemSlicePitch = m_Width * m_Height * channels;
+		initData.SysMemPitch = chanels * m_Width;
+		initData.SysMemSlicePitch = m_Width * m_Height * chanels;
 
 		D3D11_SUBRESOURCE_DATA* initDataPtr = nullptr;
 		if (data) initDataPtr = &initData;
@@ -100,7 +111,7 @@ namespace BIGOS {
 		if (SUCCEEDED(hr))
 			BGS_CORE_TRACE("D3D11SamplerState succesfully created!");
 
-		stbi_image_free(data);
+		bigos_delete[] data;
 	}
 
 	DX11Texture2D::~DX11Texture2D()
@@ -229,7 +240,7 @@ namespace BIGOS {
 			BGS_CORE_TRACE("D3D11SamplerState succesfully created!");
 
 		for(int i = 0; i<6; i++)
-			stbi_image_free(data[i]);
+			bigos_delete[](data[i]);
 	}
 
 }

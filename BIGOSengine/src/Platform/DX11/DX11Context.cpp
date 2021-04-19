@@ -41,7 +41,7 @@ namespace BIGOS {
 			&devcon
 		);
 
-		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11Device");
+		BGS_CORE_ASSERT(SUCCEEDED(hr), "Cannot create D3D11Device!");
 		if (SUCCEEDED(hr))
 			BGS_CORE_TRACE("D3D11Device and ImidieteContext succesfully created!");
 

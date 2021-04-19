@@ -1,41 +1,39 @@
 #pragma once
-
 #include "bgspch.h"
- 
+
+// This ignores all warnings raised inside External headers
+#pragma warning(push, 0)
+#include <spdlog/spdlog.h>
+#include <spdlog/fmt/ostr.h>
+#pragma warning(pop)
+
 namespace BIGOS {
 
-	enum class LogType {CLIENT, CORE};
-	enum class LogLevel { TRACE, INFO, WARN, FATAL};
-
-    class Logger 
-    {
+	class Logger
+	{
 	public:
-		Logger(const Logger&) = delete;
+		static void Init();
+		static void Shutdown();
 
-		static Logger* Get();
-
-		void Log(LogType type, LogLevel lvl, const std::string& message);
-		void Log(LogType type, LogLevel lvl, const char* format, ...);
-
+		static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+		static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 	private:
-		Logger();
-		~Logger();
-
-	private:
-
-		static Logger* s_Instance;
-    };
+		static std::shared_ptr<spdlog::logger> s_CoreLogger;
+		static std::shared_ptr<spdlog::logger> s_ClientLogger;
+	};
 
 }
 
 // Core log macros
-#define BGS_CORE_TRACE(...)    ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::TRACE, __VA_ARGS__)
-#define BGS_CORE_INFO(...)     ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::INFO, __VA_ARGS__)
-#define BGS_CORE_WARN(...)     ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::WARN, __VA_ARGS__)
-#define BGS_CORE_FATAL(...)    ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CORE,::BIGOS::LogLevel::FATAL, __VA_ARGS__)
+#define BGS_CORE_TRACE(...)    ::BIGOS::Logger::GetCoreLogger()->trace(__VA_ARGS__)
+#define BGS_CORE_INFO(...)     ::BIGOS::Logger::GetCoreLogger()->info(__VA_ARGS__)
+#define BGS_CORE_WARN(...)     ::BIGOS::Logger::GetCoreLogger()->warn(__VA_ARGS__)
+#define BGS_CORE_ERROR(...)    ::BIGOS::Logger::GetCoreLogger()->error(__VA_ARGS__)
+#define BGS_CORE_FATAL(...)	   ::BIGOS::Logger::GetCoreLogger()->critical(__VA_ARGS__)
 
 // Client log macros
-#define BGS_TRACE(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::TRACE, __VA_ARGS__)
-#define BGS_INFO(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::INFO, __VA_ARGS__)
-#define BGS_WARN(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::WARN, __VA_ARGS__)
-#define BGS_FATAL(...)	      ::BIGOS::Logger::Get()->Log(::BIGOS::LogType::CLIENT, ::BIGOS::LogLevel::FATAL, __VA_ARGS__)
+#define BGS_TRACE(...)         ::BIGOS::Logger::GetClientLogger()->trace(__VA_ARGS__)
+#define BGS_INFO(...)          ::BIGOS::Logger::GetClientLogger()->info(__VA_ARGS__)
+#define BGS_WARN(...)          ::BIGOS::Logger::GetClientLogger()->warn(__VA_ARGS__)
+#define BGS_ERROR(...)         ::BIGOS::Logger::GetClientLogger()->error(__VA_ARGS__)
+#define BGS_FATAL(...)		   ::BIGOS::Logger::GetClientLogger()->critical(__VA_ARGS__)

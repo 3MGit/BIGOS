@@ -125,26 +125,7 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_CBPerFrame->Bind(0);
 
 	POConstantBufferData cbPerObject;
-	/*
-   BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate(m_WallPosition);
-   BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(90.0f, { 1, 0, 0 });
-   BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 5.0, 5.0f, 5.0f });
-
-   cbPerObject.u_Transform = tempTrans * tempRot * tempScale;
-   cbPerObject.u_ViewProj = m_EditorCamera.GetViewProjection();
-   cbPerObject.u_InvModelViewProj = BIGOS::math::mat4::Invert(cbPerObject.u_Transform * cbPerObject.u_ViewProj);
-   cbPerObject.u_Material = m_Materials[7];
-   m_CBPerObject->SetData(&cbPerObject, sizeof(cbPerObject));
-   m_CBPerObject->Bind(1); // param is register
-   m_Texture->Bind();
-   m_NormalTexture->Bind(1);
-   m_GridMesh->Render();
-   m_NormalTexture->Unbind(1);
-   m_Texture->Unbind();
-   */
-
-	//m_WhiteTexture->Bind();
-
+	
 	size_t rows = 7, cols = 7;
 	size_t matIndex = 0;
 	for (size_t i = 0; i < rows; i++)
@@ -152,7 +133,7 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 		m_Material->SetMetalic((float)i / (float)rows);
 		for (size_t j = 0; j < cols; j++)
 		{
-			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -3.0f + 2 * j, 3.0f - 2 * i, -0.0f });
+			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -6.0f + 2 * j, 6.0f - 2 * i, -0.0f });
 			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0, { 0, 1, 0 });
 			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 0.7f, 0.7f, 0.7f });
 
@@ -170,12 +151,10 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			
 		}
 	}
-	//m_PBRMaterial->Unbind();
-
-	//m_WhiteTexture->Unbind();
 
 	m_Framebuffer->Unbind();
 
+	// Rendering texture to screen
 	m_ScreenShader->Bind();
 	m_Framebuffer->BindTexture(0);
 	m_ScreenMesh->Render();
@@ -187,13 +166,33 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 void PBRDemoLayer::OnImGuiRender()
 {
-	/*
-	ImGui::Begin("Test");
-	ImGui::Text("Hello World");
-	ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
+	//ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
 	//ImGui::Image(m_Framebuffer->GetTexture(), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
+
+
+	ImGui::Begin("Memory");
+	ImGui::Text("Currentlly in use: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.currentUsed).c_str());
+	ImGui::Text("Total allocated: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.totalAllocated).c_str());
+	ImGui::Text("Total freed: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.totalFreed).c_str());
+	ImGui::Text("Total allocations: %d", BIGOS::MemoryManager::Get()->m_MemoryStats.totalAllocations);
+	ImGui::Text("");
+	std::string availableMemory = BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->GetSystemInfo().availablePhysicalMemory);
+	ImGui::Text("System memory");
+	float values[1] = { (float)BIGOS::MemoryManager::Get()->GetSystemInfo().availablePhysicalMemory / 1024 * 1024 * 1024 };
+	ImVec2 size = { 75.0f, 100.0f };
+	float maxMem = (float)BIGOS::MemoryManager::Get()->GetSystemInfo().totalPhysicalMemory / 1024 * 1024 * 1024;
+	ImGui::Text("  %s", availableMemory.c_str());
+	ImGui::PlotHistogram("##values", values, IM_ARRAYSIZE(values), 0, NULL, 0.0f, maxMem, size);
+	ImGui::Text("\tCPU");
 	ImGui::End();
-	*/
+
+	//ImGui::Begin("Test");
+	//ImVec2 size = { 40.0f, 100.0f };
+	//const float values[5] = { 0.5f, 0.20f, 0.80f, 0.60f, 0.25f };
+	//ImGui::PlotHistogram("##values", values, IM_ARRAYSIZE(values), 0, NULL, 0.0f, 1.0f, size);
+	//ImGui::End();
+
+	//ImGui::ShowDemoWindow();
 }
 
 void PBRDemoLayer::OnEvent(BIGOS::Event& e)

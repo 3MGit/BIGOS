@@ -1,6 +1,7 @@
 #include "bgspch.h"
 
 #include "Engine/Core/Core.h"
+#include "Engine/System/Memory.h"
 #include "Engine/Events/ApplicationEvent.h"
 
 #include "Platform/Windows/Win32Window.h"
@@ -60,7 +61,7 @@ namespace BIGOS {
 
 	bool WindowsWindow::Init()
 	{
-		BGS_CORE_TRACE("Creating Win32 window: Title: %s, Width: %d, Height: %d", m_Data.Title.c_str(), m_Data.Width, m_Data.Height);
+		BGS_CORE_TRACE("Creating Win32 window: Title: {0}, Width: {1}, Height: {2}", m_Data.Title.c_str(), m_Data.Width, m_Data.Height);
 
 		m_Data.InputManager = new InputManager();
 
@@ -147,6 +148,8 @@ namespace BIGOS {
 
 	void WindowsWindow::ShutDown()
 	{
+		delete m_Data.InputManager;
+
 		// Release Context
 
 		// Destroy window

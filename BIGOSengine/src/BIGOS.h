@@ -9,6 +9,11 @@
 #include "Engine/Utils/Logger.h"
 // -----------------------------------
 
+//-----Sstem--------------------------
+#include "Engine/System/Memory.h"
+#include "Engine/System/MemoryManager.h"
+// -----------------------------------
+
 // ---Entry Point---------------------
 //#include "Engine/Core/EntryPoint.h"
 // -----------------------------------
@@ -19,7 +24,7 @@
 #include "Engine/Core/MouseCodes.h"
 // -----------------------------------
 
-//-----Input--------------------------
+//-----Events--------------------------
 #include "Engine/Events/ApplicationEvent.h"
 #include "Engine/Events/Event.h"
 #include "Engine/Events/MouseEvent.h"
@@ -29,7 +34,7 @@
 //-----Renderer-----------------------
 #include "Engine/Renderer/Renderer.h"
 #include "Engine/Renderer/Camera/EditorCamera.h"
-#include "Engine/Renderer/Light.h"
+#include "Engine/Renderer/LightManager.h"
 #include "Engine/Renderer/Material.h"
 #include "Engine/Renderer/Mesh.h"
 #include "Engine/Renderer/MeshGenerator.h"

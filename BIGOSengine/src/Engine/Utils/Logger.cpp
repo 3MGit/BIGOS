@@ -3,109 +3,43 @@
 #include "Engine/Utils/Logger.h"
 #include "Engine/Utils/TimeUtils.h"
 
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/basic_file_sink.h>
+
 namespace BIGOS {
 
-	Logger* Logger::s_Instance = NULL;
+	std::shared_ptr<spdlog::logger> Logger::s_CoreLogger;
+	std::shared_ptr<spdlog::logger> Logger::s_ClientLogger;
 
-	Logger* Logger::Get()
+	void Logger::Init()
 	{
-		if (s_Instance == NULL) {
-			s_Instance = new Logger();
-		}
-		return s_Instance;
+		std::vector<spdlog::sink_ptr> logSinks;
+		logSinks.emplace_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
+		logSinks.emplace_back(std::make_shared<spdlog::sinks::basic_file_sink_mt>("BIGOS.log", true));
+
+		logSinks[0]->set_pattern("%^[%T] %n: %v%$");
+		logSinks[1]->set_pattern("[%T] [%l] %n: %v");
+
+		s_CoreLogger = std::make_shared<spdlog::logger>("BIGOS", begin(logSinks), end(logSinks));
+		spdlog::register_logger(s_CoreLogger);
+		s_CoreLogger->set_level(spdlog::level::trace);
+		s_CoreLogger->flush_on(spdlog::level::trace);
+
+		s_ClientLogger = std::make_shared<spdlog::logger>("APP", begin(logSinks), end(logSinks));
+		spdlog::register_logger(s_ClientLogger);
+		s_ClientLogger->set_level(spdlog::level::trace);
+		s_ClientLogger->flush_on(spdlog::level::trace);
 	}
 
-	Logger::Logger()
+	void Logger::Shutdown()
 	{
-	}
-
-	Logger::~Logger()
-	{
-	}
-
-	void Logger::Log(LogType type, LogLevel lvl, const std::string& message)
-	{
-		std::ostringstream oss;
-		oss << "[" << Utils::CurrentDateTime() << "] ";
-		switch (type)
-		{
-		case BIGOS::LogType::CLIENT:
-			break;
-		case BIGOS::LogType::CORE:
-			oss << "BIGOS:";
-			break;
-		default:
-			break;
-		}
-		switch (lvl)
-		{
-		case BIGOS::LogLevel::TRACE:
-			oss << "TRACE:\t";
-			break;
-		case BIGOS::LogLevel::INFO:
-			oss << "INFO:\t";
-			break;
-		case BIGOS::LogLevel::WARN:
-			oss << "WARN:\t";
-			break;
-		case BIGOS::LogLevel::FATAL:
-			oss << "FATAL:\t";
-			break;
-		default:
-			break;
-		}
-		oss << message << "\n";
-
-		std::cout << oss.str();
-	}
-
-	void Logger::Log(LogType type, LogLevel lvl, const char* format, ...)
-	{
-		std::ostringstream oss;
-		char* sMessage = NULL;
-		int nLength = 0;
-		va_list args;
-		va_start(args, format);
-		//  Return the number of characters in the string referenced the list of arguments.
-		// _vscprintf doesn't count terminating '\0' (that's why +1)
-		nLength = _vscprintf(format, args) + 1;
-		sMessage = new char[nLength];
-		vsprintf_s(sMessage, nLength, format, args);
-		//vsprintf(sMessage, format, args);
-		oss << "[" << Utils::CurrentDateTime() << "] ";
-		switch (type)
-		{
-		case BIGOS::LogType::CLIENT:
-			break;
-		case BIGOS::LogType::CORE:
-			oss << "BIGOS:";
-			break;
-		default:
-			break;
-		}
-		switch (lvl)
-		{
-		case BIGOS::LogLevel::TRACE:
-			oss << "TRACE:\t";
-			break;
-		case BIGOS::LogLevel::INFO:
-			oss << "INFO:\t";
-			break;
-		case BIGOS::LogLevel::WARN:
-			oss << "WARN:\t";
-			break;
-		case BIGOS::LogLevel::FATAL:
-			oss << "FATAL:\t";
-			break;
-		default:
-			break;
-		}
-		oss << sMessage << "\n";
-		va_end(args);	
-
-		std::cout << oss.str();
-
-		delete[] sMessage;
+		spdlog::drop(s_CoreLogger->name());
+		spdlog::drop(s_ClientLogger->name());
+		s_CoreLogger.reset();
+		s_ClientLogger.reset();
+		s_CoreLogger = nullptr;
+		s_ClientLogger = nullptr;
+		
 	}
 
 

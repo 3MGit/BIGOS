@@ -16,6 +16,7 @@ IncludeDir = {}
 IncludeDir["ImGui"] = "%{wks.location}/BIGOSengine/ThirdParty/imgui"
 IncludeDir["Glad"] = "%{wks.location}/BIGOSengine/ThirdParty/Glad/include"
 IncludeDir["stb_image"] = "%{wks.location}/BIGOSengine/ThirdParty/stb_image"
+IncludeDir["spdlog"] = "%{wks.location}/BIGOSengine/ThirdParty/spdlog/include"
 IncludeDir["Vulkan"] = "%{wks.location}/BIGOSengine/ThirdParty/Vulkan"
 
 group "Dependencies"
@@ -53,6 +54,7 @@ project "BIGOSengine"
 	includedirs
 	{
 		"%{prj.name}/src",
+		"%{IncludeDir.spdlog}",
 		"%{IncludeDir.ImGui}",
 		"%{IncludeDir.Glad}",
 		"%{IncludeDir.stb_image}",
@@ -116,7 +118,8 @@ project "Sandbox"
 	includedirs
 	{
 		"BIGOSengine/src",
-		"BIGOSengine/ThirdParty"
+		"BIGOSengine/ThirdParty",
+		"BIGOSengine/ThirdParty/spdlog/include"
 	}
 
 	links
