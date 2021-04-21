@@ -13,16 +13,17 @@ namespace BIGOS {
 
 		static unsigned char* LoadTextureImage(const std::string& path, uint32_t* width, uint32_t* height, int* channels, DXGI_FORMAT* format)
 		{
+			//forcing texture with 4 channels, do I need to fix it?
 			size_t size;
 			uint8_t* result;
 			stbi_set_flip_vertically_on_load(0);
 			stbi_uc* data = nullptr;
 			{
 				BGS_CORE_TRACE("Stbi loading texture from: {0}", path.c_str());
-				data = stbi_load(path.c_str(), (int*)width, (int*)height, channels, 0);
+				data = stbi_load(path.c_str(), (int*)width, (int*)height, channels, STBI_rgb_alpha);
 				if (data)
 				{
-					size = (*width) * (*height) *(*channels);
+					size = (*width) * (*height) * 4;
 					result = bigos_new uint8_t[size];
 					BGS_CORE_TRACE("{0}Image loaded!", '\t');
 				}
@@ -55,17 +56,20 @@ namespace BIGOS {
 	DX11Texture2D::DX11Texture2D(const std::string& path)
 		: m_Path(path)
 	{	
-		int chanels;
-		unsigned char* data = Utils::LoadTextureImage(path, &m_Width, &m_Height, &chanels, &m_Format);
+		int channels;
+		unsigned char* data = Utils::LoadTextureImage(path, &m_Width, &m_Height, &channels, &m_Format);
 
 		uint32_t fmtSupport = 0;
 		DX11Context::GetDevice()->CheckFormatSupport(m_Format, &fmtSupport);
 		BGS_CORE_ASSERT(fmtSupport, "DirectX cannot support this format");
 
+		//Testing creation textures from *.tga files
+		channels = 4;
+
 		D3D11_SUBRESOURCE_DATA initData;
 		initData.pSysMem = data;
-		initData.SysMemPitch = chanels * m_Width;
-		initData.SysMemSlicePitch = m_Width * m_Height * chanels;
+		initData.SysMemPitch = channels * m_Width;
+		initData.SysMemSlicePitch = m_Width * m_Height * channels;
 
 		D3D11_SUBRESOURCE_DATA* initDataPtr = nullptr;
 		if (data) initDataPtr = &initData;

@@ -9,33 +9,35 @@ namespace BIGOS
 	{
 		m_MaterialBuffer = ConstantBuffer::Create(sizeof(MaterialUniform));
 		m_MaterialData = MaterialUniform();
-		m_Textures.resize(3);
+		m_Textures["albedo"] = nullptr;
+		m_Textures["metalic"] = nullptr;
+		m_Textures["roughness"] = nullptr;
 	}
 
 	void Material::Bind()
 	{
 		m_Shader->Bind();
 
-		if (m_MaterialData.usingAlbedoMap && m_MaterialData.usingMetalicMap && m_MaterialData.usingRoughnessMap)
-		{
-			for (uint32_t i = 0; i < m_Textures.size(); i++)
-			{
-				m_Textures[i]->Bind(i);
-			}
-		}
+		if (m_MaterialData.usingAlbedoMap)
+			m_Textures["albedo"]->Bind(0);
+		if (m_MaterialData.usingMetalicMap)
+			m_Textures["metalic"]->Bind(1);
+		if (m_MaterialData.usingRoughnessMap)
+			m_Textures["roughness"]->Bind(2);
+
+		
 		m_MaterialBuffer->SetData(&m_MaterialData, sizeof(m_MaterialData));
 		m_MaterialBuffer->Bind(2);
 	}
 
 	void Material::Unbind()
 	{
-		if (m_MaterialData.usingAlbedoMap && m_MaterialData.usingMetalicMap && m_MaterialData.usingRoughnessMap)
-		{
-			for (uint32_t i = 0; i < m_Textures.size(); i++)
-			{
-				m_Textures[i]->Unbind(i);
-			}
-		}
+		if (m_MaterialData.usingAlbedoMap)
+			m_Textures["albedo"]->Unbind(0);
+		if (m_MaterialData.usingMetalicMap)
+			m_Textures["metalic"]->Unbind(1);
+		if (m_MaterialData.usingRoughnessMap)
+			m_Textures["roughness"]->Unbind(2);
 	}
 
 	void Material::SetAlbedo(const math::vec4& albedo)
@@ -47,7 +49,7 @@ namespace BIGOS
 	void Material::SetAlbedoTexture(std::shared_ptr<Texture2D> albedoTextuere)
 	{
 		m_MaterialData.usingAlbedoMap = 1.0f;
-		m_Textures[0] = std::move(albedoTextuere);
+		m_Textures["albedo"] = std::move(albedoTextuere);
 	}
 
 	void Material::SetMetalic(float metalic)
@@ -59,7 +61,7 @@ namespace BIGOS
 	void Material::SetMetalicTexture(std::shared_ptr<Texture2D> metalicTextuere)
 	{
 		m_MaterialData.usingMetalicMap = 1.0f;
-		m_Textures[1] = std::move(metalicTextuere);
+		m_Textures["metalic"] = std::move(metalicTextuere);
 	}
 
 	void Material::SetRoughness(float roughness)
@@ -71,7 +73,7 @@ namespace BIGOS
 	void Material::SetRoughnessTexture(std::shared_ptr<Texture2D> roughnessTextuere)
 	{
 		m_MaterialData.usingRoughnessMap = 1.0f;
-		m_Textures[2] = std::move(roughnessTextuere);
+		m_Textures["roughness"] = std::move(roughnessTextuere);
 	}
 
 	void Material::SetAO(float ao)

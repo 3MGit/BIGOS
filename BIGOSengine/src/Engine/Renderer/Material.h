@@ -55,7 +55,7 @@ namespace BIGOS {
 		MaterialUniform m_MaterialData;
 		std::shared_ptr<Shader> m_Shader;
 		std::shared_ptr<ConstantBuffer> m_MaterialBuffer;
-		std::vector<std::shared_ptr<Texture2D>> m_Textures;
+		std::unordered_map<std::string,std::shared_ptr<Texture2D>> m_Textures;
 	};
 
 	__declspec(align(16))

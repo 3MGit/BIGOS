@@ -48,6 +48,7 @@ void PBRDemoLayer::OnAttach()
 
 	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_normal.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
+	//m_WhiteTexture = BIGOS::Texture2D::Create("assets/models/Cerberus/Textures/Metalness.tga");
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
 	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8 });
@@ -157,7 +158,9 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	// Rendering texture to screen
 	m_ScreenShader->Bind();
 	m_Framebuffer->BindTexture(0);
+	//m_WhiteTexture->Bind(0);
 	m_ScreenMesh->Render();
+	//m_WhiteTexture->Unbind(0);
 	m_Framebuffer->UnbindTexture(0);
 	m_ScreenShader->Unbind();
 

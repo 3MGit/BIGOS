@@ -14,6 +14,10 @@
 #include <sstream>
 #include <sstream>
 
+#include <vector>
+#include <unordered_map>
+#include <map>
+
 #include <cstdarg>
 
 #include <functional>
@@ -21,6 +25,7 @@
 
 #include <iomanip>
 
-#include <memory>
+//#include <memory>
+#include "Engine/System/Memory.h"
 
 #include <time.h>
