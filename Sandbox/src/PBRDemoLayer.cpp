@@ -14,7 +14,8 @@ __declspec(align(16))
 struct PFConstantBufferData
 {
 	BIGOS::math::vec3 u_CameraPosition;
-	BIGOS::Light u_Light[4];
+	BIGOS::Light u_Lights[20];
+	uint32_t u_LightsCount;
 };
 
 __declspec(align(16))
@@ -51,7 +52,11 @@ void PBRDemoLayer::OnAttach()
 	//m_WhiteTexture = BIGOS::Texture2D::Create("assets/models/Cerberus/Textures/Metalness.tga");
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
-	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8 });
+	BIGOS::FramebufferSpecification fbSpec;
+	fbSpec.Attachments = { BIGOS::FramebufferTextureFormat::RGBA8 };
+	fbSpec.Width = BIGOS::Application::Get().GetWindow()->GetWidth();
+	fbSpec.Height = BIGOS::Application::Get().GetWindow()->GetHeight();
+	m_Framebuffer = BIGOS::Framebuffer::Create(fbSpec);
 
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
 	//m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
@@ -64,10 +69,19 @@ void PBRDemoLayer::OnAttach()
 	m_SkyboxCB = BIGOS::ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
 
 	m_Material = new BIGOS::Material(m_PBRShader);
-	m_Light[0] = new BIGOS::Light({ -10.0f, 10.0f, 10.0f }, {300.0f, 300.0f, 300.0f, 300.0f});
-	m_Light[1] = new BIGOS::Light({ 10.0f, 10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
-	m_Light[2] = new BIGOS::Light({ -10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
-	m_Light[3] = new BIGOS::Light({ 10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
+
+	m_StoneMaterial = new BIGOS::Material(m_PBRShader);
+	m_StoneMaterial->SetAlbedoTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/Albedo.png"));
+	m_StoneMaterial->SetRoughnessTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/Roughness.png"));
+	m_StoneMaterial->SetNormalTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/Normal.png"));
+	m_StoneMaterial->SetAOTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/AmbientOcclusion.png"));
+
+	m_LightManager = BIGOS::LightManager::Create();
+
+	m_Lights[0] = new BIGOS::Light({ -10.0f, 10.0f, 10.0f }, {300.0f, 300.0f, 300.0f, 300.0f});
+	m_Lights[1] = new BIGOS::Light({ 10.0f, 10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
+	m_Lights[2] = new BIGOS::Light({ -10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
+	m_Lights[3] = new BIGOS::Light({ 10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 }
@@ -78,11 +92,12 @@ void PBRDemoLayer::OnDetach()
 	delete m_SphereMesh;
 	delete m_Skybox;
 	delete m_ScreenMesh;
+	delete m_Lights[0];
+	delete m_Lights[1];
+	delete m_Lights[2];
+	delete m_Lights[3];
 	delete m_Material;
-	delete m_Light[0];
-	delete m_Light[1];
-	delete m_Light[2];
-	delete m_Light[3];
+	delete m_StoneMaterial;
 }
 
 void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -113,15 +128,17 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_SkyboxCB->SetData(&skyboxCB, sizeof(skyboxCB));
 	m_SkyboxCB->Bind(0);
 	m_Skybox->Render();
+	m_EnvironmentMap->Unbind(0);
 
 
 	// Scene update
 	PFConstantBufferData cbPerFrame;
 	cbPerFrame.u_CameraPosition = m_EditorCamera.GetPosition();
-	cbPerFrame.u_Light[0] = *m_Light[0];
-	cbPerFrame.u_Light[1] = *m_Light[1];
-	cbPerFrame.u_Light[2] = *m_Light[2];
-	cbPerFrame.u_Light[3] = *m_Light[3];
+	cbPerFrame.u_Lights[0] = *m_Lights[0];
+	cbPerFrame.u_Lights[1] = *m_Lights[1];
+	cbPerFrame.u_Lights[2] = *m_Lights[2];
+	cbPerFrame.u_Lights[3] = *m_Lights[3];
+	cbPerFrame.u_LightsCount = m_LightManager->GetCount();
 	m_CBPerFrame->SetData(&cbPerFrame, sizeof(cbPerFrame));
 	m_CBPerFrame->Bind(0);
 
@@ -146,6 +163,7 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 			m_Material->SetRoughness(BIGOS::math::clamp((float)j / (float)cols, 0.05f, 1.0f));
 			m_Material->Bind();
+			//m_StoneMaterial->Bind();
 			
 			m_SphereMesh->Render();
 			matIndex++;
@@ -171,7 +189,6 @@ void PBRDemoLayer::OnImGuiRender()
 {
 	//ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
 	//ImGui::Image(m_Framebuffer->GetTexture(), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
-
 
 	ImGui::Begin("Memory");
 	ImGui::Text("Currentlly in use: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.currentUsed).c_str());

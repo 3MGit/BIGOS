@@ -12,6 +12,8 @@ namespace BIGOS
 		m_Textures["albedo"] = nullptr;
 		m_Textures["metalic"] = nullptr;
 		m_Textures["roughness"] = nullptr;
+		m_Textures["ao"] = nullptr;
+		m_Textures["normal"] = nullptr;
 	}
 
 	void Material::Bind()
@@ -24,6 +26,10 @@ namespace BIGOS
 			m_Textures["metalic"]->Bind(1);
 		if (m_MaterialData.usingRoughnessMap)
 			m_Textures["roughness"]->Bind(2);
+		if (m_MaterialData.usingAOMap)
+			m_Textures["ao"]->Bind(3);
+		if (m_MaterialData.usingNormalMap)
+			m_Textures["normal"]->Bind(4);
 
 		
 		m_MaterialBuffer->SetData(&m_MaterialData, sizeof(m_MaterialData));
@@ -38,6 +44,10 @@ namespace BIGOS
 			m_Textures["metalic"]->Unbind(1);
 		if (m_MaterialData.usingRoughnessMap)
 			m_Textures["roughness"]->Unbind(2);
+		if (m_MaterialData.usingAOMap)
+			m_Textures["ao"]->Unbind(3);
+		if (m_MaterialData.usingNormalMap)
+			m_Textures["normal"]->Unbind(4);
 	}
 
 	void Material::SetAlbedo(const math::vec4& albedo)
@@ -78,7 +88,25 @@ namespace BIGOS
 
 	void Material::SetAO(float ao)
 	{
+		m_MaterialData.usingAOMap = 0.0f;
 		m_MaterialData.AO = ao;
+	}
+
+	void Material::SetAOTexture(std::shared_ptr<Texture2D> aoTexture)
+	{
+		m_MaterialData.usingAOMap = 1.0f;
+		m_Textures["ao"] = std::move(aoTexture);
+	}
+
+	void Material::SetNormals()
+	{
+		m_MaterialData.usingNormalMap = 0.0f;
+	}
+
+	void Material::SetNormalTexture(std::shared_ptr<Texture2D> normalTexture)
+	{
+		m_MaterialData.usingNormalMap = 1.0f;
+		m_Textures["normal"] = std::move(normalTexture);
 	}
 
 }

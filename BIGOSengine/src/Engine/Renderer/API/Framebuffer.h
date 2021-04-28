@@ -14,10 +14,31 @@ namespace BIGOS {
 		DEPTH24STENCIL8,
 	};
 	
+	struct FramebufferTextureSpecification
+	{
+		FramebufferTextureSpecification() = default;
+		FramebufferTextureSpecification(FramebufferTextureFormat format)
+			:TextureFormat(format) {}
+
+		FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::RGBA8;
+	};
+
+	struct FramebufferAttachmentSpecification
+	{
+		FramebufferAttachmentSpecification() = default;
+		FramebufferAttachmentSpecification(std::initializer_list<FramebufferTextureSpecification> attachments)
+			: Attachments(attachments) {}
+
+		std::vector<FramebufferTextureSpecification> Attachments;
+	};
+
 	struct FramebufferSpecification
 	{
 		uint32_t Width = 0, Height = 0;
-		FramebufferTextureFormat TextureFormat = FramebufferTextureFormat::RGBA8;
+		FramebufferAttachmentSpecification Attachments;
+		uint32_t Samples = 1;
+
+		bool SwapChainTarget = false;
 	};
 
 	class Framebuffer

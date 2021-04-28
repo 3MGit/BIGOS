@@ -56,6 +56,12 @@ void PhongDemoLayer::OnAttach()
 
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
+	BIGOS::FramebufferSpecification fbSpec;
+	fbSpec.Attachments = { BIGOS::FramebufferTextureFormat::RGBA8 };
+	fbSpec.Width = BIGOS::Application::Get().GetWindow()->GetWidth();
+	fbSpec.Height = BIGOS::Application::Get().GetWindow()->GetHeight();
+	m_Framebuffer = BIGOS::Framebuffer::Create(fbSpec);
+
 	m_GridMesh = BIGOS::MeshGenerator::CreateGrid(3.0f, 3.0f, 2, 2);
 	//m_CubeMesh = BIGOS::MeshGenerator::CreateBox({ 1.0f, 1.0f, 1.0f });
 	m_Skybox = BIGOS::MeshGenerator::CreateBox({ 30.0f, 30.0f, 30.0f });
@@ -72,8 +78,6 @@ void PhongDemoLayer::OnAttach()
 
 	m_Materials = materialPallete;
 	m_BrickMaterial = new BIGOS::PhongMaterial(BIGOS::math::vec4(0.6f), BIGOS::math::vec4(0.5f), BIGOS::math::vec4(0.2f));
-
-	m_Framebuffer = BIGOS::Framebuffer::Create({ BIGOS::Application::Get().GetWindow()->GetWidth(), BIGOS::Application::Get().GetWindow()->GetHeight(), BIGOS::FramebufferTextureFormat::RGBA8});
 }
 
 void PhongDemoLayer::OnDetach()

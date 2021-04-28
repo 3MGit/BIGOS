@@ -41,8 +41,11 @@ private:
 	BIGOS::Mesh* m_GridMesh = nullptr;
 	BIGOS::Mesh* m_ScreenMesh = nullptr;
 
-	BIGOS::Light* m_Light[4];
+	std::unique_ptr<BIGOS::LightManager> m_LightManager;
+	
+	BIGOS::Light* m_Lights[4];
 	BIGOS::Material* m_Material;
+	BIGOS::Material* m_StoneMaterial;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

@@ -7,6 +7,8 @@ struct Material
     float Roughness;
     float usingRoughnessMap;
     float AO;
+    float usingAOMap;
+    float usingNormalMap;
 };
 
 struct Light
@@ -43,12 +45,24 @@ struct PS_INPUT
     float2 uv: TEXCOORD;
 };
 
-static const float PI = 3.14159265359;
+struct Attributes
+{
+    float4 position;
+    float2 uv;
+    float3 normal;
+    float3 binormal;
+    float3 tangent;
+};
+
+
+static const float PI = 3.14159265359f;
+static const float GAMMA = 2.2f;
 
 cbuffer cbPerFrame: register(b0)
 {
     float3 u_CameraPosition;
-    Light u_Light[4];
+    Light u_Lights[20];
+    uint u_LightsCount;
 };
 
 cbuffer cbPerObject: register(b1)
@@ -76,6 +90,10 @@ VS_OUTPUT vsmain(VS_INPUT input)
 
     return output;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////// PBR ////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 float DistributionGGX(float3 N, float3 H, float roughness)
 {
@@ -112,42 +130,103 @@ float GeometrySmith(float3 N, float3 V, float3 L, float roughness)
     return ggx1 * ggx2;
 }
 
-float3 fresnelSchlick(float cosTheta, float3 F0)
+float3 fresnelSchlick(float cosTheta, float3 F0, float roughness)
 {
-    return F0 + (1.0 - F0) * pow(max(1.0 - cosTheta, 0.0), 5.0);
+    return F0 + (max(float3(1.0 - roughness, 1.0 - roughness, 1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
 }
 
-Texture2D u_Texture : register(t0);
-SamplerState u_TextureSampler : register(s0);
+Texture2D u_AlbedoTexture : register(t0);
+Texture2D u_MetalicTexture : register(t1);
+Texture2D u_RoughnessTexture : register(t2);
+Texture2D u_AOTexture : register(t3);
+Texture2D u_NormalTexture : register(t4);
+SamplerState u_AlbedoSampler : register(s0);
+SamplerState u_MetalicSampler : register(s1);
+SamplerState u_RoughnessSampler : register(s2);
+SamplerState u_AOSampler : register(s3);
+SamplerState u_NormalSampler : register(s4);
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////// TEXTURES ///////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+float4 GammaCorrectTexture(Texture2D t, SamplerState s, float2 uv)
+{
+    float4 samp = t.Sample(s, uv);
+    return float4(pow(abs(samp.rgb), GAMMA), samp.a);
+}
+
+float4 GetAlbedo(Attributes a, Material m)
+{
+    return (1.0f - m.usingAlbedoMap) * m.Albedo + m.usingAlbedoMap * GammaCorrectTexture(u_AlbedoTexture, u_AlbedoSampler, a.uv);
+}
+
+float GetMetalic(Attributes a, Material m)
+{
+    return (1.0f - m.usingMetalicMap) * m.Metalic + m.usingMetalicMap * GammaCorrectTexture(u_MetalicTexture, u_MetalicSampler, a.uv).r;
+}
+
+float GetRoughness(Attributes a, Material m)
+{
+    return (1.0f - m.usingRoughnessMap) * m.Roughness + m.usingRoughnessMap * GammaCorrectTexture(u_RoughnessTexture, u_RoughnessSampler, a.uv).r;
+}
+
+float GetAO(Attributes a, Material m)
+{
+    return (1.0f - m.usingAOMap) * m.AO + m.usingAOMap * GammaCorrectTexture(u_AOTexture, u_AOSampler, a.uv).r;
+}
+
+float3 GetNormal(Attributes a, Material m)
+{
+    float3 N = a.normal;
+    float3 T = a.tangent;
+    float3 B = normalize(cross(N, T));
+
+    float3x3 toWorld = float3x3(T, B, N);
+    float3 normalMap = u_NormalTexture.Sample(u_NormalSampler, a.uv).rgb * 2.0 - 1.0;
+    normalMap = mul(normalMap.rgb, toWorld);
+    normalMap = normalize(normalMap);
+
+    return (1.0f - m.usingNormalMap) * a.normal + m.usingNormalMap * normalMap;
+}
+
 
 float4 psmain(PS_INPUT input) : SV_Target
 {
-    float3 N = normalize(input.normal);
-    float3 V = normalize(u_CameraPosition - input.position.xyz);
+    Attributes attributes;
+    attributes.position = input.position;
+    attributes.uv = input.uv;
+    attributes.normal = normalize(input.normal);
+    attributes.tangent = normalize(input.tangent);
+
+    float3 N = GetNormal(attributes, u_Material);
+    float3 V = normalize(u_CameraPosition - attributes.position.xyz);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
     float3 F0 = 0.04f;
-    F0 = lerp(F0, u_Material.Albedo.rbg, u_Material.Metalic);
+    F0 = lerp(F0, GetAlbedo(attributes, u_Material).rgb, GetMetalic(attributes, u_Material));
 
     // reflectance equation
     float3 Lo = 0.0f;
-    for (int i = 0; i < 4; ++i)
+    for (uint i = 0; i < 4; ++i)
     {
 
         // calculate per-light radiance
-        float3 L = normalize(u_Light[i].Position - input.position.xyz);
-        //float3 L = normalize(u_Light.Direction);
+        float3 L = normalize(u_Lights[i].Position - attributes.position.xyz);
         float3 H = normalize(V + L);
-        float distance = length(u_Light[i].Position - input.position.xyz);
+        float distance = length(u_Lights[i].Position - attributes.position.xyz);
         float attenuation = 1.0f / (distance * distance);
-        float3 radiance = u_Light[i].Color.rbg * attenuation;
+        float3 radiance = u_Lights[i].Color.rbg * attenuation;
         //radiance = u_Light.Color.rbg;
 
         // Cook-Torrance BRDF
-        float NDF = DistributionGGX(N, H, u_Material.Roughness);
-        float G = GeometrySmith(N, V, L, u_Material.Roughness);
-        float3 F = fresnelSchlick(max(dot(H, V), 0.0f), F0);
+        //float NDF = DistributionGGX(N, H, u_Material.Roughness);
+        //float G = GeometrySmith(N, V, L, u_Material.Roughness);
+        float NDF = DistributionGGX(N, H, GetRoughness(attributes, u_Material));
+        float G = GeometrySmith(N, V, L, GetRoughness(attributes, u_Material));
+        float3 F = fresnelSchlick(max(dot(H, V), 0.0f), F0, GetRoughness(attributes, u_Material));
 
         float3 nominator = NDF * G * F;
         float denominator = 4.0f * max(dot(N, V), 0.0) * max(dot(N, L), 0.0);
@@ -162,18 +241,18 @@ float4 psmain(PS_INPUT input) : SV_Target
         // multiply kD by the inverse metalness such that only non-metals 
         // have diffuse lighting, or a linear blend if partly metal (pure metals
         // have no diffuse light).
-        kD *= 1.0 - u_Material.Metalic;
+        kD *= 1.0 - GetMetalic(attributes, u_Material);
 
         // scale light by NdotL
         float NdotL = max(dot(N, L), 0.0);
 
         // add to outgoing radiance Lo
-        Lo += 4.0f * ((kD * (u_Material.Albedo.rbg / PI) + specular) * radiance * NdotL);  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
+        Lo += 4.0f * ((kD * (GetAlbedo(attributes, u_Material).rgb / PI) + specular) * radiance * NdotL);  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }
 
     // ambient lighting (note that the next IBL tutorial will replace 
     // this ambient lighting with environment lighting).
-    float3 ambient = 0.03f * u_Material.Albedo.rbg * u_Material.AO;
+    float3 ambient = 0.03f * GetAlbedo(attributes, u_Material).rgb * GetAO(attributes, u_Material);
 
     //float3 ambient = u_Material.Albedo.rbg * u_Material.AO;
 
@@ -185,6 +264,6 @@ float4 psmain(PS_INPUT input) : SV_Target
     color = pow(abs(color), 1.0f / 2.2f);
 
     return float4(color, 1.0f);
-    //return float4(NDF, 0.0f, 0.0f, 1.0f);
-    //return u_Material.Albedo;
+    //return float4(GetNormal(attributes, u_Material) *0.5f + 0.5f, 1.0f);
+    //return GetAlbedo(attributes, u_Material);
 }

@@ -17,16 +17,20 @@ namespace BIGOS {
 		float Roughness;
 		float usingRoughnessMap;
 		float AO;
+		float usingAOMap;
+		float usingNormalMap;
 
 		MaterialUniform() 
 		{
 			Albedo = { 0.5f, 0.0f, 0.0f, 1.0f };
 			usingAlbedoMap = 0.0f;
-			Metalic = 1.0f;
+			Metalic = 0.0f;
 			usingMetalicMap = 0.0f;
 			Roughness = 0.2;
 			usingRoughnessMap = 0.0f;
 			AO = 1.0f;
+			usingAOMap = 0.0f;
+			usingNormalMap = 0.0f;
 		}
 	};
 
@@ -49,6 +53,10 @@ namespace BIGOS {
 		void SetRoughnessTexture(std::shared_ptr<Texture2D> roughnessTextuere);
 
 		void SetAO(float ao);
+		void SetAOTexture(std::shared_ptr<Texture2D> aoTexture);
+
+		void SetNormals();
+		void SetNormalTexture(std::shared_ptr<Texture2D> normalTexture);
 
 		MaterialUniform GetMaterialUniform() const { return m_MaterialData; }
 	private:

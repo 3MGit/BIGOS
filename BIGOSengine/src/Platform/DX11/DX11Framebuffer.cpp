@@ -97,7 +97,7 @@ namespace BIGOS {
 		textureDesc.Height = m_Specification.Height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = BIGOSTextureFormatToDXGIFormat(m_Specification.TextureFormat);
+		textureDesc.Format = BIGOSTextureFormatToDXGIFormat(m_Specification.Attachments.Attachments[0].TextureFormat);
 		textureDesc.SampleDesc.Count = DX11Context::GetContext()->IsMSAAEnabled() ? 4 : 1;
 		//textureDesc.SampleDesc.Count = Direct3DContext::GetContext()->IsMSAAEnabled() ? (Direct3DContext::GetContext()->GetMSAAQuality() - 1) : 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;

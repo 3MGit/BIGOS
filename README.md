@@ -14,6 +14,10 @@ Engine is written by me in my free time. Some basic features are still missing, 
   <img src="https://github.com/MBahyrycz/BIGOS/blob/main/Resources/Demos/pbrDemo.png?raw=true" />
 </p>
 
+<p align="center">
+  <img src="https://github.com/MBahyrycz/BIGOS/blob/main/Resources/Demos/pbrTexturedDemo.png?raw=true" />
+</p>
+
 ## Build
 Use Win-GenProjects.bat in "scripts" folder to genetate default Visual Studio 2019 solution
 

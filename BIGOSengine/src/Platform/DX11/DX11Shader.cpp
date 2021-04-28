@@ -25,7 +25,7 @@ namespace BIGOS {
 		if (errorBlob)
 		{
 			if (errorBlob->GetBufferSize())
-				BGS_CORE_FATAL("Shader Compile Errors: %s", (const char*)errorBlob->GetBufferPointer());
+				BGS_CORE_FATAL("Shader Compile Errors: {0}", (const char*)errorBlob->GetBufferPointer());
 			ReleaseCOM(errorBlob);
 		}
 		hr2 = D3DCompileFromFile(widestr.c_str(), nullptr, nullptr, "psmain", "ps_5_0", NULL, NULL, &m_Data.ps, &errorBlob);
@@ -34,7 +34,7 @@ namespace BIGOS {
 		if (errorBlob)
 		{
 			if (errorBlob->GetBufferSize())
-				BGS_CORE_FATAL("Shader Compile Errors: %s", (const char*)errorBlob->GetBufferPointer());
+				BGS_CORE_FATAL("Shader Compile Errors: {0}", (const char*)errorBlob->GetBufferPointer());
 			ReleaseCOM(errorBlob);
 		}
 		DX11Context::GetDevice()->CreateVertexShader(m_Data.vs->GetBufferPointer(), m_Data.vs->GetBufferSize(), nullptr, &m_Data.vertexShader);
