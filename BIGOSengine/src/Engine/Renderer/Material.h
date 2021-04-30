@@ -65,21 +65,4 @@ namespace BIGOS {
 		std::shared_ptr<ConstantBuffer> m_MaterialBuffer;
 		std::unordered_map<std::string,std::shared_ptr<Texture2D>> m_Textures;
 	};
-
-	__declspec(align(16))
-		struct PhongMaterial
-	{
-		math::vec4 Ambient;
-		math::vec4 Diffuse;
-		math::vec4 Specular;
-
-		PhongMaterial()
-		{
-
-		}
-
-		PhongMaterial(math::vec4 ambient, math::vec4 diffuse, math::vec4 specular)
-			: Ambient(ambient), Diffuse(diffuse), Specular(specular) {}
-	};
-
 }

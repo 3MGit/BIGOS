@@ -47,9 +47,8 @@ void PBRDemoLayer::OnAttach()
 	m_ScreenShader = BIGOS::Shader::Create("assets/shaders/screen.hlsl");
 	m_SkyboxShader = BIGOS::Shader::Create("assets/shaders/skybox.hlsl");
 
-	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/Bricks053/Bricks053_1K_normal.png");
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
-	//m_WhiteTexture = BIGOS::Texture2D::Create("assets/models/Cerberus/Textures/Metalness.tga");
+	m_NormalTexture = BIGOS::Texture2D::Create("assets/models/Cerberus/Textures/Metalness.tga");
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
 	BIGOS::FramebufferSpecification fbSpec;

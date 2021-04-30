@@ -1,7 +1,6 @@
 #include <BIGOS.h>
 #include <Engine/Core/EntryPoint.h>
 
-#include "PhongDemoLayer.h"
 #include "PBRDemoLayer.h"
 
 class Sandbox : public BIGOS::Application
@@ -10,7 +9,6 @@ public:
 	Sandbox()
 		: Application("SandboxApp")
 	{
-		//PushLayer(new PhongDemoLayer());
 		PushLayer(new PBRDemoLayer());
 	}
 
