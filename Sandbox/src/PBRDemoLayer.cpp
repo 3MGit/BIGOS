@@ -48,7 +48,7 @@ void PBRDemoLayer::OnAttach()
 	m_SkyboxShader = BIGOS::Shader::Create("assets/shaders/skybox.hlsl");
 
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
-	m_NormalTexture = BIGOS::Texture2D::Create("assets/models/Cerberus/Textures/Metalness.tga");
+	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/hdr/ArchesPineTree.hdr");
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
 	BIGOS::FramebufferSpecification fbSpec;
@@ -83,6 +83,9 @@ void PBRDemoLayer::OnAttach()
 	m_Lights[3] = new BIGOS::Light({ 10.0f, -10.0f, 10.0f }, { 300.0f, 300.0f, 300.0f, 300.0f });
 
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
+
+	m_TestCube = BIGOS::TextureCube::Create("assets/textures/hdr/ArchesPineTree.hdr");
+
 }
 
 void PBRDemoLayer::OnDetach()
@@ -115,12 +118,13 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_EditorCamera.OnUpdate(ts);
 
 	//Framebuffer
-	m_Framebuffer->Bind();
-	m_Framebuffer->ClearAttachment(0, m_ClearColor);
+	m_Framebuffer->Bind(0);
+	m_Framebuffer->ClearColorAttachment(0, m_ClearColor);
 
 	//Envmap
 	m_SkyboxShader->Bind();
-	m_EnvironmentMap->Bind(0);
+	//m_EnvironmentMap->Bind(0);
+	m_TestCube->Bind(0);
 	SkyboxConstantBufferData skyboxCB;
 	BIGOS::math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
 	skyboxCB.u_ModelViewProj = BIGOS::math::mat4::Invert(m_EditorCamera.GetViewProjection());
@@ -174,11 +178,11 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	// Rendering texture to screen
 	m_ScreenShader->Bind();
-	m_Framebuffer->BindTexture(0);
-	//m_WhiteTexture->Bind(0);
+	m_Framebuffer->BindTexture(0,0);
+	//m_NormalTexture->Bind(0);
 	m_ScreenMesh->Render();
-	//m_WhiteTexture->Unbind(0);
-	m_Framebuffer->UnbindTexture(0);
+	m_NormalTexture->Unbind(0);
+	//m_Framebuffer->UnbindTexture(0);
 	m_ScreenShader->Unbind();
 
 	m_Rotation += ts / 50.0f;
@@ -186,8 +190,10 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 void PBRDemoLayer::OnImGuiRender()
 {
+	//ImGui::Begin("Memory");
 	//ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
-	//ImGui::Image(m_Framebuffer->GetTexture(), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
+	//ImGui::Image(m_Framebuffer->GetTexture(0), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
+	//ImGui::End();
 
 	ImGui::Begin("Memory");
 	ImGui::Text("Currentlly in use: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.currentUsed).c_str());

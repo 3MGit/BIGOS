@@ -29,7 +29,7 @@ namespace BIGOS {
 	{
 	public:
 		static std::shared_ptr<TextureCube> Create(const std::string* files);
-
+		static std::shared_ptr<TextureCube> Create(const std::string file);
 	};
 
 }

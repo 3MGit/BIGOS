@@ -41,5 +41,8 @@ struct PS_INPUT
 float4 psmain(PS_INPUT input) : SV_Target
 {
 	//return float4(u_EnvironmentMap.SampleLevel(u_EnvironmentMapSampler, input.positionL, 4));
-	return float4(u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL.xyz));
+	float3 envColor = u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL.xyz).rgb;
+	envColor = envColor / (envColor + 1.0f);
+	envColor = pow(envColor, 1.0 / 2.2);
+	return float4(envColor, 1.0f);
 }

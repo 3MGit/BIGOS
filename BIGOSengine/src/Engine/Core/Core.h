@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Utils/Logger.h"
+#include "Engine/Utils/ScopedTimer.h"
 
 #define BGS_CORE_ASSERT(x, ...) { if(!(x)) { BGS_CORE_FATAL("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 

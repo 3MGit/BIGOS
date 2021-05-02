@@ -51,4 +51,18 @@ namespace BIGOS {
 	
 	}
 
+	std::shared_ptr<TextureCube> TextureCube::Create(const std::string file)
+	{
+		switch (Renderer::GetAPI())
+		{
+		case RendererAPI::API::NONE:		BGS_CORE_ASSERT(false, "RendererAPI::None is currently not supported!");	return nullptr;
+		case RendererAPI::API::OPENGL:		BGS_CORE_ASSERT(false, "RendererAPI::OPENGL is currently not supported!");	return nullptr;
+		case RendererAPI::API::DIRECTX11:	return std::make_shared<DX11TextureCube>(file);
+		case RendererAPI::API::VULKAN:		BGS_CORE_ASSERT(false, "RendererAPI::VULKAN is currently not supported!");	return nullptr;
+		}
+
+		BGS_CORE_ASSERT(false, "Unknown RendererAPI!");
+		return nullptr;
+
+	}
 }

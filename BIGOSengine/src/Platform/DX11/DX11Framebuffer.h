@@ -13,16 +13,17 @@ namespace BIGOS {
 		DX11Framebuffer(const FramebufferSpecification& spec);
 		~DX11Framebuffer();
 
-		virtual void Bind() override;
+		virtual void Bind(uint32_t attachmentSlot) override;
 		virtual void Unbind() override;
 
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
-		virtual void ClearAttachment(uint32_t attachmentIndex, const math::vec4& color) override;
+		virtual void ClearColorAttachment(uint32_t attachmentIndex, const math::vec4& color) override;
+		virtual void ClearDepthAttachment() override;
 
 		// TEMP
-		virtual void* GetTexture() const override { return (void*)m_ShaderResourceView; }
-		virtual void BindTexture(uint32_t slot) const override;
+		virtual void* GetTexture(uint32_t slot) const override { return (void*)m_ShaderResourceViews[slot]; }
+		virtual void BindTexture(uint32_t slot, uint32_t attachmentSlot) const override;
 		virtual void UnbindTexture(uint32_t slot) const override;
 
 		virtual const FramebufferSpecification& GetSpecification() const { return m_Specification; };
@@ -31,8 +32,14 @@ namespace BIGOS {
 	private:
 		FramebufferSpecification m_Specification;
 
-		ID3D11Texture2D* m_RenderTargetTexture;
-		ID3D11RenderTargetView* m_RenderTargetView;
-		ID3D11ShaderResourceView* m_ShaderResourceView;
+		std::vector<FramebufferTextureSpecification> m_ColorAttachmentSpecifications;
+		FramebufferTextureSpecification m_DepthAttachmentSpecification = FramebufferTextureFormat::None;
+
+		ID3D11Texture2D* m_DepthStencilTexture;
+		ID3D11DepthStencilView* m_DepthStencilView;
+
+		std::vector<ID3D11Texture2D*> m_RenderTargetTextures;
+		std::vector<ID3D11RenderTargetView*> m_RenderTargetViews;
+		std::vector<ID3D11ShaderResourceView*> m_ShaderResourceViews;
 	};
 }

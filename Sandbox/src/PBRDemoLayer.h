@@ -31,6 +31,7 @@ private:
 	std::shared_ptr<BIGOS::Texture2D> m_NormalTexture;
 	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
 	std::shared_ptr<BIGOS::TextureCube> m_EnvironmentMap;
+	std::shared_ptr<BIGOS::TextureCube> m_TestCube;
 
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerObject;
 	std::shared_ptr<BIGOS::ConstantBuffer> m_CBPerFrame;

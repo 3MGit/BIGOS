@@ -1,6 +1,11 @@
 #pragma once
 
+#include "Engine/math/mat4.h"
+
+#include "Engine/Renderer/MeshGenerator.h"
+
 #include "Engine/Renderer/API/Texture.h"
+#include "Engine/Renderer/API/Framebuffer.h"
 #include <d3d11.h>
 
 namespace BIGOS {
@@ -20,8 +25,12 @@ namespace BIGOS {
 		virtual void Bind(uint32_t slot = 0) const override;
 		virtual void Unbind(uint32_t slot = 0) const override;
 	private:
+		void LoadTexture();
+	private:
 		std::string m_Path;
 		uint32_t m_Width, m_Height;
+
+		bool m_IsHDR;
 
 		D3D11_TEXTURE2D_DESC m_Desc;
 		ID3D11Texture2D* m_Texture = nullptr;
@@ -35,6 +44,7 @@ namespace BIGOS {
 	{
 	public:
 		DX11TextureCube(const std::string* files);
+		DX11TextureCube(const std::string file);
 		~DX11TextureCube();
 
 		virtual uint32_t GetWidth() const { return m_Width; }
@@ -46,15 +56,21 @@ namespace BIGOS {
 		virtual void Unbind(uint32_t slot = 0) const override;
 	private:
 		void LoadFromMultipleFiles();
+		void LoadFromHDR();
 	private:
-		std::string* m_Files;
+		std::string* m_Files = nullptr;
+		std::string m_HdrPath;
 		uint32_t m_Width, m_Height;
 
 		D3D11_TEXTURE2D_DESC m_Desc;
 		ID3D11Texture2D* m_Texture = nullptr;
-		ID3D11ShaderResourceView* m_ResourceView = nullptr;
+		ID3D11ShaderResourceView* m_ShaderResourceView = nullptr;
 		ID3D11SamplerState* m_SamplerState = nullptr;
 		D3D11_SAMPLER_DESC m_SamplerDesc;
 		DXGI_FORMAT m_Format = DXGI_FORMAT_UNKNOWN;
+
+		Mesh* m_Cube = nullptr;
+		std::array<math::mat4, 6> m_CaptureViewProjection;
+
 	};
 }
