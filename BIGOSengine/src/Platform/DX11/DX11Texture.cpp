@@ -3,6 +3,7 @@
 #include "Platform/DX11/DX11Context.h"
 #include "Platform/DX11/DX11Common.h"
 #include "Engine/Core/Core.h"
+#include "Engine/Core/App/Application.h"
 #include "Engine/System/Memory.h"
 #include "Engine/Renderer/API/Shader.h"
 
@@ -304,6 +305,8 @@ namespace BIGOS {
 		};
 
 		LoadFromHDR();
+
+		//GenerateIrradiance();
 	}
 
 	DX11TextureCube::~DX11TextureCube()
@@ -312,12 +315,13 @@ namespace BIGOS {
 		BGS_CORE_TRACE("D3D11SamplerState succesfully released!");
 		ReleaseCOM(m_ShaderResourceView);
 		BGS_CORE_TRACE("D3D11ShaderResourceView succesfully released!");
+		ReleaseCOM(m_IrradianceShaderResourceView);
+		BGS_CORE_TRACE("D3D11ShaderResourceView succesfully released!");
 		ReleaseCOM(m_Texture);
 		BGS_CORE_TRACE("D3D11TextureCube succesfully released!");
 		if(m_Files)
 			delete[] m_Files;
-		if (m_Cube)
-			delete m_Cube;
+		
 	}
 
 	void DX11TextureCube::SetData(void* data, uint32_t size)
@@ -403,95 +407,216 @@ namespace BIGOS {
 
 	void DX11TextureCube::LoadFromHDR()
 	{
-		int nrComponents;
-
 		__declspec(align(16))
 			struct SkyboxConstantBufferData
 		{
 			math::mat4 u_ModelViewProj;
 		};
+		
+		ScopedTimer timer;
+		auto texture = Texture2D::Create(m_HdrPath);
+		auto shader = Shader::Create("assets/shaders/HDRtoCube.hlsl");
+		auto cubeCB = ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
+
+		m_Cube = MeshGenerator::CreateBox({ 2.0f, 2.0f, 2.0f });
+
+		uint32_t width = 1024;
+		uint32_t height = 1024;
+
+		//Create the TextureCube
+		ID3D11Texture2D* tex = nullptr;
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 6;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
+		HRESULT hr = DX11Context::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &tex);
+
+		//Shader Resource view
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = textureDesc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = -1;
+		hr = DX11Context::GetDevice()->CreateShaderResourceView(tex, &srvDesc, &m_ShaderResourceView);
+
+		//Create the Render target views
+		ID3D11RenderTargetView* rtvs[6];
+		for (uint32_t i = 0; i < 6; i++)
 		{
-			ScopedTimer timer;
-			auto texture = Texture2D::Create(m_HdrPath);
-			auto shader = Shader::Create("assets/shaders/HDRtoCube.hlsl");
-			auto cubeCB = ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
+			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+			renderTargetViewDesc.Format = textureDesc.Format;
+			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+			renderTargetViewDesc.Texture2DArray.MipSlice = 0;
+			renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
+			renderTargetViewDesc.Texture2DArray.ArraySize = 1;
+			//ID3D11RenderTargetView* view = nullptr;
+			DX11Context::GetDevice()->CreateRenderTargetView(tex, &renderTargetViewDesc, &rtvs[i]);
+		}
 
-			m_Cube = MeshGenerator::CreateBox({ 2.0f, 2.0f, 2.0f });
+		D3D11_VIEWPORT viewport{};
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = (float)width;
+		viewport.Height = (float)height;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		DX11Context::GetDeviceContext()->RSSetViewports(1, &viewport);
 
-			uint32_t width = 2048;
-			uint32_t height = 2048;
+		texture->Bind(0);
+		shader->Bind();
 
-			//Create the TextureCube
-			ID3D11Texture2D* tex = nullptr;
-			D3D11_TEXTURE2D_DESC textureDesc = {};
-			textureDesc.Width = width;
-			textureDesc.Height = height;
-			textureDesc.MipLevels = 1;
-			textureDesc.ArraySize = 6;
-			textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-			textureDesc.CPUAccessFlags = 0;
-			textureDesc.SampleDesc.Count = 1;
-			textureDesc.SampleDesc.Quality = 0;
-			textureDesc.Usage = D3D11_USAGE_DEFAULT;
-			textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-			textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE | D3D11_RESOURCE_MISC_GENERATE_MIPS;
-			HRESULT hr = DX11Context::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &tex);
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			float col[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+			DX11Context::GetDeviceContext()->ClearRenderTargetView(rtvs[i], col);
+			DX11Context::GetDeviceContext()->OMSetRenderTargets(1, &rtvs[i], nullptr);
+			math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
+			SkyboxConstantBufferData dataCB;
+			dataCB.u_ModelViewProj = BIGOS::math::mat4::Invert(m_CaptureViewProjection[i]);
+			//dataCB.u_ModelViewProj = m_CaptureViewProjection[i];
+			cubeCB->SetData(&dataCB, sizeof(dataCB));
+			cubeCB->Bind(0);
+			m_Cube->Render();
+		}
 
-			//Shader Resource view
-			D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-			srvDesc.Format = textureDesc.Format;
-			srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
-			srvDesc.Texture2D.MostDetailedMip = 0;
-			srvDesc.Texture2D.MipLevels = -1;
-			hr = DX11Context::GetDevice()->CreateShaderResourceView(tex, &srvDesc, &m_ShaderResourceView);
+		DX11Context::GetDeviceContext()->GenerateMips(m_ShaderResourceView);
 
-			//Create the Render target views
-			ID3D11RenderTargetView* rtvs[6];
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
-				renderTargetViewDesc.Format = textureDesc.Format;
-				renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
-				renderTargetViewDesc.Texture2DArray.MipSlice = 0;
-				renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
-				renderTargetViewDesc.Texture2DArray.ArraySize = 1;
-				ID3D11RenderTargetView* view = nullptr;
-				DX11Context::GetDevice()->CreateRenderTargetView(tex, &renderTargetViewDesc, &rtvs[i]);
-			}
+		ZeroMemory(&m_SamplerDesc, sizeof(D3D11_SAMPLER_DESC));
+		m_SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		m_SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		m_SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		m_SamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+		m_SamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		m_SamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-			D3D11_VIEWPORT viewport{};
-			viewport.TopLeftX = 0.0f;
-			viewport.TopLeftY = 0.0f;
-			viewport.Width = (float)width;
-			viewport.Height = (float)height;
-			viewport.MinDepth = 0.0f;
-			viewport.MaxDepth = 1.0f;
-			DX11Context::GetDeviceContext()->RSSetViewports(1, &viewport);
+		hr = DX11Context::GetDevice()->CreateSamplerState(&m_SamplerDesc, &m_SamplerState);
+		if (SUCCEEDED(hr))
+			BGS_CORE_TRACE("D3D11SamplerState succesfully created!");
 
-			texture->Bind(0);
-			shader->Bind();
+		//DX11Context::GetDeviceContext()->OMSetRenderTargets(1, DX11Context::GetRenderTargetView(), nullptr);
 
-			for (uint32_t i = 0; i < 6; i++)
-			{
-				float col[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-				DX11Context::GetDeviceContext()->ClearRenderTargetView(rtvs[i], col);
-				DX11Context::GetDeviceContext()->OMSetRenderTargets(1, &rtvs[i], nullptr);
-				math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
-				SkyboxConstantBufferData dataCB;
-				dataCB.u_ModelViewProj = BIGOS::math::mat4::Invert(m_CaptureViewProjection[i]);
-				//dataCB.u_ModelViewProj = m_CaptureViewProjection[i];
-				cubeCB->SetData(&dataCB, sizeof(dataCB));
-				cubeCB->Bind(0);
-				m_Cube->Render();
-			}
+		DX11Context::GetContext()->SetViewport(0, 0, Application::Get().GetWindow()->GetWidth(), Application::Get().GetWindow()->GetHeight());
 
-			DX11Context::GetDeviceContext()->GenerateMips(m_ShaderResourceView);
+		for (ID3D11RenderTargetView*& rtv : rtvs)
+			rtv->Release();
+		tex->Release();
+		delete m_Cube;
+		BGS_CORE_TRACE("HDR to Cubemap conversion took {0} seconds", (timer.ElapsedMillis() / 1000));
+		
+	}
+	void DX11TextureCube::GenerateIrradiance()
+	{
+		__declspec(align(16))
+			struct SkyboxConstantBufferData
+		{
+			math::mat4 u_ModelViewProj;
+		};
 
-			for (ID3D11RenderTargetView*& rtv : rtvs)
-				rtv->Release();
-			tex->Release();
+		ScopedTimer timer;
+		uint32_t width = 32;
+		uint32_t height = 32;
 
-			BGS_CORE_TRACE("HDR to Cubemap conversion took {0} seconds", (timer.ElapsedMillis() / 1000));
+		auto shader = Shader::Create("assets/shaders/IrradianceConvolution.hlsl");
+		auto cubeCB = ConstantBuffer::Create(sizeof(SkyboxConstantBufferData));
+
+		m_Cube = MeshGenerator::CreateBox({ 2.0f, 2.0f, 2.0f });
+
+		//Create the TextureCube
+		D3D11_TEXTURE2D_DESC textureDesc = {};
+		textureDesc.Width = width;
+		textureDesc.Height = height;
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 6;
+		textureDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+		ID3D11Texture2D* tex = nullptr;
+		HRESULT hr = DX11Context::GetDevice()->CreateTexture2D(&textureDesc, nullptr, &tex);
+
+		//Shader Resource view
+		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+		srvDesc.Format = textureDesc.Format;
+		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+		srvDesc.Texture2D.MostDetailedMip = 0;
+		srvDesc.Texture2D.MipLevels = 1;
+		hr = DX11Context::GetDevice()->CreateShaderResourceView(tex, &srvDesc, &m_IrradianceShaderResourceView);
+
+		//Create the Render target views
+		ID3D11RenderTargetView* rtvs[6];
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			D3D11_RENDER_TARGET_VIEW_DESC renderTargetViewDesc = {};
+			renderTargetViewDesc.Format = textureDesc.Format;
+			renderTargetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+			renderTargetViewDesc.Texture2DArray.MipSlice = 0;
+			renderTargetViewDesc.Texture2DArray.FirstArraySlice = i;
+			renderTargetViewDesc.Texture2DArray.ArraySize = 1;
+			DX11Context::GetDevice()->CreateRenderTargetView(tex, &renderTargetViewDesc, &rtvs[i]);
+		}
+
+		D3D11_VIEWPORT viewport{};
+		viewport.TopLeftX = 0.0f;
+		viewport.TopLeftY = 0.0f;
+		viewport.Width = (float)width;
+		viewport.Height = (float)height;
+		viewport.MinDepth = 0.0f;
+		viewport.MaxDepth = 1.0f;
+		DX11Context::GetDeviceContext()->RSSetViewports(1, &viewport);
+
+		shader->Bind();
+		DX11Context::GetDeviceContext()->PSSetShaderResources(5, 1, &m_ShaderResourceView);
+		DX11Context::GetDeviceContext()->PSSetSamplers(5, 1, &m_SamplerState);
+		
+
+		for (uint32_t i = 0; i < 6; i++)
+		{
+			float col[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+			DX11Context::GetDeviceContext()->ClearRenderTargetView(rtvs[i], col);
+			DX11Context::GetDeviceContext()->OMSetRenderTargets(1, &rtvs[i], nullptr);
+			math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
+			SkyboxConstantBufferData dataCB;
+			dataCB.u_ModelViewProj = BIGOS::math::mat4::Invert(m_CaptureViewProjection[i]);
+			//dataCB.u_ModelViewProj = m_CaptureViewProjection[i];
+			cubeCB->SetData(&dataCB, sizeof(dataCB));
+			cubeCB->Bind(0);
+			m_Cube->Render();
+		}
+
+		//Cleanup
+
+		DX11Context::GetContext()->SetViewport(0, 0, Application::Get().GetWindow()->GetWidth(), Application::Get().GetWindow()->GetHeight());
+
+		tex->Release();
+		for (ID3D11RenderTargetView*& rtv : rtvs)
+			rtv->Release();
+
+		delete m_Cube;
+
+		BGS_CORE_TRACE("Irradiance map generation took {0} seconds", (timer.ElapsedMillis() / 1000));
+	}
+	void DX11TextureCube::UnbindIrradianceMap(uint32_t slot) const
+	{
+		ID3D11ShaderResourceView* rv = nullptr;
+		DX11Context::GetDeviceContext()->PSSetShaderResources(slot, 1, &rv);
+	}
+	void DX11TextureCube::BindIrradianceMap(uint32_t slot) const
+	{
+		if (m_IrradianceShaderResourceView)
+		{
+			DX11Context::GetDeviceContext()->PSSetShaderResources(slot, 1, &m_IrradianceShaderResourceView);
+			DX11Context::GetDeviceContext()->PSSetSamplers(slot, 1, &m_SamplerState);
 		}
 	}
 }

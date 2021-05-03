@@ -146,6 +146,9 @@ SamplerState u_RoughnessSampler : register(s2);
 SamplerState u_AOSampler : register(s3);
 SamplerState u_NormalSampler : register(s4);
 
+TextureCube u_IrradianceMap : register(t5);
+SamplerState u_IrradianceSampler : register(s5);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// TEXTURES ///////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -250,11 +253,13 @@ float4 psmain(PS_INPUT input) : SV_Target
         Lo += 4.0f * ((kD * (GetAlbedo(attributes, u_Material).rgb / PI) + specular) * radiance * NdotL);  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
     }
 
-    // ambient lighting (note that the next IBL tutorial will replace 
-    // this ambient lighting with environment lighting).
-    float3 ambient = 0.03f * GetAlbedo(attributes, u_Material).rgb * GetAO(attributes, u_Material);
-
-    //float3 ambient = u_Material.Albedo.rbg * u_Material.AO;
+    // ambient lighting (we now use IBL as the ambient term)
+    float3 kS = fresnelSchlick(max(dot(N, V), 0.0f), F0, GetRoughness(attributes, u_Material));
+    float3 kD = 1.0f - kS;
+    kD *= 1.0 - GetMetalic(attributes, u_Material);
+    float3 irradiance = u_IrradianceMap.Sample(u_IrradianceSampler, N).rgb;
+    float3 diffuse = irradiance * GetAlbedo(attributes, u_Material).rgb;
+    float3 ambient = (kD * diffuse) * GetAO(attributes, u_Material);
 
     float3 color = ambient + Lo;
 
@@ -264,6 +269,6 @@ float4 psmain(PS_INPUT input) : SV_Target
     color = pow(abs(color), 1.0f / 2.2f);
 
     return float4(color, 1.0f);
-    //return float4(GetNormal(attributes, u_Material) *0.5f + 0.5f, 1.0f);
+    //return float4(diffuse, 1.0f);
     //return GetAlbedo(attributes, u_Material);
 }

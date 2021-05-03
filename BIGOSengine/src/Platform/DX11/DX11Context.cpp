@@ -26,6 +26,7 @@ namespace BIGOS {
 #if defined(BGS_DEBUG) 
 		createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
+		// D3D11_CREATE_DEVICE_DISABLE_GPU_TIMEOUT for gpu timeout when computing big HDR images
 
 		// Creating D3D11Device
 		HRESULT hr = D3D11CreateDevice(
@@ -58,7 +59,7 @@ namespace BIGOS {
 		scd.BufferDesc.Width = m_WindowProperties.Width;
 		scd.BufferDesc.Height = m_WindowProperties.Height;
 
-		scd.BufferCount = 1;
+		scd.BufferCount = 3;
 		scd.BufferDesc.RefreshRate.Numerator = 60;
 		scd.BufferDesc.RefreshRate.Denominator = 1;
 		scd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -124,8 +125,8 @@ namespace BIGOS {
 		//TODO: Think how to handle that with framebuffers
 		// Creating backbuffer
 		ID3D11Texture2D* backBuffer;
-		swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
-		dev->CreateRenderTargetView(backBuffer, NULL, &m_RenderTargetView);
+		HRESULT hr = swapchain->GetBuffer(0, __uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&backBuffer));
+		hr = dev->CreateRenderTargetView(backBuffer, NULL, &m_RenderTargetView);
 		ReleaseCOM(backBuffer);
 
 		// Creating DepthStencil buffer

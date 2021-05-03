@@ -49,6 +49,7 @@ void PBRDemoLayer::OnAttach()
 
 	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
 	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/hdr/ArchesPineTree.hdr");
+	
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
 	BIGOS::FramebufferSpecification fbSpec;
@@ -85,7 +86,8 @@ void PBRDemoLayer::OnAttach()
 	m_EditorCamera = BIGOS::EditorCamera(45.0f, 1.778f, 0.1f, 1000.0f);
 
 	m_TestCube = BIGOS::TextureCube::Create("assets/textures/hdr/ArchesPineTree.hdr");
-
+	m_PBRShader->Bind();
+	m_TestCube->GenerateIrradiance();
 }
 
 void PBRDemoLayer::OnDetach()
@@ -123,7 +125,6 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	//Envmap
 	m_SkyboxShader->Bind();
-	//m_EnvironmentMap->Bind(0);
 	m_TestCube->Bind(0);
 	SkyboxConstantBufferData skyboxCB;
 	BIGOS::math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
@@ -131,8 +132,9 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	m_SkyboxCB->SetData(&skyboxCB, sizeof(skyboxCB));
 	m_SkyboxCB->Bind(0);
 	m_Skybox->Render();
-	m_EnvironmentMap->Unbind(0);
+	m_TestCube->Unbind(0);
 
+	m_TestCube->BindIrradianceMap(5);
 
 	// Scene update
 	PFConstantBufferData cbPerFrame;
@@ -154,7 +156,7 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 		m_Material->SetMetalic((float)i / (float)rows);
 		for (size_t j = 0; j < cols; j++)
 		{
-			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -6.0f + 2 * j, 6.0f - 2 * i, -0.0f });
+			BIGOS::math::mat4 tempTrans = BIGOS::math::mat4::Translate({ -6.0f + 2 * j, -6.0f + 2 * i, -0.0f });
 			BIGOS::math::mat4 tempRot = BIGOS::math::mat4::Rotate(0, { 0, 1, 0 });
 			BIGOS::math::mat4 tempScale = BIGOS::math::mat4::Scale({ 0.7f, 0.7f, 0.7f });
 
@@ -169,11 +171,11 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			//m_StoneMaterial->Bind();
 			
 			m_SphereMesh->Render();
-			matIndex++;
-			
+			matIndex++;	
 		}
 	}
 
+	m_TestCube->UnbindIrradianceMap(5);
 	m_Framebuffer->Unbind();
 
 	// Rendering texture to screen
@@ -190,11 +192,11 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 void PBRDemoLayer::OnImGuiRender()
 {
-	//ImGui::Begin("Memory");
+	//ImGui::Begin("");
 	//ImGui::DragFloat3("Wall position", m_WallPosition.ptr());
 	//ImGui::Image(m_Framebuffer->GetTexture(0), ImVec2(m_Framebuffer->GetSpecification().Width, m_Framebuffer->GetSpecification().Height));
 	//ImGui::End();
-
+	
 	ImGui::Begin("Memory");
 	ImGui::Text("Currentlly in use: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.currentUsed).c_str());
 	ImGui::Text("Total allocated: %s", BIGOS::MemoryManager::Get()->BytesToString(BIGOS::MemoryManager::Get()->m_MemoryStats.totalAllocated).c_str());

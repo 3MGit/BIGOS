@@ -54,6 +54,10 @@ namespace BIGOS {
 
 		virtual void Bind(uint32_t slot = 0) const override;
 		virtual void Unbind(uint32_t slot = 0) const override;
+		
+		virtual void GenerateIrradiance() override;
+		virtual void BindIrradianceMap(uint32_t slot) const override;
+		virtual void UnbindIrradianceMap(uint32_t slot) const override;
 	private:
 		void LoadFromMultipleFiles();
 		void LoadFromHDR();
@@ -68,6 +72,8 @@ namespace BIGOS {
 		ID3D11SamplerState* m_SamplerState = nullptr;
 		D3D11_SAMPLER_DESC m_SamplerDesc;
 		DXGI_FORMAT m_Format = DXGI_FORMAT_UNKNOWN;
+
+		ID3D11ShaderResourceView* m_IrradianceShaderResourceView = nullptr;
 
 		Mesh* m_Cube = nullptr;
 		std::array<math::mat4, 6> m_CaptureViewProjection;
