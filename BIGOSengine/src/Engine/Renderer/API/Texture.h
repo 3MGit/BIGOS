@@ -28,10 +28,14 @@ namespace BIGOS {
 	class TextureCube : public Texture
 	{
 	public:
-		virtual void GenerateIrradiance() = 0;
+		virtual void GenerateIrradianceMap() = 0;
+		virtual void GeneratePrefilteredMap() = 0;
 
 		virtual void BindIrradianceMap(uint32_t slot) const = 0;
 		virtual void UnbindIrradianceMap(uint32_t slot) const = 0;
+
+		virtual void BindPrefilteredMap(uint32_t slot) const = 0;
+		virtual void UnbindPrefilteredMap(uint32_t slot) const = 0;
 
 		static std::shared_ptr<TextureCube> Create(const std::string* files);
 		static std::shared_ptr<TextureCube> Create(const std::string file);

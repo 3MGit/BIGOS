@@ -28,8 +28,7 @@ private:
 
 	std::shared_ptr<BIGOS::Framebuffer> m_Framebuffer;
 
-	std::shared_ptr<BIGOS::Texture2D> m_NormalTexture;
-	std::shared_ptr<BIGOS::Texture2D> m_WhiteTexture;
+	std::shared_ptr<BIGOS::Texture2D> m_BRDFTexture;
 	std::shared_ptr<BIGOS::TextureCube> m_EnvironmentMap;
 	std::shared_ptr<BIGOS::TextureCube> m_TestCube;
 
@@ -47,6 +46,7 @@ private:
 	BIGOS::Light* m_Lights[4];
 	BIGOS::Material* m_Material;
 	BIGOS::Material* m_StoneMaterial;
+	BIGOS::Material* m_WornMetal;
 
 	BIGOS::EditorCamera m_EditorCamera;
 };

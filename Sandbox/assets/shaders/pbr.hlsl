@@ -148,6 +148,10 @@ SamplerState u_NormalSampler : register(s4);
 
 TextureCube u_IrradianceMap : register(t5);
 SamplerState u_IrradianceSampler : register(s5);
+TextureCube u_PrefilteredMap : register(t6);
+SamplerState u_PrefilteredSampler : register(s6);
+Texture2D u_BRDFMap : register(t7);
+SamplerState u_BRDFSampler : register(s7);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// TEXTURES ///////////////////////////////////////////////////////////////////////////////////////
@@ -194,6 +198,13 @@ float3 GetNormal(Attributes a, Material m)
     return (1.0f - m.usingNormalMap) * a.normal + m.usingNormalMap * normalMap;
 }
 
+uint QuerySpecularTextureLevels()
+{
+    uint width, height, levels;
+    u_PrefilteredMap.GetDimensions(0, width, height, levels);
+    return levels;
+}
+
 
 float4 psmain(PS_INPUT input) : SV_Target
 {
@@ -205,6 +216,7 @@ float4 psmain(PS_INPUT input) : SV_Target
 
     float3 N = GetNormal(attributes, u_Material);
     float3 V = normalize(u_CameraPosition - attributes.position.xyz);
+    float3 R = reflect(-V, N);
 
     // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
     // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
@@ -254,12 +266,21 @@ float4 psmain(PS_INPUT input) : SV_Target
     }
 
     // ambient lighting (we now use IBL as the ambient term)
-    float3 kS = fresnelSchlick(max(dot(N, V), 0.0f), F0, GetRoughness(attributes, u_Material));
+    float3 F = fresnelSchlick(max(dot(N, V), 0.0f), F0, GetRoughness(attributes, u_Material));
+    float3 kS = F;
     float3 kD = 1.0f - kS;
     kD *= 1.0 - GetMetalic(attributes, u_Material);
+
+    //diffuse from irradianceMap
     float3 irradiance = u_IrradianceMap.Sample(u_IrradianceSampler, N).rgb;
     float3 diffuse = irradiance * GetAlbedo(attributes, u_Material).rgb;
-    float3 ambient = (kD * diffuse) * GetAO(attributes, u_Material);
+
+    // sample both the pre-filter map and the BRDF lut and combine them together as per the Split-Sum approximation to get the IBL specular part.
+    float3 prefilteredColor = u_PrefilteredMap.SampleLevel(u_PrefilteredSampler, R, GetRoughness(attributes, u_Material) * QuerySpecularTextureLevels()).rgb;
+    float2 brdf = u_BRDFMap.Sample(u_BRDFSampler, float2(max(dot(N, V), 0.0), GetRoughness(attributes, u_Material))).rg;
+    float3 specular = prefilteredColor * (F * brdf.x + brdf.y);
+    
+    float3 ambient = (kD * diffuse + specular) * GetAO(attributes, u_Material);
 
     float3 color = ambient + Lo;
 
@@ -269,6 +290,6 @@ float4 psmain(PS_INPUT input) : SV_Target
     color = pow(abs(color), 1.0f / 2.2f);
 
     return float4(color, 1.0f);
-    //return float4(diffuse, 1.0f);
+    //return float4(GetNormal(attributes, u_Material) * 0.5f + 0.5f, 1.0f);
     //return GetAlbedo(attributes, u_Material);
 }

@@ -47,8 +47,7 @@ void PBRDemoLayer::OnAttach()
 	m_ScreenShader = BIGOS::Shader::Create("assets/shaders/screen.hlsl");
 	m_SkyboxShader = BIGOS::Shader::Create("assets/shaders/skybox.hlsl");
 
-	m_WhiteTexture = BIGOS::Texture2D::Create("assets/textures/white.png");
-	m_NormalTexture = BIGOS::Texture2D::Create("assets/textures/hdr/ArchesPineTree.hdr");
+	m_BRDFTexture = BIGOS::Texture2D::Create("assets/textures/BRDF_LUT.tga");
 	
 	m_EnvironmentMap = BIGOS::TextureCube::Create(environmentFiles);
 
@@ -76,6 +75,14 @@ void PBRDemoLayer::OnAttach()
 	m_StoneMaterial->SetNormalTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/Normal.png"));
 	m_StoneMaterial->SetAOTexture(BIGOS::Texture2D::Create("assets/textures/Rocks022/AmbientOcclusion.png"));
 
+	m_WornMetal = new BIGOS::Material(m_PBRShader);
+	m_WornMetal->SetAlbedoTexture(BIGOS::Texture2D::Create("assets/textures/worn_metal/Albedo.png"));
+	m_WornMetal->SetRoughnessTexture(BIGOS::Texture2D::Create("assets/textures/worn_metal/Roughness.png"));
+	m_WornMetal->SetMetalicTexture(BIGOS::Texture2D::Create("assets/textures/worn_metal/Metallic.png"));
+	m_WornMetal->SetNormalTexture(BIGOS::Texture2D::Create("assets/textures/worn_metal/Normal.png"));
+	m_WornMetal->SetAOTexture(BIGOS::Texture2D::Create("assets/textures/worn_metal/AmbientOcclusion.png"));
+
+
 	m_LightManager = BIGOS::LightManager::Create();
 
 	m_Lights[0] = new BIGOS::Light({ -10.0f, 10.0f, 10.0f }, {300.0f, 300.0f, 300.0f, 300.0f});
@@ -87,7 +94,9 @@ void PBRDemoLayer::OnAttach()
 
 	m_TestCube = BIGOS::TextureCube::Create("assets/textures/hdr/ArchesPineTree.hdr");
 	m_PBRShader->Bind();
-	m_TestCube->GenerateIrradiance();
+	m_TestCube->GenerateIrradianceMap();
+	m_PBRShader->Bind();
+	m_TestCube->GeneratePrefilteredMap();
 }
 
 void PBRDemoLayer::OnDetach()
@@ -102,6 +111,7 @@ void PBRDemoLayer::OnDetach()
 	delete m_Lights[3];
 	delete m_Material;
 	delete m_StoneMaterial;
+	delete m_WornMetal;
 }
 
 void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
@@ -126,15 +136,21 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 	//Envmap
 	m_SkyboxShader->Bind();
 	m_TestCube->Bind(0);
+	//m_TestCube->BindIrradianceMap(0);
+	//m_TestCube->BindPrefilteredMap(0);
 	SkyboxConstantBufferData skyboxCB;
 	BIGOS::math::mat4 tempSkyboxTransform = BIGOS::math::mat4::Translate({ 0.0f, 0.0f, 0.0f });
 	skyboxCB.u_ModelViewProj = BIGOS::math::mat4::Invert(m_EditorCamera.GetViewProjection());
 	m_SkyboxCB->SetData(&skyboxCB, sizeof(skyboxCB));
-	m_SkyboxCB->Bind(0);
+	m_SkyboxCB->Bind(3);
 	m_Skybox->Render();
+	//m_TestCube->UnbindIrradianceMap(0);
+	//m_TestCube->UnbindPrefilteredMap(0);
 	m_TestCube->Unbind(0);
 
 	m_TestCube->BindIrradianceMap(5);
+	m_TestCube->BindPrefilteredMap(6);
+	m_BRDFTexture->Bind(7);
 
 	// Scene update
 	PFConstantBufferData cbPerFrame;
@@ -169,6 +185,7 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 			m_Material->SetRoughness(BIGOS::math::clamp((float)j / (float)cols, 0.05f, 1.0f));
 			m_Material->Bind();
 			//m_StoneMaterial->Bind();
+			//m_WornMetal->Bind();
 			
 			m_SphereMesh->Render();
 			matIndex++;	
@@ -180,11 +197,10 @@ void PBRDemoLayer::OnUpdate(BIGOS::Utils::Timestep ts)
 
 	// Rendering texture to screen
 	m_ScreenShader->Bind();
+	m_BRDFTexture->Bind(0);
 	m_Framebuffer->BindTexture(0,0);
-	//m_NormalTexture->Bind(0);
 	m_ScreenMesh->Render();
-	m_NormalTexture->Unbind(0);
-	//m_Framebuffer->UnbindTexture(0);
+	m_Framebuffer->UnbindTexture(0);
 	m_ScreenShader->Unbind();
 
 	m_Rotation += ts / 50.0f;

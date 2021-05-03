@@ -12,7 +12,7 @@ struct VS_OUTPUT
 	float4 positionL : POSITION;
 };
 
-cbuffer invBuffer : register(b0)
+cbuffer invBuffer : register(b3)
 {
 	float4x4 u_InvertViewProj;
 }
@@ -42,6 +42,7 @@ float4 psmain(PS_INPUT input) : SV_Target
 {
 	//return float4(u_EnvironmentMap.SampleLevel(u_EnvironmentMapSampler, input.positionL, 4));
 	float3 envColor = u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL.xyz).rgb;
+	//float3 envColor = u_EnvironmentMap.Sample(u_EnvironmentMapSampler, input.positionL.xyz, 2.0f).rgb;
 	envColor = envColor / (envColor + 1.0f);
 	envColor = pow(envColor, 1.0 / 2.2);
 	return float4(envColor, 1.0f);

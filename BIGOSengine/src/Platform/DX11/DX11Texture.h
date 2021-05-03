@@ -55,7 +55,12 @@ namespace BIGOS {
 		virtual void Bind(uint32_t slot = 0) const override;
 		virtual void Unbind(uint32_t slot = 0) const override;
 		
-		virtual void GenerateIrradiance() override;
+		virtual void GenerateIrradianceMap() override;
+		virtual void GeneratePrefilteredMap() override;
+
+		virtual void BindPrefilteredMap(uint32_t slot) const override;
+		virtual void UnbindPrefilteredMap(uint32_t slot) const override;
+
 		virtual void BindIrradianceMap(uint32_t slot) const override;
 		virtual void UnbindIrradianceMap(uint32_t slot) const override;
 	private:
@@ -74,6 +79,7 @@ namespace BIGOS {
 		DXGI_FORMAT m_Format = DXGI_FORMAT_UNKNOWN;
 
 		ID3D11ShaderResourceView* m_IrradianceShaderResourceView = nullptr;
+		ID3D11ShaderResourceView* m_PrefilteredShaderResourceView = nullptr;
 
 		Mesh* m_Cube = nullptr;
 		std::array<math::mat4, 6> m_CaptureViewProjection;
